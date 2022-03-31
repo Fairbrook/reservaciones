@@ -1,7 +1,7 @@
 # Funcionalidad para el proyecto de Ingeniería de Software __Reservaciones__
 
 ## Instalación de paquetes
-
+El proyecto depende de múltiples librerías que están anotadas en requirements.txt y se pueden instalar con el siguiente comando
 ```
 pip install -r requirements.txt
 ```
