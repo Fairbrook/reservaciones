@@ -10,3 +10,4 @@ name = os.getenv("DB_NAME")
 
 db = mysql.connector.connect(
     user=user, password=password, host=host, database=name)
+
