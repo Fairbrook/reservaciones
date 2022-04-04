@@ -7,7 +7,6 @@ Created on Wed Sep  8 09:56:58 2021
 
 import tkinter
 from tkinter import *
-from io import open
 
 def inicio_sesion():
     global pantalla, user_verify, password_verify, user_entry, password_entry, rol, cupos, reserva
@@ -89,14 +88,14 @@ def menu_admin():
     global pantalla_ma
     pantalla_ma = Toplevel(pantalla)
     imagen=PhotoImage(file="logop.png")   
-    pantalla_ma.geometry("300x350")
+    pantalla_ma.geometry("300x450")
     pantalla_ma.title("Administrador")
         
     Label(pantalla_ma, text="Bienvenido Admin :D", 
           bg="medium aquamarine").pack
     info = Button(pantalla_ma, text="Modificar\ninformación", 
                   height="3", width="300",
-                  command=lambda:modificar_info).pack()
+                  command=modificar_info).pack()
     Label(pantalla_ma, text="").pack()
     reserva = Button(pantalla_ma, text="Reservaciones",
                      height="3", width="300",
@@ -106,12 +105,13 @@ def menu_admin():
                        height="3", width="300",
                        command=lambda:menu_calificacion(1)).pack()
     Label(pantalla_ma, text="").pack()
+    calificar = Button(pantalla_ma, text="Modificar menú",
+                       height="3", width="300",
+                       command=lambda:menu_calificacion(1)).pack()                   
+    Label(pantalla_ma, text="").pack()
     Label(pantalla_ma, image=imagen).pack()
     
     pantalla_ma.mainloop()
-
-def modificar_info():
-    pass
 
 def ver_info():
 
@@ -151,27 +151,55 @@ def ver_info():
     texto_info.config(state='disabled') #El usuario no puede hacerle nada al texto, solo se muestra
 
 
-'''def menu_informacion(user):
-    global pantalla_info
-
+def modificar_info():
     
-    if user==1:
-        pantalla_info = Toplevel(pantalla_ma)
-        pantalla_info.geometry("400x500")
-        pantalla_info.title("Modificar información")
-    else:
-        pantalla_info = Toplevel(pantalla_mc)
-        pantalla_info.geometry("400x500")
-        pantalla_info.title("Visualizar información")
-        frame_title = Frame(pantalla_info, bg="white")
-        frame_title.grid(column=0,row=0)
-        Label(frame_title, text="Información", font=("Arial", 20), fg="navy blue").place(anchor="n")
+    print("MODIFICAR")
+    global pantalla_modificar_info 
+    pantalla_modificar_info = Toplevel()
+    pantalla_modificar_info.geometry("590x650")
+    pantalla_modificar_info.config(bg="white")
+    pantalla_modificar_info.title("Modificar información")
+    pantalla_modificar_info.resizable(0,0)
+    pantalla_modificar_info = Frame(pantalla_modificar_info, bg = "white")
+    pantalla_modificar_info.grid(column=0,row=0)
+    Label(pantalla_modificar_info, text="Información", font=("Arial", 20), fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
 
+    frame_info = Frame(pantalla_modificar_info, bg= "white")
+    frame_info.grid(column=0, row=1)
+    frame_boton = Frame(pantalla_modificar_info, bg="white")
+    frame_boton.grid(column=0, row=2)
+
+    texto_info = Text(frame_info, height=30, width=70, font=("Lato", 10))
+    texto_info.grid(column=0,row=0, padx=20,pady=10)
+
+    ladoy = Scrollbar(frame_info, orient =VERTICAL)
+    ladox = Scrollbar(frame_info, orient= HORIZONTAL)
+    ladox.grid(column=0, row = 1, sticky='ew') 
+    ladoy.grid(column = 1, row = 0, sticky='ns')
+
+    texto_info.config(yscrollcommand = ladoy.set)
+    texto_info.config(xscrollcommand= ladox.set)
+    ladoy.config(command=texto_info.yview)
+    ladox.config(command=texto_info.xview)
+
+    def mostrar_info_actual():
+        archivo = open("informacion.txt", 'r')
+        texto_info.delete("1.0", "end") #Limpiamos pantalla por si acaso
+
+        for linea in archivo:
+            texto_info.insert("end", linea)
+        
+        archivo.close()
     
-    volver = Button(pantalla_info, text="Volver",
-                    height="2", width="15",
-                    command=pantalla_info.destroy).place("s")
-                    '''
+    def actualizar_info():
+        archivo = open("informacion.txt", 'w')
+        nuevo_texto = texto_info.get(1.0, "end")
+        archivo.write(nuevo_texto)
+
+    Button(frame_boton, text = "Actualizar info", bg= "#47525E", fg="white", command=actualizar_info).grid(column=0, row=0, pady=5, padx=5)
+    Button(frame_boton, text = "Mostrar info", bg= "#47525E", fg="white", command=mostrar_info_actual).grid(column=1, row=0, pady=5, padx=5)
+
+                    
     
 def menu_reservaciones(user):
     global pantalla_rese
