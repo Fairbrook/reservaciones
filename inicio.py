@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Wed Sep  8 09:56:58 2021
 
 @author: Oscar
-"""
+'''
 
 import tkinter
 from tkinter import *
-import re
+from io import open
 
 def inicio_sesion():
     global pantalla, user_verify, password_verify, user_entry, password_entry, rol, cupos, reserva
@@ -66,7 +66,7 @@ def menu_cliente():
     
     info = Button(pantalla_mc, text="Informacion", 
                   height="3", width="300",
-                  command=lambda:menu_informacion(0)).pack()
+                  command=ver_info).pack()
     Label(pantalla_mc, text="").pack()
     reserva = Button(pantalla_mc, text="Reservar",
                      height="3", width="300",
@@ -94,15 +94,15 @@ def menu_admin():
         
     Label(pantalla_ma, text="Bienvenido Admin :D", 
           bg="medium aquamarine").pack
-    info = Button(pantalla_ma, text="Informacion", 
+    info = Button(pantalla_ma, text="Modificar\ninformación", 
                   height="3", width="300",
-                  command=lambda:menu_informacion(1)).pack()
+                  command=lambda:modificar_info).pack()
     Label(pantalla_ma, text="").pack()
-    reserva = Button(pantalla_ma, text="Reservar",
+    reserva = Button(pantalla_ma, text="Reservaciones",
                      height="3", width="300",
                      command=lambda:menu_reservaciones(1)).pack()
     Label(pantalla_ma, text="").pack()
-    calificar = Button(pantalla_ma, text="Calificar",
+    calificar = Button(pantalla_ma, text="Calificaciones",
                        height="3", width="300",
                        command=lambda:menu_calificacion(1)).pack()
     Label(pantalla_ma, text="").pack()
@@ -110,19 +110,68 @@ def menu_admin():
     
     pantalla_ma.mainloop()
 
-def menu_informacion(user):
+def modificar_info():
+    pass
+
+def ver_info():
+
+    global pantalla_viewinfo
+
+    pantalla_viewinfo = Toplevel()
+    pantalla_viewinfo.geometry("590x600")
+    pantalla_viewinfo.config(bg="white")
+    pantalla_viewinfo.title("Visualizar información")
+    pantalla_viewinfo.resizable(0,0)
+    frame_titulo = Frame(pantalla_viewinfo, bg = "white")
+    frame_titulo.grid(column=0,row=0)
+    Label(frame_titulo, text="Información", font=("Arial", 20), fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
+
+    frame_info = Frame(pantalla_viewinfo, bg= "white")
+    frame_info.grid(column=0, row=1)
+
+    texto_info = Text(frame_info, height=30, width=70, font=("Lato", 10))
+    texto_info.grid(column=0,row=0, padx=20,pady=10)
+
+    ladoy = Scrollbar(frame_info, orient =VERTICAL)
+    ladox = Scrollbar(frame_info, orient= HORIZONTAL)
+    ladox.grid(column=0, row = 1, sticky='ew') 
+    ladoy.grid(column = 1, row = 0, sticky='ns')
+
+    texto_info.config(yscrollcommand = ladoy.set)
+    texto_info.config(xscrollcommand= ladox.set)
+    ladoy.config(command=texto_info.yview)
+    ladox.config(command=texto_info.xview)
+
+    archivo = open("informacion.txt", 'r')
+    texto_info.delete("1.0", "end") #Limpiamos pantalla por si acaso
+
+    for linea in archivo:
+        texto_info.insert("end", linea) 
+    
+    texto_info.config(state='disabled') #El usuario no puede hacerle nada al texto, solo se muestra
+
+
+'''def menu_informacion(user):
     global pantalla_info
+
+    
     if user==1:
         pantalla_info = Toplevel(pantalla_ma)
+        pantalla_info.geometry("400x500")
+        pantalla_info.title("Modificar información")
     else:
         pantalla_info = Toplevel(pantalla_mc)
-    pantalla_info.geometry("300x600")
-    pantalla_info.title("Informacion")
+        pantalla_info.geometry("400x500")
+        pantalla_info.title("Visualizar información")
+        frame_title = Frame(pantalla_info, bg="white")
+        frame_title.grid(column=0,row=0)
+        Label(frame_title, text="Información", font=("Arial", 20), fg="navy blue").place(anchor="n")
+
     
-    Label(pantalla_info, text="").pack()
     volver = Button(pantalla_info, text="Volver",
                     height="2", width="15",
-                    command=pantalla_info.destroy).pack(side="bottom")
+                    command=pantalla_info.destroy).place("s")
+                    '''
     
 def menu_reservaciones(user):
     global pantalla_rese
@@ -264,4 +313,4 @@ def ocupar():
     
     
 inicio_sesion()
-app=aplication()
+#app=aplication()
