@@ -6,7 +6,11 @@ Created on Wed Sep  8 09:56:58 2021
 '''
 
 import tkinter
+from tkinter import  messagebox
+import os
 from tkinter import *
+from models.administrador import consulta_BD
+import hashlib
 
 def inicio_sesion():
     global pantalla, user_verify, password_verify, user_entry, password_entry, rol, cupos, reserva
@@ -318,15 +322,26 @@ def menu_calificacion(user):
     volver = Button(pantalla_cali, text="Volver",
                     height="2", width="15",
                     command=pantalla_cali.destroy).pack(side="bottom")
-    
+#valida el inicio de sesion cuando se ingresa como admin 
 def validar(numero):
+    
     if numero==1: #1 para el inicio de sesion
+        #obtenemos los valores igresados en las cajas de teto
         usuariovalidar=user_entry.get()
         contraseñavalidar=password_entry.get()
-        if usuariovalidar=="admin" and contraseñavalidar=="admin":
-            menu_admin()
-        else:
-            menu_cliente()
+        #Encriptamos la contraseña con sh256
+        hashed_string = hashlib.sha256(contraseñavalidar.encode('utf-8')).hexdigest()
+        #realizamos las consultas a la base de datos para ver si los valores coinciden
+        consultaUsuario = consulta_BD("nombre_usuario",usuariovalidar)
+        consultaContrasena = consulta_BD("contrasena",hashed_string)
+        
+        #sino existen registros con los datos ingresados
+    if len(consultaUsuario and consultaContrasena) == 0:
+                messagebox.showwarning("Sin coincidencia", "No hubo coincidencias con los valores ingresados")
+    else:
+        #si hay concidencias se muestra el menu de admin
+        menu_admin()
+    
             
 def registrar_bd():
     new_user.get()
