@@ -4,11 +4,12 @@ import tkinter
 from tkinter import  messagebox
 import os
 from tkinter import *
-from models.administrador import consulta_BD
+#from models.administrador import consulta_BD
 import hashlib
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
-    global pantalla, user_verify, password_verify, user_entry, password_entry, rol, cupos, reserva #variables globales
+    global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
+    global rol, cupos, reserva, estrellas #variables globales
     pantalla=Tk() #declaramos la pantalla principal
     pantalla.geometry("300x350") #tamaño de ventana
     pantalla.title("Login") #titulo de ventana
@@ -18,6 +19,7 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     reserva=IntVar() #indicamos el tipo de variable
     
     cupos=10 #inicializamos (TEMPORALES PARA PRUEBAS)
+    estrellas=5 #limite de estrellas a dar
     reserva=0
     
     #Label = etiqueta
@@ -37,7 +39,7 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
 
     #boton para iniciar sesion
     Label(pantalla, text="").pack()
-    Button(pantalla, text='Iniciar Sesión', height="2", width="20", command=lambda:validar(1)).pack()
+    Button(pantalla, text='Iniciar Sesión', height="2", width="20", command=validar).pack()
 
     #boton para registrar
     Label(pantalla, text="").pack()
@@ -99,7 +101,7 @@ def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
     #Boton llamado menu y sus caracteristicas
     menu = Button(pantalla_mc, text="Menu",
                        height="3", width="300",
-                       command=lambda:menu_calificacion(0)).pack()                   
+                       command=lambda:pop_ups("No hay menu hasta que\nFercho lo metam")).pack()                   
     Label(pantalla_mc, text="").pack()
 
     #Imagen de nuestro equipo
@@ -356,12 +358,13 @@ def menu_calificacion(user): #Interfaz de las calificaciones
         pantalla_cali = Toplevel(pantalla_ma)
     else: #Si es cliente
         pantalla_cali = Toplevel(pantalla_mc)
-    pantalla_cali.geometry("300x250")
+    pantalla_cali.geometry("300x300")
     pantalla_cali.title("Calificacion")
     
     if user!=1: #Si el usuario no es admin se muestra la opcion de calificar
         Button(pantalla_cali, text="Calificar",
-               height="3", width="300").pack()
+               height="3", width="300",
+               command=crear_calificacion).pack()
         Label(pantalla_cali, text="").pack()
 
     Button(pantalla_cali, text="Ver calificacion",
@@ -371,28 +374,122 @@ def menu_calificacion(user): #Interfaz de las calificaciones
     puntuacion = Label(pantalla_cali, text="...").pack() #Promedio de calificacion no visible
     Label(pantalla_cali, text="").pack()
 
+    Button(pantalla_cali, text="Ver Opiniones",
+           height="3", width="300").pack() #Boton para ver las opiniones
+    Label(pantalla_cali, text="").pack()
+
     volver = Button(pantalla_cali, text="Volver",
                     height="2", width="15",
                     command=pantalla_cali.destroy).pack(side="bottom") #Boton para regresar al menu de opciones
 
-def validar(numero): #Funcion para hacer validaciones 
+def crear_calificacion():
+    global pantalla_crear_cali, new_opinion #pantalla_crear_cali = pantalla crear calificacion
+    pantalla_crear_cali = Toplevel(pantalla_cali)
+    pantalla_crear_cali.geometry("290x300")
+    pantalla_crear_cali.title("Crear Calificacion")
+
+    Label(pantalla_crear_cali, text="Seleccione la Puntuacion:",
+          font="15,bold").grid(column=1) #Muestra los cupos disponibles
+
+    #Una etiqueta con dos botones adyacentes para subir o disminuir el numero de cupos a reservar
+    puntuacion = Label(pantalla_crear_cali, text=str(estrellas),
+                          height="2", width="4",
+                          font="18").grid(row=3, column=1) #Estara en el centro, son los cupos existentes
     
-    if numero==1: #1 para el inicio de sesion
-        #obtenemos los valores igresados en las cajas de teto
-        usuariovalidar=user_entry.get()
-        contraseñavalidar=password_entry.get()
-        #Encriptamos la contraseña con sh256
-        hashed_string = hashlib.sha256(contraseñavalidar.encode('utf-8')).hexdigest()
-        #realizamos las consultas a la base de datos para ver si los valores coinciden
-        consultaUsuario = consulta_BD("nombre_usuario",usuariovalidar)
-        consultaContrasena = consulta_BD("contrasena",hashed_string)
+    def dar_puntos(operacion): #Funcion para ver los cupos disponibles y delimitar los botones
+        global estrellas
+        if estrellas==0 and estrellas>0: #Si es 0 o menor no se puede disminuir
+            estrellas=estrellas-1
+            puntuacion = Label(pantalla_crear_cali, text=str(estrellas),
+                                  height="2", width="4",
+                                  font="18").grid(row=3, column=1) #muestra las estrellas
+        elif operacion==1 and estrellas<5: #Si es 5 o mas no se puede aumentar
+            estrellas=estrellas+1
+            puntuacion = Label(pantalla_crear_cali, text=str(estrellas),
+                                  height="2", width="4",
+                                  font="18").grid(row=3, column=1) #muestra las estrellas
+
+    resta = Button(pantalla_crear_cali, text="-",
+                   height="2", width="4",
+                   font="18", command=lambda:dar_puntos(0)).grid(row=3, column=0, padx=3) #Boton de resta
+    suma = Button(pantalla_crear_cali, text="+",
+                  height="2", width="4",
+                  font="18", command=lambda:dar_puntos(1)).grid(row=3, column=2) #Boton de suma
+
+    Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3)
+    Label(pantalla_crear_cali, text="Comentario:",
+          font="15,bold").grid(column=0, columnspan=3)
+    new_opinion = Entry(pantalla_crear_cali, textvariable=user_verify, width="30")
+    new_opinion.grid(column=1)
+    Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3)
+
+    submit = Button(pantalla_crear_cali, text="Registrar calificacion",
+                    height="3", width="20",
+                    command=pantalla_crear_cali.destroy).grid(column=1)
+    Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3)
+    
+    volver = Button(pantalla_crear_cali, text="Volver",
+                    height="2", width="15",
+                    command=pantalla_crear_cali.destroy).grid(column=1) #Boton para regresar al menu de calificar
+    
+
+
+def validar(): #Funcion para hacer validaciones 
+     #1 para el inicio de sesion
+    #obtenemos los valores igresados en las cajas de texto
+    
+    usuariovalidar=user_entry.get()
+    contraseñavalidar=password_entry.get()
+     #Encriptamos la contraseña con sh256
+    hashed_string = hashlib.sha256(contraseñavalidar.encode('utf-8')).hexdigest()
+    #realizamos las consultas a la base de datos para ver si los valores coinciden
+    consultaUsuario = consulta_BD("nombre_usuario",usuariovalidar)
+    consultaContrasena = consulta_BD("contrasena",hashed_string)
         
-        #sino existen registros con los datos ingresados
+    #sino existen registros con los datos ingresados
     if len(consultaUsuario and consultaContrasena) == 0:
                 messagebox.showwarning("Sin coincidencia", "No hubo coincidencias con los valores ingresados")
-    else:
+
+    else: #Pongan para cliente y admin :3-----------------------------
         #si hay concidencias se muestra el menu de admin
         menu_admin()
+        """
+    usuariovalidar=user_entry.get()
+    contraseñavalidar=password_entry.get()
+    if usuariovalidar=="admin" and contraseñavalidar=="admin":
+        menu_admin()
+    else:
+        menu_cliente()
+        """
+
+def pop_ups(texto): #Funcion para los pop ups
+    global pop_up
+    pop_up = Toplevel() #Encima de cualquier cosa
+    imagen_cheems=PhotoImage(file="cheems.png") #Importamos la imagen
+    image=imagen_cheems.subsample(2,2)
+    pop_up.geometry("550x330")
+    pop_up.title("Errorm")
+    pop_up.configure(bg="white") #fondo blanco limdom
+    
+    #Ponemos la label en la segunda columna, para que en la primera este la imagen
+    Label(pop_up, text="¡Oh no!", height="3",
+         font="Arial,48,bold", bg="white").grid(row=0, column=1)
+    Label(pop_up, text="Emcomtramste el errorm:\n"+str(texto),
+         height="3", font="Arial,32,bold", bg="white").grid(row=1, column=1)
+    Label(pop_up, text="Emstamos trabajandom\npara remparmlo",
+         height="3", font="Arial,32,bold", bg="white").grid(row=2, column=1)
+
+    #Boton para que se cierre con picar el boton
+    Entendido = Button(pop_up, text="Entendido",
+                    height="3", width="15",
+                    command=pop_up.destroy).grid(row=3, column=1)
+    
+    #Imagen
+    Label(pop_up, image=imagen_cheems, bg="white").grid(row=0, column=0, rowspan=4)
+
+    pop_up.mainloop()
+
+
             
 def registrar_bd(): #Funcion para el registro
     new_user.get() #Obtencion de datos
