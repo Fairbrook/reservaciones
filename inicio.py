@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import tkinter
+from tkinter import  messagebox
+import os
 from tkinter import *
+from models.administrador import consulta_BD
+import hashlib
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry, rol, cupos, reserva #variables globales
@@ -333,8 +337,7 @@ def crear_reservacion(): #Funcion para crear la reservacion
                   font="18", command=lambda:cupos_disp(1)).grid(row=3, column=2) #Boton de suma
     reservar = Button(crear_rese, text="RESERVAR",
                       heigh="3",
-                      font="18", command=ocupar,
-                       command= crear_rese.destroy).grid(row=5, column=1) #Boton para reservar y finalizar
+                      font="18", command=ocupar).grid(row=5, column=1) #Boton para reservar y finalizar
     
 def ver_reservacion(): #Funcion para Ver la Reservacion
     global ver_rese, reserva #ver rese = pantalla de ver reserva
@@ -371,15 +374,25 @@ def menu_calificacion(user): #Interfaz de las calificaciones
     volver = Button(pantalla_cali, text="Volver",
                     height="2", width="15",
                     command=pantalla_cali.destroy).pack(side="bottom") #Boton para regresar al menu de opciones
+
+def validar(numero): #Funcion para hacer validaciones 
     
-def validar(numero): #Con esto se haran las validaciones 
     if numero==1: #1 para el inicio de sesion
-        usuariovalidar=user_entry.get() #Se obtiene el entry de esa variable en pantalla inicio sesion
-        contraseñavalidar=password_entry.get() #Se obtiene el entry de esa variable en pantalla inicio sesion
-        if usuariovalidar=="admin" and contraseñavalidar=="admin": #si es esto, se otorga admin
-            menu_admin()
-        else:
-            menu_cliente()
+        #obtenemos los valores igresados en las cajas de teto
+        usuariovalidar=user_entry.get()
+        contraseñavalidar=password_entry.get()
+        #Encriptamos la contraseña con sh256
+        hashed_string = hashlib.sha256(contraseñavalidar.encode('utf-8')).hexdigest()
+        #realizamos las consultas a la base de datos para ver si los valores coinciden
+        consultaUsuario = consulta_BD("nombre_usuario",usuariovalidar)
+        consultaContrasena = consulta_BD("contrasena",hashed_string)
+        
+        #sino existen registros con los datos ingresados
+    if len(consultaUsuario and consultaContrasena) == 0:
+                messagebox.showwarning("Sin coincidencia", "No hubo coincidencias con los valores ingresados")
+    else:
+        #si hay concidencias se muestra el menu de admin
+        menu_admin()
             
 def registrar_bd(): #Funcion para el registro
     new_user.get() #Obtencion de datos
