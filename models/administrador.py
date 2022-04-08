@@ -12,12 +12,13 @@ sys.path.append(path)
 
 from db import *
 #funcion para realizar consulta a la base de datos
-def consulta_BD(nombre_columna, valor): 
+def login_admin(user_name , password): 
    #establecemos un cursor             
     cur = db.cursor()
     #sentencia sql para hacer la consulta
-    sql = "SELECT * FROM administrador WHERE {} = '{}'".format(nombre_columna, valor)
-    cur.execute(sql)
+    sql = "SELECT * FROM administrador WHERE contrasena = SHA2(%s,256) and nombre_usuario = %s "
+    cur = db.cursor()
+    cur.execute(sql, (user_name, password))
     #obtenemos los registros
     admin = cur.fetchall()
     #cerramos la conexion

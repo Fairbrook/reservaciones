@@ -4,8 +4,9 @@ import tkinter
 from tkinter import  messagebox
 import os
 from tkinter import *
-#from models.administrador import consulta_BD
+#from models.administrador import login_admin
 import hashlib
+from models.administrador import login_admin
 
 from models.usuario import login, register
 
@@ -460,14 +461,23 @@ def validar():
             menu_cliente()
             return
 
+    except:
+        return
+
+
+    #Agregar validación parar admin
+    try:
+        user = login_admin(usuariovalidar, contraseñavalidar)
+
+        if user!=None:
+            menu_admin()
+            return
+
         if user == None:
             messagebox.showwarning("Error", "Usuario y/o contrseña incorrectos")
     except:
         messagebox.showwarning("Error", "Hubo un error inesperado")
         return
-
-
-    #Agregar validación parar admin
 
 def pop_ups(texto): #Funcion para los pop ups
     global pop_up
