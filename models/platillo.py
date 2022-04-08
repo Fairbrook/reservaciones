@@ -1,16 +1,16 @@
 from tkinter import *
 import os
 import sys
-from dotenv import load_dotenv
-load_dotenv()
-path_db = os.getenv("PATH_DB")
-sys.path.append(path_db)
+
+sys.path.append('../')
+
 from db import *
 
 path_imagenes = os.getcwd() + '\imagenes' #Path en el equipo para la carpeta de imagenes
 
 #Para insertar un platillo, se le pedirán al usuario todos los elementos,
 #incluyendo el path de donde se encuentra contenida la imagen que desea insertar para el platillo
+
 def insertar_Platillo_bd(path_imagen, precio, descripcion, nombre_platillo):
     
     with open(path_imagen, "rb") as file: 
@@ -59,6 +59,12 @@ def ver_menu():
     row = 1
 
 
+def modificar_menu():
+    pass
+
+
+
+'''
 platillos = select_Platillos_bd()
 
 for platillo in platillos:
@@ -75,6 +81,6 @@ for platillo in platillos:
         file.write(imagen)
         file.close()
 
- 
+ '''
 
 
