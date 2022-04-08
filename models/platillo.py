@@ -60,7 +60,19 @@ def ver_menu():
 
 
 def modificar_menu():
-    pass
+    
+    global pantalla_mod_menu
+    pantalla_mod_menu = Toplevel()
+    pantalla_mod_menu.title('Modificar menú de platillos')
+    pantalla_mod_menu.geometry('1000x600')
+
+    frame_superior = Frame(pantalla_mod_menu)
+    frame_superior.grid(column=0, row=0)
+
+    frame_tabla = Frame(pantalla_mod_menu)
+    frame_tabla.grid(column=0, row=1)
+
+
 
 
 

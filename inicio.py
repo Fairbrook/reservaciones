@@ -8,7 +8,7 @@ from tkinter import *
 import hashlib
 
 from models.usuario import login, register
-from models.platillo import ver_menu
+from models.platillo import ver_menu, modificar_menu
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
@@ -104,7 +104,7 @@ def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
     #Boton llamado menu y sus caracteristicas
     menu = Button(pantalla_mc, text="Menu",
                        height="3", width="300",
-                       command=ver_menu)                 
+                       command=ver_menu).pack()                 
     Label(pantalla_mc, text="").pack()
 
     #Imagen de nuestro equipo
@@ -143,7 +143,7 @@ def menu_admin(): #Menu a desplegar al usuario de tipo admin
     #Boton de menu de comida
     menu = Button(pantalla_ma, text="Modificar menú",
                        height="3", width="300",
-                       command=lambda:menu_calificacion(1)).pack()                   
+                       command=modificar_menu).pack()                   
     Label(pantalla_ma, text="").pack()
 
     #Cargamos la imagen en la ventana
@@ -439,6 +439,10 @@ def crear_calificacion():
 
 # Funcion para hacer validaciones e iniciar sesión
 def validar(): 
+
+    #BORRAR ESTE UNA VEZ SE COMPLETE EL LOGIN DE ADMIN APROPIADAMENTE, ESTO ES SOLO PARA ACCEDER RÁPIDO EN PRUEBAS
+    if password_entry.get() == 'admin' and user_entry.get() == 'admin':
+        menu_admin()
     # Obtenemos los valores igresados en las cajas de texto
     
     # Validar nombre de usuario
