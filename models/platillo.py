@@ -109,6 +109,8 @@ def modificar_menu():
             tabla.delete(fila)
             id = ("'"+ str(id_borrar) + "'")       
             borrar_platillo_bd(id)
+        else:
+            messagebox.showwarning("Aviso", "No se ha seleccionado ningún platillo")
 
         mostrar_platillos_tabla()
 
