@@ -9,6 +9,7 @@ import hashlib
 from models.administrador import login_admin
 
 from models.usuario import login, register
+from models.platillo import ver_menu
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
@@ -104,7 +105,7 @@ def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
     #Boton llamado menu y sus caracteristicas
     menu = Button(pantalla_mc, text="Menu",
                        height="3", width="300",
-                       command=lambda:pop_ups("No hay menu hasta que\nFercho lo metam")).pack()                   
+                       command=ver_menu)                 
     Label(pantalla_mc, text="").pack()
 
     #Imagen de nuestro equipo
