@@ -1,4 +1,5 @@
 from msilib import text
+from sqlite3 import Cursor
 from tkinter import *
 from tkinter import filedialog
 import os
@@ -19,6 +20,7 @@ path_imagenes = os.getcwd() + '\imagenes' #Path en el equipo para la carpeta de 
 
 def insertar_Platillo_bd(path_imagen, precio, descripcion, nombre_platillo):
     
+    cursor = db.cursor()
     #Si el usuario no optó por poner una imagen, entonces hacemos inserción sin campo foto
     if path_imagen == "":
         statement = "Insert into Platillo (nombre_platillo, precio, descripcion) values('{}', {}, '{}')".format(nombre_platillo, precio, descripcion)
@@ -40,22 +42,17 @@ def insertar_Platillo_bd(path_imagen, precio, descripcion, nombre_platillo):
     
 def select_Platillos_bd():
 
+    cursor = db.cursor()
     sql = "Select * from Platillo"
     cursor.execute(sql)
     platillos = cursor.fetchall()
     cursor.close()
     return platillos
 
-def select_Platillos_Vista_sin_Img():
 
-    sql = "Select (id_platillo, nombre_platillo, descripcion, precio) from Platillo"
-    cursor.execute(sql)
-    platillos = cursor.fetchall()
-    cursor.close()
-    return platillos
+def borrar_platillo_bd(id_eliminar):
 
-def borrar_platillo(id_eliminar):
-
+    cursor = db.cursor()
     sql = "Delete from Platillo where id_platillo = {}".format(id_eliminar)
     cursor.execute(sql)
     db.commit()
@@ -97,7 +94,7 @@ def modificar_menu():
   #--------------Funciones que se necesitarán para interactuar con la tabla y los registros en esta sección----------
     
     #Función para obtener info del registro en dicha fila
-    def obtener_fila_tabla():
+    def obtener_fila_tabla(event):
         current_item = tabla.focus()
         if not current_item:
             return
@@ -111,8 +108,10 @@ def modificar_menu():
         if len(fila) !=0:        
             tabla.delete(fila)
             id = ("'"+ str(id_borrar) + "'")       
-            borrar_platillo(id)
-    
+            borrar_platillo_bd(id)
+
+        mostrar_platillos_tabla()
+
     def escoger_imagen():
 
         path_imagen = filedialog.askopenfilename(initialdir="/", title="Seleccione una imagen para el platillo", filetypes=(("Archivos png", "*.png"),))
@@ -128,6 +127,19 @@ def modificar_menu():
         #Por alguna razón, la cadena resultante desde Text siempre tenia un \n añadido al final, rstrip lo quita
         path_imagen_platillo = path_imagen_platillo.rstrip() 
         insertar_Platillo_bd(path_imagen_platillo, precio, descripcion, nombre)
+
+        mostrar_platillos_tabla()
+    
+    def mostrar_platillos_tabla():
+        
+        tabla.delete(*tabla.get_children())
+        platillos = select_Platillos_bd()
+        i = -1
+        for platillo in platillos:
+            i= i+1   
+            #Como el orden de columnas es diferente en la bd que en la tabla, hacemos un reacomodo usando indices
+            tabla.insert('',i, text = "", values=(platillo[0], platillo[3], platillo[2], platillo[1]))
+
 
 #---------------------------------------------------------------------------------------------------------------------
     
@@ -147,7 +159,8 @@ def modificar_menu():
     frame_inferior = Frame(pantalla_mod_menu)
     frame_inferior.grid(column=0, row= 3)
 
-    Button(frame_inferior, text = "Eliminar platillo seleccionado", bg = "red", fg = "white", font=("Lato", 10)).grid(column=0, row=0,pady=5,padx=5)
+    Button(frame_inferior, text = "Eliminar platillo seleccionado", bg = "red", fg = "white", font=("Lato", 10), command=borrar_platillo).grid(
+        column=0, row=0,pady=5,padx=5)
     Button(frame_inferior, text = "Visualizar carta de menú actual", bg = "yellow", fg = "black", font=("Lato", 10)).grid(column=1, row=0,pady=5,padx=5)
 
     entry_nombre = StringVar()
@@ -213,7 +226,7 @@ def modificar_menu():
     estilo.map('Treeview',background=[('selected', 'lato')], foreground=[('selected','green')] )
 
     tabla.bind("<<TreeviewSelect>>", obtener_fila_tabla)  #Conectamos a la tabla con una función para obtener los datos de la fila seleccionada
-
+    mostrar_platillos_tabla()
     
 
 
