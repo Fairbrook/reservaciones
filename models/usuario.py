@@ -1,4 +1,10 @@
 import sys
+from tkinter import *
+import os
+import sys
+#from platillo import *
+
+path_imagenes = os.getenv('PATH_IMG') #PATH EN EL EQUIPO DONDE SE EJECUTA DONDE ESTARÁN LAS IMAGENES (DENTRO DE ESTE REPOSITORIO)
   
 # setting path
 sys.path.append('../')
@@ -12,8 +18,6 @@ def register(user_name, password):
     cursor.execute(query, (user_name,))
     if len(list(cursor)) > 0:
         return (True, 'El nombre de usuario se encuentra en uso')
-
-    # Se añade la información del nuevo usuario en la base de datots
     query = "INSERT INTO usuario (nombre_usuario, contrasena) VALUES (%s,SHA2(%s,256))"
     cursor = db.cursor()
     cursor.execute(query, (user_name, password))
@@ -21,6 +25,8 @@ def register(user_name, password):
     cursor.close()
     return (False, '')
 
+
+    
 # Función para inicio de sesión de usuario
 def login(user_name, password):
     # Se comprueba que exista el usuario con el nombre y contraseña especificados
