@@ -1,0 +1,8 @@
+Para acceder al menu de administrador
+ingrese el usuario admin y la contraseña masterd10
+
+además agregue a su base de datos, en la tabla admin 
+un registro con los siguientes datos:
+
+insert into administrador values(1,'administrador','admin',
+'e4aa78afca7b8586293ad09b91fccc52c73916da987a100f33213739c230879f',1);
