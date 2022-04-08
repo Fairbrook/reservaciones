@@ -453,19 +453,18 @@ def validar():
         return
 
     # Inicio de sesión
-    # try:
-    user = login(usuariovalidar, contraseñavalidar)
+    try:
+        user = login(usuariovalidar, contraseñavalidar)
 
-    if user!=None:
-        menu_cliente()
+        if user!=None:
+            menu_cliente()
+            return
+
+        if user == None:
+            messagebox.showwarning("Error", "Usuario y/o contrseña incorrectos")
+    except:
+        messagebox.showwarning("Error", "Hubo un error inesperado")
         return
-
-    if user == None:
-        messagebox.showwarning("Error", "Usuario y/o contrseña incorrectos")
-
-    # except:
-    #     messagebox.showwarning("Error", "Hubo un error inesperado")
-    #     return
 
 
     #Agregar validación parar admin
