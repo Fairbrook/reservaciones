@@ -4,7 +4,6 @@ import os
 import sys
 #from platillo import *
 
-path_imagenes = os.getenv('PATH_IMG') #PATH EN EL EQUIPO DONDE SE EJECUTA DONDE ESTARÁN LAS IMAGENES (DENTRO DE ESTE REPOSITORIO)
   
 # setting path
 sys.path.append('../')
