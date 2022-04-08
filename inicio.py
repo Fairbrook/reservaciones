@@ -4,7 +4,7 @@ import tkinter
 from tkinter import  messagebox
 import os
 from tkinter import *
-#from models.administrador import consulta_BD
+from models.administrador import consulta_BD
 import hashlib
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
@@ -17,6 +17,10 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     password_verify=StringVar() #indicamos el tipo de variable
     cupos=IntVar() #indicamos el tipo de variable
     reserva=IntVar() #indicamos el tipo de variable
+    new_name.delete(first=0,last='end')
+    new_lastname.delete(first=0,last='end')
+    new_user.delete(first=0,last='end')
+    new_password.delete(first=0,last='end')
     
     cupos=10 #inicializamos (TEMPORALES PARA PRUEBAS)
     estrellas=5 #limite de estrellas a dar
@@ -39,24 +43,43 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
 
     #boton para iniciar sesion
     Label(pantalla, text="").pack()
-    Button(pantalla, text='Iniciar Sesión', height="2", width="20", command=validar).pack()
+    Button(pantalla, text='Iniciar Sesión',
+             height="2", width="20",
+             bg= "#BCEBE0",
+             command=validar).pack()
 
     #boton para registrar
     Label(pantalla, text="").pack()
-    Button(pantalla, text='¿No tienes cuenta? \n Registrate!', height="3", width="20", command=registro).pack()  
+    Button(pantalla, text='¿No tienes cuenta? \n Registrate!',
+             height="3", width="20",
+             bg= "#BCEBE0",
+             command=registro).pack()  
 
    #depuramos la pantalla como iniciador del programa 
     pantalla.mainloop()
     
 def registro(): #Se despliega encima de iniciar sesion para dar un registro
-    global pantalla_r, new_user, new_password
+    global pantalla_r, new_user, new_password, new_name, new_lastname
     pantalla_r = Toplevel(pantalla) #pantalla_r = pantalla registro
     pantalla_r.geometry("300x350")
     pantalla_r.title("Registro")
     user_entry.delete(first=0,last='end') #limpiamos campos
     password_entry.delete(first=0,last='end')
+    new_name.delete(first=0,last='end')
+    new_lastname.delete(first=0,last='end')
     
     Label(pantalla_r, text="Ingrese los datos para el registro", font="bold").pack()
+    Label(pantalla_r, text="").pack()
+
+    #Pide el nuevo usuario
+    Label(pantalla_r, text="Nombre(s):").pack()
+    new_name = Entry(pantalla_r, textvariable=user_verify, width="25")
+    new_name.pack()
+
+    #Pide el nuevo usuario
+    Label(pantalla_r, text="Apellido(s):").pack()
+    new_lastname = Entry(pantalla_r, textvariable=user_verify, width="25")
+    new_lastname.pack()
     Label(pantalla_r, text="").pack()
 
     #Pide el nuevo usuario
@@ -71,7 +94,10 @@ def registro(): #Se despliega encima de iniciar sesion para dar un registro
     Label(pantalla_r, text="").pack()
 
     #Registra al nuevo usuario y contraseña
-    Button(pantalla_r, text='REGISTRAR', height="3", width="20", command=registrar_bd).pack()
+    Button(pantalla_r, text='REGISTRAR',
+             height="3", width="20",
+             bg= "#BCEBE0",
+             command=registrar_bd).pack()
     
 def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
     global pantalla_mc #Pantalla_mc = pantalla menu cliente 
@@ -86,21 +112,25 @@ def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
     #Boton llamado info (informacion) y sus caracteristicas
     info = Button(pantalla_mc, text="Informacion", 
                   height="3", width="300",
+                  bg= "#BCEBE0",
                   command=ver_info).pack()
     Label(pantalla_mc, text="").pack()
     #Boton llamado reserva y sus caracteristicas
     reserva = Button(pantalla_mc, text="Reservar",
                      height="3", width="300",
+                     bg= "#BCEBE0",
                      command=lambda:menu_reservaciones(0)).pack()
     Label(pantalla_mc, text="").pack()
     #Boton llamado calificar y sus caracteristicas
     calificar = Button(pantalla_mc, text="Calificar",
                        height="3", width="300",
+                       bg= "#BCEBE0",
                        command=lambda:menu_calificacion(0)).pack()
     Label(pantalla_mc, text="").pack()
     #Boton llamado menu y sus caracteristicas
     menu = Button(pantalla_mc, text="Menu",
                        height="3", width="300",
+                       bg= "#BCEBE0",
                        command=lambda:pop_ups("No hay menu hasta que\nFercho lo metam")).pack()                   
     Label(pantalla_mc, text="").pack()
 
@@ -125,21 +155,25 @@ def menu_admin(): #Menu a desplegar al usuario de tipo admin
     #Boton de informacion
     info = Button(pantalla_ma, text="Modificar\ninformación", 
                   height="3", width="300",
+                  bg= "#BCEBE0",
                   command=modificar_info).pack()
     Label(pantalla_ma, text="").pack()
     #Boton de reservaciones
     reserva = Button(pantalla_ma, text="Reservaciones",
                      height="3", width="300",
+                     bg= "#BCEBE0",
                      command=lambda:menu_reservaciones(1)).pack()
     Label(pantalla_ma, text="").pack()
     #Boton de calificaciones
     calificar = Button(pantalla_ma, text="Calificaciones",
                        height="3", width="300",
+                       bg= "#BCEBE0",
                        command=lambda:menu_calificacion(1)).pack()
     Label(pantalla_ma, text="").pack()
     #Boton de menu de comida
     menu = Button(pantalla_ma, text="Modificar menú",
                        height="3", width="300",
+                       bg= "#BCEBE0",
                        command=lambda:menu_calificacion(1)).pack()                   
     Label(pantalla_ma, text="").pack()
 
@@ -162,7 +196,8 @@ def ver_info():#Funcion para ver la informacion
     frame_titulo = Frame(pantalla_viewinfo, bg = "white") 
     frame_titulo.grid(column=0,row=0)
     #Etiqueta de titulo del frame
-    Label(frame_titulo, text="Información", font=("Arial", 20), fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
+    Label(frame_titulo, text="Información", font=("Arial", 20),
+          fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
 
     frame_info = Frame(pantalla_viewinfo, bg= "white")
     frame_info.grid(column=0, row=1)
@@ -264,22 +299,28 @@ def menu_reservaciones(user): #Funcion que despliega el menu de reservaciones, r
         #Se crean los botones de las funciones de reservar
         Button(pantalla_rese, text="Reservar",
                height="3", width="300",
+               bg= "#BCEBE0",
                command=crear_reservacion).pack() #Boton de Crear reservacion
         Label(pantalla_rese, text="").pack()
         Button(pantalla_rese, text="Ver mi reservacion",
                height="3", width="300",
+               bg= "#BCEBE0",
                command=ver_reservacion).pack() #Boton de Ver reservacion
         Label(pantalla_rese, text="").pack()
         Button(pantalla_rese, text="Cancelar reservacion",
-               height="3", width="300").pack() #Boton de Borrar reservacion
+               height="3", width="300",
+               bg= "#BCEBE0").pack() #Boton de Borrar reservacion
         Label(pantalla_rese, text="").pack()
         Button(pantalla_rese, text="Obtener codigo", 
-               height="3", width="300", command=codigo_reservacion).pack() #Boton Obtener el Codigo QR
+               height="3", width="300",
+               bg= "#BCEBE0",
+               command=codigo_reservacion).pack() #Boton Obtener el Codigo QR
         Label(pantalla_rese, text="").pack()
     else:
         #Botones para el admin relacionados con reservar
         Button(pantalla_rese, text="Ver reservaciones",
-               height="3", width="300").pack() #Boton para Ver las reservaciones totales
+               height="3", width="300",
+               bg= "#BCEBE0").pack() #Boton para Ver las reservaciones totales
         Label(pantalla_rese, text="").pack()
     volver = Button(pantalla_rese, text="Volver",
                     height="2", width="15",
@@ -287,16 +328,16 @@ def menu_reservaciones(user): #Funcion que despliega el menu de reservaciones, r
 
 def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (TRATAR DE HACER UN GENERADOR)
     global qr, reserva 
-    qr = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
-    imagen_codigo=PhotoImage(file="QR.gif") #Importamos la imagen
-    image=imagen_codigo.subsample(2,2)
-    qr.geometry("200x200")
-    qr.title("Codigo de reservacion")
     
     if reserva==0: #TEMPORAL comprobamos si tiene una reserva, sino se despliega un pop up de error
-        Label(qr, text="No tiene una reserva").pack()
+        pop_ups("No tiene reserva")
             #Falta el pop up ;p
     else:
+        qr = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
+        imagen_codigo=PhotoImage(file="QR.gif") #Importamos la imagen
+        image=imagen_codigo.subsample(2,2)
+        qr.geometry("200x200")
+        qr.title("Codigo de reservacion")
         Label(qr, image=imagen_codigo).pack() #Si tiene reserva, se muestra el QR
     
     qr.mainloop() #Lo hacemos mainloop para que se muestre la imagen, se elimina al destruir la ventana al parecer
@@ -333,23 +374,26 @@ def crear_reservacion(): #Funcion para crear la reservacion
     
     resta = Button(crear_rese, text="-",
                    height="2", width="4",
-                   font="18", command=lambda:cupos_disp(0)).grid(row=3, column=0, padx=3) #Boton de resta
+                   font="18", bg= "#BCEBE0",
+                   command=lambda:cupos_disp(0)).grid(row=3, column=0, padx=3) #Boton de resta
     suma = Button(crear_rese, text="+",
                   height="2", width="4",
-                  font="18", command=lambda:cupos_disp(1)).grid(row=3, column=2) #Boton de suma
+                  font="18", bg= "#BCEBE0",
+                  command=lambda:cupos_disp(1)).grid(row=3, column=2) #Boton de suma
     reservar = Button(crear_rese, text="RESERVAR",
                       heigh="3",
-                      font="18", command=ocupar).grid(row=5, column=1) #Boton para reservar y finalizar
+                      font="18", bg= "#BCEBE0",
+                      command=ocupar).grid(row=5, column=1) #Boton para reservar y finalizar
     
 def ver_reservacion(): #Funcion para Ver la Reservacion
     global ver_rese, reserva #ver rese = pantalla de ver reserva
-    ver_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
-    ver_rese.geometry("300x300")
-    ver_rese.title("Ver reservacion")
     
     if reserva==0: #No existe reservacion
-        Label(ver_rese, text="No tiene una reserva").pack() #se cambiara a un pop up
+        pop_ups("No tiene una reserva") #se cambiara a un pop up
     else:
+        ver_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
+        ver_rese.geometry("300x300")
+        ver_rese.title("Ver reservacion")
         Label(ver_rese, text="Su reserva es:").pack() #pop up donde se muestra la info PROXUMAMENTE
     
 def menu_calificacion(user): #Interfaz de las calificaciones
@@ -358,24 +402,27 @@ def menu_calificacion(user): #Interfaz de las calificaciones
         pantalla_cali = Toplevel(pantalla_ma)
     else: #Si es cliente
         pantalla_cali = Toplevel(pantalla_mc)
-    pantalla_cali.geometry("300x300")
+    pantalla_cali.geometry("300x320")
     pantalla_cali.title("Calificacion")
     
     if user!=1: #Si el usuario no es admin se muestra la opcion de calificar
         Button(pantalla_cali, text="Calificar",
                height="3", width="300",
+               bg= "#BCEBE0",
                command=crear_calificacion).pack()
         Label(pantalla_cali, text="").pack()
 
     Button(pantalla_cali, text="Ver calificacion",
-           height="3", width="300").pack() #Boton para ver la calificacion
+           height="3", width="300",
+           bg= "#BCEBE0").pack() #Boton para ver la calificacion
     Label(pantalla_cali, text="").pack()
 
     puntuacion = Label(pantalla_cali, text="...").pack() #Promedio de calificacion no visible
     Label(pantalla_cali, text="").pack()
 
     Button(pantalla_cali, text="Ver Opiniones",
-           height="3", width="300").pack() #Boton para ver las opiniones
+           height="3", width="300",
+           bg= "#BCEBE0").pack() #Boton para ver las opiniones
     Label(pantalla_cali, text="").pack()
 
     volver = Button(pantalla_cali, text="Volver",
@@ -387,6 +434,8 @@ def crear_calificacion():
     pantalla_crear_cali = Toplevel(pantalla_cali)
     pantalla_crear_cali.geometry("290x300")
     pantalla_crear_cali.title("Crear Calificacion")
+    user_entry.delete(first=0,last='end') #limpiamos campos
+    password_entry.delete(first=0,last='end')
 
     Label(pantalla_crear_cali, text="Seleccione la Puntuacion:",
           font="15,bold").grid(column=1) #Muestra los cupos disponibles
@@ -411,9 +460,11 @@ def crear_calificacion():
 
     resta = Button(pantalla_crear_cali, text="-",
                    height="2", width="4",
+                   bg= "#BCEBE0",
                    font="18", command=lambda:dar_puntos(0)).grid(row=3, column=0, padx=3) #Boton de resta
     suma = Button(pantalla_crear_cali, text="+",
                   height="2", width="4",
+                  bg= "#BCEBE0",
                   font="18", command=lambda:dar_puntos(1)).grid(row=3, column=2) #Boton de suma
 
     Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3)
@@ -425,6 +476,7 @@ def crear_calificacion():
 
     submit = Button(pantalla_crear_cali, text="Registrar calificacion",
                     height="3", width="20",
+                    bg= "#BCEBE0",
                     command=pantalla_crear_cali.destroy).grid(column=1)
     Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3)
     
