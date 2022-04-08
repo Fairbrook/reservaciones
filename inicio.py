@@ -6,6 +6,10 @@ import os
 from tkinter import *
 from models.administrador import consulta_BD
 import hashlib
+#from models.administrador import login_admin
+
+from models.usuario import login, register
+from models.platillo import ver_menu, modificar_menu
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
@@ -130,8 +134,8 @@ def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
     #Boton llamado menu y sus caracteristicas
     menu = Button(pantalla_mc, text="Menu",
                        height="3", width="300",
-                       bg= "#BCEBE0",
-                       command=lambda:pop_ups("No hay menu hasta que\nFercho lo metam")).pack()                   
+                       bg= "#BCEBE0",                  
+                       command=ver_menu).pack()                 
     Label(pantalla_mc, text="").pack()
 
     #Imagen de nuestro equipo
@@ -173,8 +177,8 @@ def menu_admin(): #Menu a desplegar al usuario de tipo admin
     #Boton de menu de comida
     menu = Button(pantalla_ma, text="Modificar menú",
                        height="3", width="300",
-                       bg= "#BCEBE0",
-                       command=lambda:menu_calificacion(1)).pack()                   
+                       bg= "#BCEBE0",                   
+                       command=modificar_menu).pack()                   
     Label(pantalla_ma, text="").pack()
 
     #Cargamos la imagen en la ventana
@@ -486,33 +490,52 @@ def crear_calificacion():
     
 
 
-def validar(): #Funcion para hacer validaciones 
-     #1 para el inicio de sesion
-    #obtenemos los valores igresados en las cajas de texto
-    
-    usuariovalidar=user_entry.get()
-    contraseñavalidar=password_entry.get()
-     #Encriptamos la contraseña con sh256
-    hashed_string = hashlib.sha256(contraseñavalidar.encode('utf-8')).hexdigest()
-    #realizamos las consultas a la base de datos para ver si los valores coinciden
-    consultaUsuario = consulta_BD("nombre_usuario",usuariovalidar)
-    consultaContrasena = consulta_BD("contrasena",hashed_string)
-        
-    #sino existen registros con los datos ingresados
-    if len(consultaUsuario and consultaContrasena) == 0:
-                messagebox.showwarning("Sin coincidencia", "No hubo coincidencias con los valores ingresados")
+# Funcion para hacer validaciones e iniciar sesión
+def validar(): 
 
-    else: #Pongan para cliente y admin :3-----------------------------
-        #si hay concidencias se muestra el menu de admin
+    #BORRAR ESTE UNA VEZ SE COMPLETE EL LOGIN DE ADMIN APROPIADAMENTE, ESTO ES SOLO PARA ACCEDER RÁPIDO EN PRUEBAS
+    if password_entry.get() == 'admin' and user_entry.get() == 'admin':
         menu_admin()
-        """
+    # Obtenemos los valores igresados en las cajas de texto
+    
+    # Validar nombre de usuario
     usuariovalidar=user_entry.get()
+    if len(usuariovalidar) == 0:
+        messagebox.showwarning("Error", "Introduzca su nombre de usuario")
+        return
+
+    # Validar contraseña
     contraseñavalidar=password_entry.get()
-    if usuariovalidar=="admin" and contraseñavalidar=="admin":
-        menu_admin()
-    else:
-        menu_cliente()
-        """
+    if len(contraseñavalidar) == 0:
+        messagebox.showwarning("Error", "Introduzca su contraseña")
+        return
+
+    # Inicio de sesión
+    try:
+        user = login(usuariovalidar, contraseñavalidar)
+
+        if user!=None:
+            menu_cliente()
+            return
+
+    except:
+        pop_ups("Inicio de sesion c")
+        return
+
+
+    #Agregar validación parar admin
+    try:
+        user = login_admin(usuariovalidar, contraseñavalidar)
+
+        if user!=None:
+            menu_admin()
+            return
+
+        if user == None:
+            messagebox.showwarning("Error", "Usuario y/o contrseña incorrectos")
+    except:
+        pop_ups("Inicio de sesion a")
+        return
 
 def pop_ups(texto): #Funcion para los pop ups
     global pop_up
@@ -544,8 +567,26 @@ def pop_ups(texto): #Funcion para los pop ups
 
             
 def registrar_bd(): #Funcion para el registro
-    new_user.get() #Obtencion de datos
-    new_password.get() #Obtencion de datos
+
+    user_name = new_user.get() #Obtencion de datos
+    if len(user_name) == 0:
+        messagebox.showwarning("Error", "Introduzca su nombre de usuario")
+        return
+
+    password = new_password.get() #Obtencion de datos
+    if len(password) == 0:
+        messagebox.showwarning("Error", "Introduzca su contraseña")
+        return
+
+    try:
+        has_error, error_msg = register(user_name, password)
+        if has_error:
+            messagebox.showwarning("Error", error_msg)
+            return
+    except:
+        messagebox.showwarning("Error", "Hubo un error inesperado")
+        return
+
     user_entry.delete(first=0,last='end') #Se limpia
     password_entry.delete(first=0,last='end') #Se limpia despues del uso
     pantalla_r.destroy()
