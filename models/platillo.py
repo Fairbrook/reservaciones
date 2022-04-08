@@ -4,6 +4,7 @@ from tkinter import filedialog
 import os
 import sys
 from tkinter import messagebox
+from functools import partial
 from tkinter.ttk import Style, Treeview
 sys.path.append('../')
 
@@ -18,14 +19,25 @@ path_imagenes = os.getcwd() + '\imagenes' #Path en el equipo para la carpeta de 
 
 def insertar_Platillo_bd(path_imagen, precio, descripcion, nombre_platillo):
     
-    with open(path_imagen, "rb") as file: 
-        binarydata = file.read() #Leemos la imagen de forma binaria, porque en la BD es así como se guardan imgs
+    #Si el usuario no optó por poner una imagen, entonces hacemos inserción sin campo foto
+    if path_imagen == "":
+        statement = "Insert into Platillo (nombre_platillo, precio, descripcion) values('{}', {}, '{}')".format(nombre_platillo, precio, descripcion)
+        cursor.execute(statement)
+        db.commit()
+    #Si si hay imagen, leeremos dicho archivo, lo convertimos a blob y lo insertamos
+    else:
+        try:
+            with open(path_imagen, "rb") as file: 
+                binarydata = file.read() #Leemos la imagen de forma binaria, porque en la BD es así como se guardan imgs
+        except:
+            messagebox.showerror("Error de archivo", "Ocurrió un error a la hora de leer el archivo")
+        else:
+            statement = "Insert into Platillo (precio, descripcion, nombre_platillo, foto) VALUES (%s,%s,%s,%s)"
+            cursor.execute(statement,(precio,descripcion,nombre_platillo, binarydata, )) #Todos los parámetros pasados con este formato tienen que ir en una sola tupla
+            db.commit()
 
-    statement = "Insert into Platillo (precio, descripcion, nombre_platillo, foto) VALUES (%s,%s,%s,%s)"
-    cursor.execute(statement,(precio,descripcion,nombre_platillo, binarydata, )) #Todos los parámetros pasados con este formato tienen que ir en una sola tupla
-    db.commit()
     cursor.close()
-
+    
 def select_Platillos_bd():
 
     sql = "Select * from Platillo"
@@ -104,14 +116,18 @@ def modificar_menu():
     def escoger_imagen():
 
         path_imagen = filedialog.askopenfilename(initialdir="/", title="Seleccione una imagen para el platillo", filetypes=(("Archivos png", "*.png"),))
-        
+        texto_path.insert("end", path_imagen)
 
     def agregar_platillo():
 
-        print("Nombre: ",entry_nombre.get())
-        print("Precio: ",entry_precio.get())
-        print("Imagen: ", path_imagen)
-        print(texto_descripcion.get(1.0, "end"))
+        nombre = entry_nombre.get()
+        precio = entry_precio.get()
+        descripcion = texto_descripcion.get(1.0, "end")
+        #Pusimos el path seleccionado en una caja Text para tener de dónde "jalar" dicho path dentro de una función
+        path_imagen_platillo = texto_path.get(1.0, "end")
+        #Por alguna razón, la cadena resultante desde Text siempre tenia un \n añadido al final, rstrip lo quita
+        path_imagen_platillo = path_imagen_platillo.rstrip() 
+        insertar_Platillo_bd(path_imagen_platillo, precio, descripcion, nombre)
 
 #---------------------------------------------------------------------------------------------------------------------
     
@@ -136,8 +152,7 @@ def modificar_menu():
 
     entry_nombre = StringVar()
     entry_precio = StringVar()
-    global path_imagen
-    path_imagen = ""
+
     
     Label(frame_botones, text = "Nombre platillo: ", font=("Lato", 10)).grid(column=0, row=0, padx=5)
     Entry(frame_botones, textvariable=entry_nombre, width=20, font=("Lato", 10)).grid(column=1, row=0, padx=5)
@@ -148,12 +163,14 @@ def modificar_menu():
 
     Label(frame_botones, text = "Precio $: ", font=("Lato", 10)).grid(column=4, row=0, padx=5)
     Entry(frame_botones, textvariable=entry_precio, width=20, font=("Lato", 10)).grid(column=5, row=0, padx=5)
-    Label(frame_botones, text =  "Seleccionar foto ", font=("Lato", 10)).grid(column=0, row=1, padx=10, pady=20)
     Button(frame_botones, text="Seleccionar archivo", font=("Lato", 10), bg= "#47525E", fg="white", command=escoger_imagen).grid(
-        column=1, row=1, padx=10, pady=20)
+        column=0, row=1, padx=10, pady=20)
+
+    texto_path = Text(frame_botones, height=1, width=20)
+    texto_path.grid(column=1, row=1, padx=10, pady=20)
+
     Button(frame_botones, text = "Agregar platillo", font = ("Lato", 10), bg = "green", fg = "white", width=25, command=agregar_platillo).grid(
         column=3, row=1, padx=10, pady=20, columnspan=2)
-    
 
 
     #Comenzamos a configurar espacio y aspectos de la tabla
