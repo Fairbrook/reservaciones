@@ -1,3 +1,4 @@
+from msilib import text
 from tkinter import *
 import os
 import sys
@@ -68,6 +69,27 @@ def modificar_menu():
 
     frame_superior = Frame(pantalla_mod_menu)
     frame_superior.grid(column=0, row=0)
+
+    Label(frame_superior, text= "Agregar platillo", font=("Lato", 12)).grid(column=0, row=0, pady=10, padx=420)
+
+    frame_botones = Frame(pantalla_mod_menu)
+    frame_botones.grid(column=0, row=1, pady=10)
+
+    entry_nombre = StringVar()
+    entry_precio = StringVar()
+    
+    Label(frame_botones, text = "Nombre platillo: ", font=("Lato", 10)).grid(column=0, row=0, padx=5)
+    Entry(frame_botones, textvariable=entry_nombre, width=20, font=("Lato", 10)).grid(column=1, row=0, padx=5)
+    Label(frame_botones, text = "Descripción: ", font=("Lato", 10)).grid(column=2, row=0, padx=5)
+    texto_descripcion = Text(frame_botones, height=2, width=28, font=("Lato", 10))
+    texto_descripcion.grid(column=3, row=0, padx=5)
+    Label(frame_botones, text = "Precio $: ", font=("Lato", 10)).grid(column=4, row=0, padx=5)
+    Entry(frame_botones, textvariable=entry_precio, width=20, font=("Lato", 10)).grid(column=5, row=0, padx=5)
+    Label(frame_botones, text =  "Seleccionar foto ", font=("Lato", 10)).grid(column=0, row=1, padx=5, pady=10)
+    Button(frame_botones, text="Seleccionar archivo", font=("Lato", 10), bg= "#47525E", fg="white").grid(column=1, row=1, padx=5, pady=10)
+
+
+
 
     frame_tabla = Frame(pantalla_mod_menu)
     frame_tabla.grid(column=0, row=1)
