@@ -472,7 +472,7 @@ def validar():
         #si hay concidencias se muestra el menu de admin
             menu_admin()
           elif user == None:
-            messagebox.showwarning("Error", "Usuario y/o contrseña incorrectos")
+            messagebox.showwarning("Error", "Usuario y/o contraseña incorrectos")
     except:
         messagebox.showwarning("Error", "Hubo un error inesperado")
         return
