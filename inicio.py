@@ -443,6 +443,7 @@ def validar():
 
     #BORRAR ESTE UNA VEZ SE COMPLETE EL LOGIN DE ADMIN APROPIADAMENTE, ESTO ES SOLO PARA ACCEDER RÁPIDO EN PRUEBAS
     if password_entry.get() == 'admin' and user_entry.get() == 'admin':
+        pantalla.iconify()
         menu_admin()
     # Obtenemos los valores igresados en las cajas de texto
     
@@ -463,6 +464,7 @@ def validar():
         user = login(usuariovalidar, contraseñavalidar)
 
         if user!=None:
+            pantalla.iconify()
             menu_cliente()
             return
 

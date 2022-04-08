@@ -1,9 +1,10 @@
 from msilib import text
 from tkinter import *
+from tkinter import filedialog
 import os
 import sys
+from tkinter import messagebox
 from tkinter.ttk import Style, Treeview
-
 sys.path.append('../')
 
 from db import *
@@ -81,6 +82,39 @@ def ver_menu():
 
 def modificar_menu():
 
+  #--------------Funciones que se necesitarán para interactuar con la tabla y los registros en esta sección----------
+    
+    #Función para obtener info del registro en dicha fila
+    def obtener_fila_tabla():
+        current_item = tabla.focus()
+        if not current_item:
+            return
+        global data_seleccionada, id_borrar
+        data_seleccionada = tabla.item(current_item)
+        id_borrar = data_seleccionada['values'][0]
+    
+    def borrar_platillo():
+        fila = tabla.selection()
+
+        if len(fila) !=0:        
+            tabla.delete(fila)
+            id = ("'"+ str(id_borrar) + "'")       
+            borrar_platillo(id)
+    
+    def escoger_imagen():
+
+        path_imagen = filedialog.askopenfilename(initialdir="/", title="Seleccione una imagen para el platillo", filetypes=(("Archivos png", "*.png"),))
+        
+
+    def agregar_platillo():
+
+        print("Nombre: ",entry_nombre.get())
+        print("Precio: ",entry_precio.get())
+        print("Imagen: ", path_imagen)
+        print(texto_descripcion.get(1.0, "end"))
+
+#---------------------------------------------------------------------------------------------------------------------
+    
     global pantalla_mod_menu
     pantalla_mod_menu = Toplevel()
     pantalla_mod_menu.title('Modificar menú de platillos')
@@ -100,20 +134,27 @@ def modificar_menu():
     Button(frame_inferior, text = "Eliminar platillo seleccionado", bg = "red", fg = "white", font=("Lato", 10)).grid(column=0, row=0,pady=5,padx=5)
     Button(frame_inferior, text = "Visualizar carta de menú actual", bg = "yellow", fg = "black", font=("Lato", 10)).grid(column=1, row=0,pady=5,padx=5)
 
-
     entry_nombre = StringVar()
     entry_precio = StringVar()
+    global path_imagen
+    path_imagen = ""
     
     Label(frame_botones, text = "Nombre platillo: ", font=("Lato", 10)).grid(column=0, row=0, padx=5)
     Entry(frame_botones, textvariable=entry_nombre, width=20, font=("Lato", 10)).grid(column=1, row=0, padx=5)
     Label(frame_botones, text = "Descripción: ", font=("Lato", 10)).grid(column=2, row=0, padx=5)
+
     texto_descripcion = Text(frame_botones, height=2, width=28, font=("Lato", 10))
     texto_descripcion.grid(column=3, row=0, padx=5)
+
     Label(frame_botones, text = "Precio $: ", font=("Lato", 10)).grid(column=4, row=0, padx=5)
     Entry(frame_botones, textvariable=entry_precio, width=20, font=("Lato", 10)).grid(column=5, row=0, padx=5)
     Label(frame_botones, text =  "Seleccionar foto ", font=("Lato", 10)).grid(column=0, row=1, padx=10, pady=20)
-    Button(frame_botones, text="Seleccionar archivo", font=("Lato", 10), bg= "#47525E", fg="white").grid(column=1, row=1, padx=10, pady=20)
-    Button(frame_botones, text = "Agregar platillo", font = ("Lato", 10), bg = "green", fg = "white", width=25).grid(column=3, row=1, padx=10, pady=20, columnspan=2)
+    Button(frame_botones, text="Seleccionar archivo", font=("Lato", 10), bg= "#47525E", fg="white", command=escoger_imagen).grid(
+        column=1, row=1, padx=10, pady=20)
+    Button(frame_botones, text = "Agregar platillo", font = ("Lato", 10), bg = "green", fg = "white", width=25, command=agregar_platillo).grid(
+        column=3, row=1, padx=10, pady=20, columnspan=2)
+    
+
 
     #Comenzamos a configurar espacio y aspectos de la tabla
     frame_tabla = Frame(pantalla_mod_menu)
@@ -156,23 +197,7 @@ def modificar_menu():
 
     tabla.bind("<<TreeviewSelect>>", obtener_fila_tabla)  #Conectamos a la tabla con una función para obtener los datos de la fila seleccionada
 
-    #Función para obtener info del registro en dicha fila
-    def obtener_fila_tabla():
-        current_item = tabla.focus()
-        if not current_item:
-            return
-        global data_seleccionada, id_borrar
-        data_seleccionada = tabla.item(current_item)
-        id_borrar = data_seleccionada['values'][0]
     
-    def borrar_platillo():
-        fila = tabla.selection()
-
-        if len(fila) !=0:        
-            tabla.delete(fila)
-            id = ("'"+ str(id_borrar) + "'")       
-            borrar_platillo(id)
-
 
 
 
