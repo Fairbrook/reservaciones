@@ -7,6 +7,8 @@ from tkinter import *
 #from models.administrador import consulta_BD
 import hashlib
 
+from models.usuario import login, register
+
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
     global rol, cupos, reserva, estrellas #variables globales
@@ -434,33 +436,39 @@ def crear_calificacion():
     
 
 
-def validar(): #Funcion para hacer validaciones 
-     #1 para el inicio de sesion
-    #obtenemos los valores igresados en las cajas de texto
+# Funcion para hacer validaciones e iniciar sesión
+def validar(): 
+    # Obtenemos los valores igresados en las cajas de texto
     
+    # Validar nombre de usuario
     usuariovalidar=user_entry.get()
-    contraseñavalidar=password_entry.get()
-     #Encriptamos la contraseña con sh256
-    hashed_string = hashlib.sha256(contraseñavalidar.encode('utf-8')).hexdigest()
-    #realizamos las consultas a la base de datos para ver si los valores coinciden
-    consultaUsuario = consulta_BD("nombre_usuario",usuariovalidar)
-    consultaContrasena = consulta_BD("contrasena",hashed_string)
-        
-    #sino existen registros con los datos ingresados
-    if len(consultaUsuario and consultaContrasena) == 0:
-                messagebox.showwarning("Sin coincidencia", "No hubo coincidencias con los valores ingresados")
+    if len(usuariovalidar) == 0:
+        messagebox.showwarning("Error", "Introduzca su nombre de usuario")
+        return
 
-    else: #Pongan para cliente y admin :3-----------------------------
-        #si hay concidencias se muestra el menu de admin
-        menu_admin()
-        """
-    usuariovalidar=user_entry.get()
+    # Validar contraseña
     contraseñavalidar=password_entry.get()
-    if usuariovalidar=="admin" and contraseñavalidar=="admin":
-        menu_admin()
-    else:
+    if len(contraseñavalidar) == 0:
+        messagebox.showwarning("Error", "Introduzca su contraseña")
+        return
+
+    # Inicio de sesión
+    # try:
+    user = login(usuariovalidar, contraseñavalidar)
+
+    if user!=None:
         menu_cliente()
-        """
+        return
+
+    if user == None:
+        messagebox.showwarning("Error", "Usuario y/o contrseña incorrectos")
+
+    # except:
+    #     messagebox.showwarning("Error", "Hubo un error inesperado")
+    #     return
+
+
+    #Agregar validación parar admin
 
 def pop_ups(texto): #Funcion para los pop ups
     global pop_up
@@ -492,8 +500,26 @@ def pop_ups(texto): #Funcion para los pop ups
 
             
 def registrar_bd(): #Funcion para el registro
-    new_user.get() #Obtencion de datos
-    new_password.get() #Obtencion de datos
+
+    user_name = new_user.get() #Obtencion de datos
+    if len(user_name) == 0:
+        messagebox.showwarning("Error", "Introduzca su nombre de usuario")
+        return
+
+    password = new_password.get() #Obtencion de datos
+    if len(password) == 0:
+        messagebox.showwarning("Error", "Introduzca su contraseña")
+        return
+
+    try:
+        has_error, error_msg = register(user_name, password)
+        if has_error:
+            messagebox.showwarning("Error", error_msg)
+            return
+    except:
+        messagebox.showwarning("Error", "Hubo un error inesperado")
+        return
+
     user_entry.delete(first=0,last='end') #Se limpia
     password_entry.delete(first=0,last='end') #Se limpia despues del uso
     pantalla_r.destroy()
