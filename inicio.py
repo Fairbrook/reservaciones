@@ -440,10 +440,6 @@ def crear_calificacion():
 # Funcion para hacer validaciones e iniciar sesión
 def validar(): 
 
-    #BORRAR ESTE UNA VEZ SE COMPLETE EL LOGIN DE ADMIN APROPIADAMENTE, ESTO ES SOLO PARA ACCEDER RÁPIDO EN PRUEBAS
-    if password_entry.get() == 'admin' and user_entry.get() == 'admin':
-        menu_admin()
-    # Obtenemos los valores igresados en las cajas de texto
     
     # Validar nombre de usuario
     usuariovalidar=user_entry.get()
@@ -463,6 +459,7 @@ def validar():
         user = login(usuariovalidar, contraseñavalidar)
 
         if user!=None:
+            pantalla.iconify()
             menu_cliente()
         else:
         #Inicio sesion admin
@@ -470,6 +467,7 @@ def validar():
         #revisamos si hay concidencias
           if len(admin) != 0:    
         #si hay concidencias se muestra el menu de admin
+            pantalla.iconify()
             menu_admin()
           elif user == None:
             messagebox.showwarning("Error", "Usuario y/o contraseña incorrectos")
