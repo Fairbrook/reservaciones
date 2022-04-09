@@ -90,9 +90,7 @@ def ver_menu():
 
     platillos = select_Platillos_bd()
     lista_imagenes = [] #Aquí iremos tomando las imagenes para mostrar
-    #lista_imagenes.append(PhotoImage(file = path_imagenes + '\\26.png'))
 
-    #imagen = PhotoImage(file= path_imagenes + '\\26.png')
 
     for platillo in platillos:
 
