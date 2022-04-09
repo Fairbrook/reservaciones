@@ -88,6 +88,59 @@ def ver_menu():
 
     row = 1
 
+    platillos = select_Platillos_bd()
+
+    for platillo in platillos:
+
+        image_exists = True
+        id = platillo[0]
+        nombre = platillo[3]
+        precio = platillo[1]
+        descripcion = platillo[2]
+        imagen_platillo = platillo[4]
+
+        if imagen_platillo == None:
+            image_exists = False
+
+        if image_exists == True:
+            almacenar_en = path_imagenes + '\\{}.png'.format(id)
+            with open(almacenar_en, 'wb') as file:
+                file.write(imagen_platillo)
+                file.close()
+            
+            imagen = PhotoImage(file = almacenar_en)
+            print(almacenar_en)
+            Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
+            Label(second_frame, text=precio, font=("Lato", 10), width=20).grid(column=1, row=row, padx=5, pady=8)
+            Label(second_frame, text=descripcion, font=("Lato", 10), width=20).grid(column=2, row=row, padx=5, pady=8)
+            Label(second_frame, image=imagen, font=("Lato", 10), width=200).grid(column=3, row=row, padx=5, pady=8)
+
+        else:
+            Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
+            Label(second_frame, text=precio, font=("Lato", 10), width=20).grid(column=1, row=row, padx=5, pady=8)
+            Label(second_frame, text=descripcion, font=("Lato", 10), width=20).grid(column=2, row=row, padx=5, pady=8)
+
+        row += 1
+
+    '''
+platillos = select_Platillos_bd()
+
+for platillo in platillos:
+    nombre = platillo[3]
+    id = platillo[0]
+    descripcion = platillo[2]
+    precio = platillo[1]
+    imagen = platillo[4]
+
+    print("Nombre: {}   id: {}   descripcion: {}    precio: {}".format(nombre, id, descripcion, precio))
+    almacenar_en = path_imagenes + '\\{}.png'.format(id)
+
+    with open(almacenar_en, "wb") as file:
+        file.write(imagen)
+        file.close()
+
+ '''
+
 
 def modificar_menu():
 
@@ -163,7 +216,8 @@ def modificar_menu():
 
     Button(frame_inferior, text = "Eliminar platillo seleccionado", bg = "red", fg = "white", font=("Lato", 10), command=borrar_platillo).grid(
         column=0, row=0,pady=5,padx=5)
-    Button(frame_inferior, text = "Visualizar carta de menú actual", bg = "yellow", fg = "black", font=("Lato", 10)).grid(column=1, row=0,pady=5,padx=5)
+    Button(frame_inferior, text = "Visualizar carta de menú actual", bg = "yellow", fg = "black", font=("Lato", 10), command=ver_menu).grid(
+        column=1, row=0,pady=5,padx=5)
 
     entry_nombre = StringVar()
     entry_precio = StringVar()
@@ -230,27 +284,3 @@ def modificar_menu():
     tabla.bind("<<TreeviewSelect>>", obtener_fila_tabla)  #Conectamos a la tabla con una función para obtener los datos de la fila seleccionada
     mostrar_platillos_tabla()
     
-
-
-
-
-'''
-platillos = select_Platillos_bd()
-
-for platillo in platillos:
-    nombre = platillo[3]
-    id = platillo[0]
-    descripcion = platillo[2]
-    precio = platillo[1]
-    imagen = platillo[4]
-
-    print("Nombre: {}   id: {}   descripcion: {}    precio: {}".format(nombre, id, descripcion, precio))
-    almacenar_en = path_imagenes + '\\{}.png'.format(id)
-
-    with open(almacenar_en, "wb") as file:
-        file.write(imagen)
-        file.close()
-
- '''
-
-

@@ -440,7 +440,6 @@ def crear_calificacion():
 # Funcion para hacer validaciones e iniciar sesión
 def validar(): 
 
-    # Obtenemos los valores igresados en las cajas de texto
     
     # Validar nombre de usuario
     usuariovalidar=user_entry.get()
@@ -468,6 +467,7 @@ def validar():
         #revisamos si hay concidencias
           if len(admin) != 0:    
         #si hay concidencias se muestra el menu de admin
+            pantalla.iconify()
             menu_admin()
           elif user == None:
             messagebox.showwarning("Error", "Usuario y/o contrseña incorrectos")
