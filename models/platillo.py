@@ -60,7 +60,7 @@ def borrar_platillo_bd(id_eliminar):
 
 def ver_menu():
     
-    global pantalla_menu_cliente, lista_imagenes
+    global pantalla_menu_cliente, lista_imagenes #lista de imagenes debe ser pública
     pantalla_menu_cliente = Toplevel()
     pantalla_menu_cliente.title('Menú')
     pantalla_menu_cliente.geometry("1200x600")
@@ -87,11 +87,13 @@ def ver_menu():
     Label(second_frame, text="Imagen", font=("Lato", 10), width=50).grid(column=3, row=0, padx=5, pady=8)
 
     row = 1
+    contador_imagenes = -1 #Dado a que puede haber platillos con o sin imagen, es necesario tener un indice
+                            #que nos indique cuantos platillos con imagen van, no es lo mismo que row
 
     platillos = select_Platillos_bd()
     lista_imagenes = [] #Aquí iremos tomando las imagenes para mostrar
 
-
+    #Por cada platillo existente en la BD, extraemos sus atributos
     for platillo in platillos:
 
         image_exists = True
@@ -99,50 +101,33 @@ def ver_menu():
         nombre = platillo[3]
         precio = platillo[1]
         descripcion = platillo[2]
-        imagen_platillo = platillo[4]
+        imagen_platillo = platillo[4] #imagen en formato blob
 
-        if imagen_platillo == None:
+        if imagen_platillo == None: #No existe foto para este platillo
             image_exists = False
 
-        if image_exists == True:
-            
+        if image_exists == True: #Si hay foto en este platillo, la almacenamos en el equipo para poder mostrarla en interfaz
+            contador_imagenes +=1
             almacenar_en = path_imagenes + '\\{}.png'.format(id)
-            with open(almacenar_en, 'wb') as file:
+            with open(almacenar_en, 'wb') as file: #En la carpeta Imagenes "escribimos" la imagen
                 file.write(imagen_platillo)
                 file.close()
             
 
-            lista_imagenes.append(PhotoImage(file = almacenar_en))
+            lista_imagenes.append(PhotoImage(file = almacenar_en)) #Tomamos imagen previamente creada en el equipo y la agregamos a la lista
             Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
             Label(second_frame, text=precio, font=("Lato", 10), width=20).grid(column=1, row=row, padx=5, pady=8)
             Label(second_frame, text=descripcion, font=("Lato", 10), width=20).grid(column=2, row=row, padx=5, pady=8)
-            Label(second_frame, image=lista_imagenes[row-1], font=("Lato", 10), width=200).grid(column=3, row=row, padx=5, pady=8)
+            #Aquí sacamos la imagen correspondiente de la lista y la ponemos en la etiqueta
+            Label(second_frame, image=lista_imagenes[contador_imagenes], font=("Lato", 10), width=200).grid(column=3, row=row, padx=5, pady=8)
 
         else:
+            #No hay imagen, solo se ponen las primeras tres columnas
             Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
             Label(second_frame, text=precio, font=("Lato", 10), width=20).grid(column=1, row=row, padx=5, pady=8)
             Label(second_frame, text=descripcion, font=("Lato", 10), width=20).grid(column=2, row=row, padx=5, pady=8)
 
         row += 1
-
-    '''
-platillos = select_Platillos_bd()
-
-for platillo in platillos:
-    nombre = platillo[3]
-    id = platillo[0]
-    descripcion = platillo[2]
-    precio = platillo[1]
-    imagen = platillo[4]
-
-    print("Nombre: {}   id: {}   descripcion: {}    precio: {}".format(nombre, id, descripcion, precio))
-    almacenar_en = path_imagenes + '\\{}.png'.format(id)
-
-    with open(almacenar_en, "wb") as file:
-        file.write(imagen)
-        file.close()
-
- '''
 
 
 def modificar_menu():
@@ -184,7 +169,11 @@ def modificar_menu():
         path_imagen_platillo = texto_path.get(1.0, "end")
         #Por alguna razón, la cadena resultante desde Text siempre tenia un \n añadido al final, rstrip lo quita
         path_imagen_platillo = path_imagen_platillo.rstrip() 
-        insertar_Platillo_bd(path_imagen_platillo, precio, descripcion, nombre)
+
+        if nombre and precio != "":
+            insertar_Platillo_bd(path_imagen_platillo, precio, descripcion, nombre)
+        else:
+            messagebox.showwarning("Falta de datos", "Nombre y precio son obligatorios para agregar un platillo")
 
         mostrar_platillos_tabla()
     
