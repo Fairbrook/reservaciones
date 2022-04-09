@@ -60,7 +60,7 @@ def borrar_platillo_bd(id_eliminar):
 
 def ver_menu():
     
-    global pantalla_menu_cliente, imagen
+    global pantalla_menu_cliente, lista_imagenes
     pantalla_menu_cliente = Toplevel()
     pantalla_menu_cliente.title('Menú')
     pantalla_menu_cliente.geometry("1200x600")
@@ -89,6 +89,10 @@ def ver_menu():
     row = 1
 
     platillos = select_Platillos_bd()
+    lista_imagenes = [] #Aquí iremos tomando las imagenes para mostrar
+    #lista_imagenes.append(PhotoImage(file = path_imagenes + '\\26.png'))
+
+    #imagen = PhotoImage(file= path_imagenes + '\\26.png')
 
     for platillo in platillos:
 
@@ -103,17 +107,18 @@ def ver_menu():
             image_exists = False
 
         if image_exists == True:
+            
             almacenar_en = path_imagenes + '\\{}.png'.format(id)
             with open(almacenar_en, 'wb') as file:
                 file.write(imagen_platillo)
                 file.close()
             
-            imagen = PhotoImage(file = almacenar_en)
-            print(almacenar_en)
+
+            lista_imagenes.append(PhotoImage(file = almacenar_en))
             Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
             Label(second_frame, text=precio, font=("Lato", 10), width=20).grid(column=1, row=row, padx=5, pady=8)
             Label(second_frame, text=descripcion, font=("Lato", 10), width=20).grid(column=2, row=row, padx=5, pady=8)
-            Label(second_frame, image=imagen, font=("Lato", 10), width=200).grid(column=3, row=row, padx=5, pady=8)
+            Label(second_frame, image=lista_imagenes[row-1], font=("Lato", 10), width=200).grid(column=3, row=row, padx=5, pady=8)
 
         else:
             Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
