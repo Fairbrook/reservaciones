@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from re import L
 import tkinter
 from tkinter import  messagebox
 import os
 from tkinter import *
 from models.administrador import consulta_BD
 import hashlib
-#from models.administrador import login_admin
-
+from models.administrador import login_admin
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
 
@@ -21,87 +21,103 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     password_verify=StringVar() #indicamos el tipo de variable
     cupos=IntVar() #indicamos el tipo de variable
     reserva=IntVar() #indicamos el tipo de variable
-    new_name.delete(first=0,last='end')
-    new_lastname.delete(first=0,last='end')
-    new_user.delete(first=0,last='end')
-    new_password.delete(first=0,last='end')
     
     cupos=10 #inicializamos (TEMPORALES PARA PRUEBAS)
     estrellas=5 #limite de estrellas a dar
     reserva=0
     
+    #Configuracion para escalar los elementos de la ventana
+    rowconfigure(pantalla,11)
+    columnconfigure(pantalla,1)
+
     #Label = etiqueta
-    Label(pantalla, text="Ingrese su usuario y constraseña", bg="medium aquamarine", font="Arial,16,bold").pack()
-    #Salto de linea para dar espacio
-    Label(pantalla, text="").pack()
+    Label(pantalla, text="Ingrese su usuario y constraseña", bg="medium aquamarine",
+        font="Arial,16,bold").grid(sticky="NSEW")
+    #Label en blanco para salto, definida en su funcion
+    blanklabel(pantalla)
 
     #Entrada para dar un usuario
-    Label(pantalla, text="Usuario:").pack()
+    Label(pantalla, text="Usuario:").grid(sticky="NSEW")
     user_entry = Entry(pantalla, textvariable=user_verify, width="25")
-    user_entry.pack()
+    user_entry.grid(padx=20, sticky="NSEW")
+
+    blanklabel(pantalla)
     
     #Entrada para dar la contraseña, el show es un minicifrado visual
-    Label(pantalla, text="Contraseña:").pack()
+    Label(pantalla, text="Contraseña:").grid(sticky="NSEW")
     password_entry = Entry(pantalla, show="*", textvariable=password_verify, width="25")
-    password_entry.pack()
+    password_entry.grid(padx=20, sticky="NSEW")
+
+    blanklabel(pantalla)
 
     #boton para iniciar sesion
-    Label(pantalla, text="").pack()
     Button(pantalla, text='Iniciar Sesión',
              height="2", width="20",
              bg= "#BCEBE0",
-             command=validar).pack()
+             command=validar).grid(padx=60, sticky="NSEW")
+
+    blanklabel(pantalla)
 
     #boton para registrar
-    Label(pantalla, text="").pack()
     Button(pantalla, text='¿No tienes cuenta? \n Registrate!',
              height="3", width="20",
              bg= "#BCEBE0",
-             command=registro).pack()  
+             command=registro).grid(padx=60, sticky="NSEW")  
+    
+    blanklabel(pantalla)
 
    #depuramos la pantalla como iniciador del programa 
     pantalla.mainloop()
     
 def registro(): #Se despliega encima de iniciar sesion para dar un registro
-    global pantalla_r, new_user, new_password, new_name, new_lastname
+    global pantalla_r, new_user_entry, new_password_entry, new_name_entry, new_lastname_entry
+    global new_user_verify, new_password_verify, new_name_verify, new_lastname_verify
     pantalla_r = Toplevel(pantalla) #pantalla_r = pantalla registro
     pantalla_r.geometry("300x350")
     pantalla_r.title("Registro")
-    user_entry.delete(first=0,last='end') #limpiamos campos
-    password_entry.delete(first=0,last='end')
-    new_name.delete(first=0,last='end')
-    new_lastname.delete(first=0,last='end')
+    new_user_verify=StringVar() #Indicamos el tipo de variable
+    new_password_verify=StringVar() #Indicamos el tipo de variable
+    new_name_verify=StringVar() #Indicamos el tipo de variable
+    new_lastname_verify=StringVar() #Indicamos el tipo de variable
+
+    rowconfigure(pantalla_r,13)
+    columnconfigure(pantalla_r,1)
+
+    Label(pantalla_r, text="Ingrese los datos para el registro", font="bold").grid(sticky="NSEW")
+
+    blanklabel(pantalla_r)
+
+    #Pide el nuevo usuario
+    Label(pantalla_r, text="Nombre(s):").grid(sticky="NSEW")
+    new_name_entry = Entry(pantalla_r, textvariable=new_name_verify, width="25")
+    new_name_entry.grid(padx=20, sticky="NSEW")
+
+    #Pide el nuevo usuario
+    Label(pantalla_r, text="Apellido(s):").grid(sticky="NSEW")
+    new_lastname_entry = Entry(pantalla_r, textvariable=new_lastname_verify, width="25")
+    new_lastname_entry.grid(padx=20, sticky="NSEW")
     
-    Label(pantalla_r, text="Ingrese los datos para el registro", font="bold").pack()
-    Label(pantalla_r, text="").pack()
+    blanklabel(pantalla_r)
 
     #Pide el nuevo usuario
-    Label(pantalla_r, text="Nombre(s):").pack()
-    new_name = Entry(pantalla_r, textvariable=user_verify, width="25")
-    new_name.pack()
-
-    #Pide el nuevo usuario
-    Label(pantalla_r, text="Apellido(s):").pack()
-    new_lastname = Entry(pantalla_r, textvariable=user_verify, width="25")
-    new_lastname.pack()
-    Label(pantalla_r, text="").pack()
-
-    #Pide el nuevo usuario
-    Label(pantalla_r, text="Usuario:").pack()
-    new_user = Entry(pantalla_r, textvariable=user_verify, width="25")
-    new_user.pack()
+    Label(pantalla_r, text="Usuario:").grid(sticky="NSEW")
+    new_user_entry = Entry(pantalla_r, textvariable=new_user_verify, width="25")
+    new_user_entry.grid(padx=20, sticky="NSEW")
 
     #Pide la contraseña
-    Label(pantalla_r, text="Contraseña:").pack()
-    new_password = Entry(pantalla_r, show="*", textvariable=password_verify, width="25")
-    new_password.pack()
-    Label(pantalla_r, text="").pack()
+    Label(pantalla_r, text="Contraseña:").grid(sticky="NSEW")
+    new_password_entry = Entry(pantalla_r, show="*", textvariable=new_password_verify, width="25")
+    new_password_entry.grid(padx=20, sticky="NSEW")
+    
+    blanklabel(pantalla_r)
 
     #Registra al nuevo usuario y contraseña
     Button(pantalla_r, text='REGISTRAR',
              height="3", width="20",
              bg= "#BCEBE0",
-             command=registrar_bd).pack()
+             command=registrar_bd).grid(padx=60, sticky="NSEW")
+    
+    blanklabel(pantalla_r)
     
 def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
     global pantalla_mc #Pantalla_mc = pantalla menu cliente 
@@ -112,34 +128,46 @@ def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
     pantalla_mc.geometry("300x500")
     pantalla_mc.title("Menu")
     
+    rowconfigure(pantalla_mc,10)
+    columnconfigure(pantalla_mc,1)
+
     #Los siguientes cuatro Button son para los botones que redirigen a los menus correspondientes al nombre
     #Boton llamado info (informacion) y sus caracteristicas
     info = Button(pantalla_mc, text="Informacion", 
                   height="3", width="300",
                   bg= "#BCEBE0",
-                  command=ver_info).pack()
-    Label(pantalla_mc, text="").pack()
+                  command=ver_info).grid(padx=60, sticky="NSEW")
+
+    blanklabel(pantalla_mc)
+
     #Boton llamado reserva y sus caracteristicas
     reserva = Button(pantalla_mc, text="Reservar",
                      height="3", width="300",
                      bg= "#BCEBE0",
-                     command=lambda:menu_reservaciones(0)).pack()
-    Label(pantalla_mc, text="").pack()
+                     command=lambda:menu_reservaciones(0)).grid(padx=60, sticky="NSEW")
+    
+    blanklabel(pantalla_mc)
+
     #Boton llamado calificar y sus caracteristicas
     calificar = Button(pantalla_mc, text="Calificar",
                        height="3", width="300",
                        bg= "#BCEBE0",
-                       command=lambda:menu_calificacion(0)).pack()
-    Label(pantalla_mc, text="").pack()
+                       command=lambda:menu_calificacion(0)).grid(padx=60, sticky="NSEW")
+    
+    blanklabel(pantalla_mc)
+
     #Boton llamado menu y sus caracteristicas
     menu = Button(pantalla_mc, text="Menu",
                        height="3", width="300",
                        bg= "#BCEBE0",                  
-                       command=ver_menu).pack()                 
-    Label(pantalla_mc, text="").pack()
+                       command=ver_menu).grid(padx=60, sticky="NSEW")                 
+    
+    blanklabel(pantalla_mc)
 
     #Imagen de nuestro equipo
-    Label(pantalla_mc, image=imagen).pack()
+    Label(pantalla_mc, image=imagen).grid()
+
+    blanklabel(pantalla_mc)
 
     pantalla_mc.mainloop()
     
@@ -151,39 +179,47 @@ def menu_admin(): #Menu a desplegar al usuario de tipo admin
     pantalla_ma.geometry("300x450")
     pantalla_ma.title("Administrador")
         
-    #Texto lamebotas
-    Label(pantalla_ma, text="Bienvenido Admin :D", 
-          bg="medium aquamarine").pack
+    rowconfigure(pantalla_ma,11)
+    columnconfigure(pantalla_ma,1)
 
     #Igual, 4 bototones para las weas de acciones
     #Boton de informacion
     info = Button(pantalla_ma, text="Modificar\ninformación", 
                   height="3", width="300",
                   bg= "#BCEBE0",
-                  command=modificar_info).pack()
-    Label(pantalla_ma, text="").pack()
+                  command=modificar_info).grid(padx=60, sticky="NSEW")
+    
+    blanklabel(pantalla_ma)
+
     #Boton de reservaciones
     reserva = Button(pantalla_ma, text="Reservaciones",
                      height="3", width="300",
                      bg= "#BCEBE0",
-                     command=lambda:menu_reservaciones(1)).pack()
-    Label(pantalla_ma, text="").pack()
+                     command=lambda:menu_reservaciones(1)).grid(padx=60, sticky="NSEW")
+    
+    blanklabel(pantalla_ma)
+
     #Boton de calificaciones
     calificar = Button(pantalla_ma, text="Calificaciones",
                        height="3", width="300",
                        bg= "#BCEBE0",
-                       command=lambda:menu_calificacion(1)).pack()
-    Label(pantalla_ma, text="").pack()
+                       command=lambda:menu_calificacion(1)).grid(padx=60, sticky="NSEW")
+    
+    blanklabel(pantalla_ma)
+
     #Boton de menu de comida
     menu = Button(pantalla_ma, text="Modificar menú",
                        height="3", width="300",
                        bg= "#BCEBE0",                   
-                       command=modificar_menu).pack()                   
-    Label(pantalla_ma, text="").pack()
+                       command=modificar_menu).grid(padx=60, sticky="NSEW")                   
+    
+    blanklabel(pantalla_ma)
 
     #Cargamos la imagen en la ventana
-    Label(pantalla_ma, image=imagen).pack()
+    Label(pantalla_ma, image=imagen).grid()
     
+    blanklabel(pantalla_ma)
+
     pantalla_ma.mainloop()
 
 def ver_info():#Funcion para ver la informacion
@@ -285,50 +321,68 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
         archivo.write(nuevo_texto)
 
     #Botones para ejecutar las dos funciones previas
-    Button(frame_boton, text = "Actualizar info", bg= "#47525E", fg="white", command=actualizar_info).grid(column=0, row=0, pady=5, padx=5)
-    Button(frame_boton, text = "Mostrar info", bg= "#47525E", fg="white", command=mostrar_info_actual).grid(column=1, row=0, pady=5, padx=5)
-
-                    
+    Button(frame_boton, text = "Actualizar info",
+            bg= "#47525E", fg="white", 
+            command=actualizar_info).grid(column=0, row=0, pady=5, padx=5)
+    Button(frame_boton, text = "Mostrar info",
+            bg= "#47525E", fg="white", 
+            command=mostrar_info_actual).grid(column=1, row=0, pady=5, padx=5)
+                   
     
 def menu_reservaciones(user): #Funcion que despliega el menu de reservaciones, recibe como parametro la id del usuario
     global pantalla_rese
     if user==1: #1 es de admin, probablemente dependiendo de la BD cambiara a ser una funcion aparte
         pantalla_rese = Toplevel(pantalla_ma) #Encima de la pantalla de menu admin
+        rowconfigure(pantalla_rese,3)
+        columnconfigure(pantalla_rese,1)
     else: #else de cliente (TEMPORAL)
         pantalla_rese = Toplevel(pantalla_mc) #Encima de la pantalla de menu cliente
+        rowconfigure(pantalla_rese,9)
+        columnconfigure(pantalla_rese,1)
     pantalla_rese.geometry("300x350")
     pantalla_rese.title("Reservacion")
     
+
     if user!=1: #Si el usuario es cualquier cliente 
         #Se crean los botones de las funciones de reservar
         Button(pantalla_rese, text="Reservar",
                height="3", width="300",
                bg= "#BCEBE0",
-               command=crear_reservacion).pack() #Boton de Crear reservacion
-        Label(pantalla_rese, text="").pack()
+               command=crear_reservacion).grid(padx=60, sticky="NSEW") #Boton de Crear reservacion
+        
+        blanklabel(pantalla_rese)
+
         Button(pantalla_rese, text="Ver mi reservacion",
                height="3", width="300",
                bg= "#BCEBE0",
-               command=ver_reservacion).pack() #Boton de Ver reservacion
-        Label(pantalla_rese, text="").pack()
+               command=ver_reservacion).grid(padx=60, sticky="NSEW") #Boton de Ver reservacion
+        
+        blanklabel(pantalla_rese)
+        
         Button(pantalla_rese, text="Cancelar reservacion",
                height="3", width="300",
-               bg= "#BCEBE0").pack() #Boton de Borrar reservacion
-        Label(pantalla_rese, text="").pack()
+               bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton de Borrar reservacion
+        
+        blanklabel(pantalla_rese)
+
         Button(pantalla_rese, text="Obtener codigo", 
                height="3", width="300",
                bg= "#BCEBE0",
-               command=codigo_reservacion).pack() #Boton Obtener el Codigo QR
-        Label(pantalla_rese, text="").pack()
+               command=codigo_reservacion).grid(padx=60, sticky="NSEW") #Boton Obtener el Codigo QR
+        
+        blanklabel(pantalla_rese)
+
     else:
         #Botones para el admin relacionados con reservar
         Button(pantalla_rese, text="Ver reservaciones",
                height="3", width="300",
-               bg= "#BCEBE0").pack() #Boton para Ver las reservaciones totales
-        Label(pantalla_rese, text="").pack()
+               bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para Ver las reservaciones totales
+        
+        blanklabel(pantalla_rese)
+
     volver = Button(pantalla_rese, text="Volver",
                     height="2", width="15",
-                    command=pantalla_rese.destroy).pack(side="bottom") #Boton para regresar al menu de opciones
+                    command=pantalla_rese.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
 
 def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (TRATAR DE HACER UN GENERADOR)
     global qr, reserva 
@@ -350,8 +404,11 @@ def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (
 def crear_reservacion(): #Funcion para crear la reservacion
     global crear_rese, reserva
     crear_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
-    crear_rese.geometry("300x300")
+    crear_rese.geometry("450x200")
     crear_rese.title("Crear reservacion")
+
+    rowconfigure(crear_rese,6)
+    columnconfigure(crear_rese,3)
     
     Label(crear_rese, text="¿Cuantas mesas ocupara?", 
           font="15,bold").grid(column=1) #Texto de pregunta
@@ -379,15 +436,15 @@ def crear_reservacion(): #Funcion para crear la reservacion
     resta = Button(crear_rese, text="-",
                    height="2", width="4",
                    font="18", bg= "#BCEBE0",
-                   command=lambda:cupos_disp(0)).grid(row=3, column=0, padx=3) #Boton de resta
+                   command=lambda:cupos_disp(0)).grid(row=3, column=0, padx=15, sticky="NSEW") #Boton de resta
     suma = Button(crear_rese, text="+",
                   height="2", width="4",
                   font="18", bg= "#BCEBE0",
-                  command=lambda:cupos_disp(1)).grid(row=3, column=2) #Boton de suma
+                  command=lambda:cupos_disp(1)).grid(row=3, column=2, padx=15, sticky="NSEW") #Boton de suma
     reservar = Button(crear_rese, text="RESERVAR",
                       heigh="3",
                       font="18", bg= "#BCEBE0",
-                      command=ocupar).grid(row=5, column=1) #Boton para reservar y finalizar
+                      command=ocupar).grid(row=5, column=1, sticky="NSEW") #Boton para reservar y finalizar
     
 def ver_reservacion(): #Funcion para Ver la Reservacion
     global ver_rese, reserva #ver rese = pantalla de ver reserva
@@ -404,8 +461,12 @@ def menu_calificacion(user): #Interfaz de las calificaciones
     global pantalla_cali #pantalla cali = pantalla calificaciones
     if user==1: #Si es admin
         pantalla_cali = Toplevel(pantalla_ma)
+        rowconfigure(pantalla_cali, 7)
+        columnconfigure(pantalla_cali, 1)
     else: #Si es cliente
         pantalla_cali = Toplevel(pantalla_mc)
+        rowconfigure(pantalla_cali, 9)
+        columnconfigure(pantalla_cali, 1)
     pantalla_cali.geometry("300x320")
     pantalla_cali.title("Calificacion")
     
@@ -413,33 +474,39 @@ def menu_calificacion(user): #Interfaz de las calificaciones
         Button(pantalla_cali, text="Calificar",
                height="3", width="300",
                bg= "#BCEBE0",
-               command=crear_calificacion).pack()
-        Label(pantalla_cali, text="").pack()
+               command=crear_calificacion).grid(padx=60, sticky="NSEW")
+        
+        blanklabel(pantalla_cali)
 
     Button(pantalla_cali, text="Ver calificacion",
            height="3", width="300",
-           bg= "#BCEBE0").pack() #Boton para ver la calificacion
-    Label(pantalla_cali, text="").pack()
+           bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para ver la calificacion
+    
+    blanklabel(pantalla_cali)
 
-    puntuacion = Label(pantalla_cali, text="...").pack() #Promedio de calificacion no visible
-    Label(pantalla_cali, text="").pack()
+    puntuacion = Label(pantalla_cali, text="...").grid() #Promedio de calificacion no visible
+    
+    blanklabel(pantalla_cali)
 
     Button(pantalla_cali, text="Ver Opiniones",
            height="3", width="300",
-           bg= "#BCEBE0").pack() #Boton para ver las opiniones
-    Label(pantalla_cali, text="").pack()
+           bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para ver las opiniones
+    
+    blanklabel(pantalla_cali)
 
     volver = Button(pantalla_cali, text="Volver",
                     height="2", width="15",
-                    command=pantalla_cali.destroy).pack(side="bottom") #Boton para regresar al menu de opciones
+                    command=pantalla_cali.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
 
 def crear_calificacion():
-    global pantalla_crear_cali, new_opinion #pantalla_crear_cali = pantalla crear calificacion
+    global pantalla_crear_cali, new_opinion, opinion_entry #pantalla_crear_cali = pantalla crear calificacion
     pantalla_crear_cali = Toplevel(pantalla_cali)
-    pantalla_crear_cali.geometry("290x300")
+    pantalla_crear_cali.geometry("450x300")
     pantalla_crear_cali.title("Crear Calificacion")
-    user_entry.delete(first=0,last='end') #limpiamos campos
-    password_entry.delete(first=0,last='end')
+    new_opinion=StringVar()
+
+    rowconfigure(pantalla_crear_cali,10)
+    columnconfigure(pantalla_crear_cali,3)
 
     Label(pantalla_crear_cali, text="Seleccione la Puntuacion:",
           font="15,bold").grid(column=1) #Muestra los cupos disponibles
@@ -465,39 +532,44 @@ def crear_calificacion():
     resta = Button(pantalla_crear_cali, text="-",
                    height="2", width="4",
                    bg= "#BCEBE0",
-                   font="18", command=lambda:dar_puntos(0)).grid(row=3, column=0, padx=3) #Boton de resta
+                   font="18", command=lambda:dar_puntos(0)).grid(row=3, column=0, padx=15, sticky="NSEW") #Boton de resta
     suma = Button(pantalla_crear_cali, text="+",
                   height="2", width="4",
                   bg= "#BCEBE0",
-                  font="18", command=lambda:dar_puntos(1)).grid(row=3, column=2) #Boton de suma
+                  font="18", command=lambda:dar_puntos(1)).grid(row=3, column=2, padx=15, sticky="NSEW") #Boton de suma
 
-    Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3)
+    blanklabel(pantalla_crear_cali)
+
     Label(pantalla_crear_cali, text="Comentario:",
-          font="15,bold").grid(column=0, columnspan=3)
-    new_opinion = Entry(pantalla_crear_cali, textvariable=user_verify, width="30")
-    new_opinion.grid(column=1)
-    Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3)
+          font="15,bold").grid(column=0, columnspan=3) #Para ingresar un comentario
+    opinion_entry = Entry(pantalla_crear_cali, textvariable=new_opinion, width="30")
+    opinion_entry.grid(column=1)
+
+    blanklabel(pantalla_crear_cali)
 
     submit = Button(pantalla_crear_cali, text="Registrar calificacion",
                     height="3", width="20",
                     bg= "#BCEBE0",
                     command=pantalla_crear_cali.destroy).grid(column=1)
-    Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3)
+    Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3, padx=60, sticky="NSEW")
     
     volver = Button(pantalla_crear_cali, text="Volver",
                     height="2", width="15",
-                    command=pantalla_crear_cali.destroy).grid(column=1) #Boton para regresar al menu de calificar
+                    command=pantalla_crear_cali.destroy).grid(column=1, padx=80, sticky="NSEW") #Boton para regresar al menu de calificar
     
 
 
 # Funcion para hacer validaciones e iniciar sesión
 def validar(): 
-
+    """
     #BORRAR ESTE UNA VEZ SE COMPLETE EL LOGIN DE ADMIN APROPIADAMENTE, ESTO ES SOLO PARA ACCEDER RÁPIDO EN PRUEBAS
+    #NO LO BORREN PARA QUE FRONTEND PUEDA HACER PRUEBAS * C MUERE POR POBRE *
     if password_entry.get() == 'admin' and user_entry.get() == 'admin':
         menu_admin()
+    else:
+        menu_cliente()
     # Obtenemos los valores igresados en las cajas de texto
-    
+    """
     # Validar nombre de usuario
     usuariovalidar=user_entry.get()
     if len(usuariovalidar) == 0:
@@ -512,30 +584,28 @@ def validar():
 
     # Inicio de sesión
     try:
+        #funcion para login
         user = login(usuariovalidar, contraseñavalidar)
 
         if user!=None:
+            pantalla.iconify()
             menu_cliente()
-            return
-
-    except:
-        pop_ups("Inicio de sesion c")
-        return
-
-
-    #Agregar validación parar admin
-    try:
-        user = login_admin(usuariovalidar, contraseñavalidar)
-
-        if user!=None:
+        else:
+        #Inicio sesion admin
+          admin = login_admin(usuariovalidar,contraseñavalidar)
+        #revisamos si hay concidencias
+          if len(admin) != 0:    
+        #si hay concidencias se muestra el menu de admin
+            pantalla.iconify()
             menu_admin()
-            return
-
-        if user == None:
-            messagebox.showwarning("Error", "Usuario y/o contrseña incorrectos")
+          elif user == None:
+            messagebox.showwarning("Error", "Usuario y/o contraseña incorrectos")
     except:
-        pop_ups("Inicio de sesion a")
+        messagebox.showwarning("Error", "Hubo un error inesperado")
         return
+    
+    user_entry.delete(first=0,last='end') #Se limpia
+    password_entry.delete(first=0,last='end') #Se limpia despues del uso
 
 def pop_ups(texto): #Funcion para los pop ups
     global pop_up
@@ -545,56 +615,81 @@ def pop_ups(texto): #Funcion para los pop ups
     pop_up.geometry("550x330")
     pop_up.title("Errorm")
     pop_up.configure(bg="white") #fondo blanco limdom
+
+    rowconfigure(pop_up,4)
+    columnconfigure(pop_up,2)
     
     #Ponemos la label en la segunda columna, para que en la primera este la imagen
     Label(pop_up, text="¡Oh no!", height="3",
-         font="Arial,48,bold", bg="white").grid(row=0, column=1)
+         font="Arial,48,bold", bg="white").grid(row=0, column=1, sticky="NSEW")
     Label(pop_up, text="Emcomtramste el errorm:\n"+str(texto),
-         height="3", font="Arial,32,bold", bg="white").grid(row=1, column=1)
+         height="3", font="Arial,32,bold", bg="white").grid(row=1, column=1, sticky="NSEW")
     Label(pop_up, text="Emstamos trabajandom\npara remparmlo",
-         height="3", font="Arial,32,bold", bg="white").grid(row=2, column=1)
+         height="3", font="Arial,32,bold", bg="white").grid(row=2, column=1, sticky="NSEW")
 
     #Boton para que se cierre con picar el boton
     Entendido = Button(pop_up, text="Entendido",
                     height="3", width="15",
-                    command=pop_up.destroy).grid(row=3, column=1)
+                    command=pop_up.destroy).grid(row=3, column=1, sticky="NSEW")
     
     #Imagen
-    Label(pop_up, image=imagen_cheems, bg="white").grid(row=0, column=0, rowspan=4)
+    Label(pop_up, image=imagen_cheems, bg="white").grid(row=0, column=0, rowspan=4, sticky="NSEW")
 
-    pop_up.mainloop()
+    pop_ups.mainloop()
 
 
             
 def registrar_bd(): #Funcion para el registro
 
-    user_name = new_user.get() #Obtencion de datos
-    if len(user_name) == 0:
+    new_name = new_name_entry.get() #Obtencion de datos
+    new_lastname = new_lastname_entry.get() #Obtencion de datos
+    new_user = new_user_entry.get() #Obtencion de datos
+    new_password = new_password_entry.get() #Obtencion de datos
+    if len(new_name) == 0:
+        messagebox.showwarning("Error", "Introduzca su(s) nombre(s)")
+        return
+
+    if len(new_lastname) == 0:
+        messagebox.showwarning("Error", "Introduzca su(s) apellido(s)")
+        return
+
+    if len(new_user) == 0:
         messagebox.showwarning("Error", "Introduzca su nombre de usuario")
         return
-
-    password = new_password.get() #Obtencion de datos
-    if len(password) == 0:
+        
+    if len(new_password) == 0:
         messagebox.showwarning("Error", "Introduzca su contraseña")
         return
-
     try:
-        has_error, error_msg = register(user_name, password)
+        has_error, error_msg = register(new_name, new_lastname, new_user, new_password)
         if has_error:
             messagebox.showwarning("Error", error_msg)
             return
     except:
-        messagebox.showwarning("Error", "Hubo un error inesperado")
+        pop_ups("Hubo un error inesperado en el Registro")
         return
 
-    user_entry.delete(first=0,last='end') #Se limpia
-    password_entry.delete(first=0,last='end') #Se limpia despues del uso
+    new_name_entry.delete(first=0,last='end') #Se limpia
+    new_lastname_entry.delete(first=0,last='end') #Se limpia despues del uso
+    new_user_entry.delete(first=0,last='end') #Se limpia despues del uso
+    new_password_entry.delete(first=0,last='end') #Se limpia despues del uso
     pantalla_r.destroy()
     
-def ocupar(): #POr si se ocupa la reserva, calidacion
+def ocupar(): #Por si se ocupa la reserva, validacion
     global reserva
     reserva=reserva+1
-    
+
+def blanklabel(ventana): #Para no escribir mucho, esta funcion crea el salto de linea
+    Label(ventana, text="").grid() #Lit crea una etiqueta en blanco que se puede usar para separar elementos
+
+#Funciones para automatizar los escalados
+def rowconfigure(ventana, row): #Escalado de filas, se requiere las filas que se usaran
+    for x in range(row):
+        Grid.rowconfigure(ventana,x,weight=1) #Da un peso que escala
+
+def columnconfigure(ventana, column): #Escalado de columnas, se requiere las columnas que se usaran
+    for x in range(column):
+        Grid.columnconfigure(ventana,x,weight=1) #Da un peso que escala
     
 inicio_sesion()
 #app=aplication()
