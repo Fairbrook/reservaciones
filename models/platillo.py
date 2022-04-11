@@ -117,17 +117,17 @@ def ver_menu():
             img_redimension = ImageTk.PhotoImage(imagen)
 
             lista_imagenes.append(img_redimension) #Tomamos imagen previamente creada en el equipo y la agregamos a la lista
-            Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
-            Label(second_frame, text=precio, font=("Lato", 10), width=20).grid(column=1, row=row, padx=5, pady=8)
-            Label(second_frame, text=descripcion, font=("Lato", 10), width=20).grid(column=2, row=row, padx=5, pady=8)
+            Label(second_frame, text=nombre, font=("Lato", 10), width=40).grid(column=0, row=row, padx=5, pady=8)
+            Label(second_frame, text=precio, font=("Lato", 10), width=10).grid(column=1, row=row, padx=5, pady=8)
+            Label(second_frame, text=descripcion, font=("Lato", 10), width=50).grid(column=2, row=row, padx=5, pady=8)
             #Aquí sacamos la imagen correspondiente de la lista y la ponemos en la etiqueta
             Label(second_frame, image=lista_imagenes[contador_imagenes], font=("Lato", 10), width=200).grid(column=3, row=row, padx=5, pady=8)
 
         else:
             #No hay imagen, solo se ponen las primeras tres columnas
-            Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
-            Label(second_frame, text=precio, font=("Lato", 10), width=20).grid(column=1, row=row, padx=5, pady=8)
-            Label(second_frame, text=descripcion, font=("Lato", 10), width=20).grid(column=2, row=row, padx=5, pady=8)
+            Label(second_frame, text=nombre, font=("Lato", 10), width=40).grid(column=0, row=row, padx=5, pady=8)
+            Label(second_frame, text=precio, font=("Lato", 10), width=10).grid(column=1, row=row, padx=5, pady=8)
+            Label(second_frame, text=descripcion, font=("Lato", 10), width=50).grid(column=2, row=row, padx=5, pady=8)
 
         row += 1
 
