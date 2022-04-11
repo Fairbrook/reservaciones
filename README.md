@@ -11,6 +11,7 @@ pip install -r requirements.txt
 ## Conección a la base de datos
 
 Require un archivo .env en el root del proyecto con la siguiente forma
+Copiar el .env.example y renombrarlo a .env para modificar las variables
 
 ```
 DB_USER=root
