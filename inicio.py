@@ -607,6 +607,9 @@ def validar():
     user_entry.delete(first=0,last='end') #Se limpia
     password_entry.delete(first=0,last='end') #Se limpia despues del uso
 
+    user_entry.delete(first=0,last='end') #Se limpia
+    password_entry.delete(first=0,last='end') #Se limpia despues del uso
+
 def pop_ups(texto): #Funcion para los pop ups
     global pop_up
     pop_up = Toplevel() #Encima de cualquier cosa
