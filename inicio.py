@@ -5,7 +5,7 @@ import tkinter
 from tkinter import  messagebox
 import os
 from tkinter import *
-from models.administrador import consulta_BD
+#from models.administrador import consulta_BD
 import hashlib
 from models.administrador import login_admin
 from models.usuario import login, register
