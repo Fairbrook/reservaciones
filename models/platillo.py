@@ -1,5 +1,3 @@
-from msilib import text
-from sqlite3 import Cursor
 from tkinter import *
 from tkinter import filedialog
 import os
@@ -7,6 +5,7 @@ import sys
 from tkinter import messagebox
 from functools import partial
 from tkinter.ttk import Style, Treeview
+from PIL import Image, ImageTk
 sys.path.append('../')
 
 from db import *
@@ -113,19 +112,22 @@ def ver_menu():
                 file.write(imagen_platillo)
                 file.close()
             
+            imagen = Image.open(almacenar_en)
+            imagen = imagen.resize((150,120), Image.ANTIALIAS)
+            img_redimension = ImageTk.PhotoImage(imagen)
 
-            lista_imagenes.append(PhotoImage(file = almacenar_en)) #Tomamos imagen previamente creada en el equipo y la agregamos a la lista
-            Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
-            Label(second_frame, text=precio, font=("Lato", 10), width=20).grid(column=1, row=row, padx=5, pady=8)
-            Label(second_frame, text=descripcion, font=("Lato", 10), width=20).grid(column=2, row=row, padx=5, pady=8)
+            lista_imagenes.append(img_redimension) #Tomamos imagen previamente creada en el equipo y la agregamos a la lista
+            Label(second_frame, text=nombre, font=("Lato", 10), width=40).grid(column=0, row=row, padx=5, pady=8)
+            Label(second_frame, text=precio, font=("Lato", 10), width=10).grid(column=1, row=row, padx=5, pady=8)
+            Label(second_frame, text=descripcion, font=("Lato", 10), width=50).grid(column=2, row=row, padx=5, pady=8)
             #Aquí sacamos la imagen correspondiente de la lista y la ponemos en la etiqueta
             Label(second_frame, image=lista_imagenes[contador_imagenes], font=("Lato", 10), width=200).grid(column=3, row=row, padx=5, pady=8)
 
         else:
             #No hay imagen, solo se ponen las primeras tres columnas
-            Label(second_frame, text=nombre, font=("Lato", 10), width=20).grid(column=0, row=row, padx=5, pady=8)
-            Label(second_frame, text=precio, font=("Lato", 10), width=20).grid(column=1, row=row, padx=5, pady=8)
-            Label(second_frame, text=descripcion, font=("Lato", 10), width=20).grid(column=2, row=row, padx=5, pady=8)
+            Label(second_frame, text=nombre, font=("Lato", 10), width=40).grid(column=0, row=row, padx=5, pady=8)
+            Label(second_frame, text=precio, font=("Lato", 10), width=10).grid(column=1, row=row, padx=5, pady=8)
+            Label(second_frame, text=descripcion, font=("Lato", 10), width=50).grid(column=2, row=row, padx=5, pady=8)
 
         row += 1
 

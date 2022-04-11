@@ -16,3 +16,10 @@ DB_PASSOWRD=
 DB_HOST=127.0.0.1
 DB_NAME=sistema_de_reservacion
 ```
+## Importación de nuevo módulo para interactuar con imágenes
+Para poder redimensionar imagenes para ser mostradas con un formato uniforme y no exceda la medida de las columnas, 
+es necesario instalar el módulo PIL. Se realiza mediante el comando 
+---
+
+pip install Pillow
+---
