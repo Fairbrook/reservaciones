@@ -531,7 +531,7 @@ def registrar_bd(): #Funcion para el registro
     password_entry.delete(first=0,last='end') #Se limpia despues del uso
     pantalla_r.destroy()
     
-def ocupar(): #POr si se ocupa la reserva, calidacion
+def ocupar(): #POr si se ocupa la reserva, validacion
     global reserva
     reserva=reserva+1
     
