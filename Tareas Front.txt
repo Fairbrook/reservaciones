@@ -1,0 +1,3 @@
+Interfaz reservaciones Calendario, personas, hora y zona
+Generador codigos QR
+Nueva ventana de reservaciones para el admin pueda cambiar

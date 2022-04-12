@@ -3,8 +3,10 @@
 from re import L
 import tkinter
 from tkinter import  messagebox
+from tkinter import  ttk
 import os
 from tkinter import *
+from tkcalendar import Calendar 
 #from models.administrador import consulta_BD
 import hashlib
 from models.administrador import login_admin
@@ -13,7 +15,7 @@ from models.platillo import ver_menu, modificar_menu
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
-    global rol, cupos, reserva, estrellas #variables globales
+    global rol, cupos, reserva, estrellas, zona, fecha
     pantalla=Tk() #declaramos la pantalla principal
     pantalla.geometry("300x350") #tamaño de ventana
     pantalla.title("Login") #titulo de ventana
@@ -21,8 +23,10 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     password_verify=StringVar() #indicamos el tipo de variable
     cupos=IntVar() #indicamos el tipo de variable
     reserva=IntVar() #indicamos el tipo de variable
+    zona=IntVar() #indicamos el tipo de variable
+    fecha=StringVar() #indicamos el tipo de variable
     
-    cupos=10 #inicializamos (TEMPORALES PARA PRUEBAS)
+    cupos=6 #inicializamos (TEMPORALES PARA PRUEBAS)
     estrellas=5 #limite de estrellas a dar
     reserva=0
     
@@ -78,7 +82,6 @@ def registro(): #Se despliega encima de iniciar sesion para dar un registro
     new_user_verify=StringVar() #Indicamos el tipo de variable
     new_password_verify=StringVar() #Indicamos el tipo de variable
     new_name_verify=StringVar() #Indicamos el tipo de variable
-    new_lastname_verify=StringVar() #Indicamos el tipo de variable
 
     rowconfigure(pantalla_r,13)
     columnconfigure(pantalla_r,1)
@@ -87,15 +90,10 @@ def registro(): #Se despliega encima de iniciar sesion para dar un registro
 
     blanklabel(pantalla_r)
 
-    #Pide el nuevo usuario
+    #Pide el nombre de la persona
     Label(pantalla_r, text="Nombre(s):").grid(sticky="NSEW")
     new_name_entry = Entry(pantalla_r, textvariable=new_name_verify, width="25")
     new_name_entry.grid(padx=20, sticky="NSEW")
-
-    #Pide el nuevo usuario
-    Label(pantalla_r, text="Apellido(s):").grid(sticky="NSEW")
-    new_lastname_entry = Entry(pantalla_r, textvariable=new_lastname_verify, width="25")
-    new_lastname_entry.grid(padx=20, sticky="NSEW")
     
     blanklabel(pantalla_r)
 
@@ -404,21 +402,47 @@ def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (
 def crear_reservacion(): #Funcion para crear la reservacion
     global crear_rese, reserva
     crear_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
-    crear_rese.geometry("450x200")
+    crear_rese.geometry("450x500")
     crear_rese.title("Crear reservacion")
 
-    rowconfigure(crear_rese,6)
+    #Configuracion de escalabilidad
+    rowconfigure(crear_rese,10)
     columnconfigure(crear_rese,3)
+
+    #Calendario de seleccion de día para la reserva
+    Label(crear_rese, text="Seleccione el día:", 
+          font="15,bold").grid(column=1) #Seleccion del día
     
-    Label(crear_rese, text="¿Cuantas mesas ocupara?", 
+    dia_rese = Button(crear_rese, text="Día:",#Boton que indica zona de reservacion adentro
+                      font="18,bold", bg= "#BCEBE0",
+                      command=Calendario).grid(row=1, column=1, sticky="NSEW")
+
+    #Hora de reserva
+    Label(crear_rese, text="Seleccione la hora:", 
+          font="15,bold").grid(column=1) #Seleccion de zonas
+    
+    seleccion_zona = ttk.Combobox(crear_rese,
+            state="readonly",
+            values=["16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:00", "19:30", "20:00", "20:30"])
+    seleccion_zona.grid(column=1, sticky="NSEW")
+    
+    #Zona de reserva
+    Label(crear_rese, text="Seleccione la zona:", 
+          font="15,bold").grid(column=1) #Seleccion de zonas
+    
+    seleccion_zona = ttk.Combobox(crear_rese,
+            state="readonly",
+            values=["Seleccione una zona", "Green Garden", "Zona Interior"])
+    seleccion_zona.grid(column=1, sticky="NSEW")
+
+    #Personas para la reserva
+    Label(crear_rese, text="¿Cuantas personas?\nCupo Maximo: 6", 
           font="15,bold").grid(column=1) #Texto de pregunta
-    Label(crear_rese, text="Existen: "+str(cupos)+" disponibles",
-          font="15,bold").grid(column=1) #Muestra los cupos disponibles
 
     #Una etiqueta con dos botones adyacentes para subir o disminuir el numero de cupos a reservar
     mostrar_cupos = Label(crear_rese, text=str(cupos),
                           height="2", width="4",
-                          font="18").grid(row=3, column=1) #Estara en el centro, son los cupos existentes
+                          font="18").grid(row=7, column=1) #Estara en el centro, son los cupos existentes
     
     def cupos_disp(operacion): #Funcion para ver los cupos disponibles y delimitar los botones
         global cupos
@@ -426,25 +450,28 @@ def crear_reservacion(): #Funcion para crear la reservacion
             cupos=cupos-1
             mostrar_cupos = Label(crear_rese, text=str(cupos),
                                   height="2", width="4",
-                                  font="18").grid(row=3, column=1) #muestra los cupos 
-        elif operacion==1 and cupos<10: #Si es 10 o mas no se puede aumentar
+                                  font="18").grid(row=7, column=1) #muestra los cupos 
+        elif operacion==1 and cupos<6: #Si es 10 o mas no se puede aumentar
             cupos=cupos+1
             mostrar_cupos = Label(crear_rese, text=str(cupos),
                                   height="2", width="4",
-                                  font="18").grid(row=3, column=1) #muestra los cupos
+                                  font="18").grid(row=7, column=1) #muestra los cupos
     
     resta = Button(crear_rese, text="-",
                    height="2", width="4",
                    font="18", bg= "#BCEBE0",
-                   command=lambda:cupos_disp(0)).grid(row=3, column=0, padx=15, sticky="NSEW") #Boton de resta
+                   command=lambda:cupos_disp(0)).grid(row=7, column=0, padx=15, sticky="NSEW") #Boton de resta
     suma = Button(crear_rese, text="+",
                   height="2", width="4",
                   font="18", bg= "#BCEBE0",
-                  command=lambda:cupos_disp(1)).grid(row=3, column=2, padx=15, sticky="NSEW") #Boton de suma
+                  command=lambda:cupos_disp(1)).grid(row=7, column=2, padx=15, sticky="NSEW") #Boton de suma
+
+    blanklabel(crear_rese)
+
     reservar = Button(crear_rese, text="RESERVAR",
                       heigh="3",
                       font="18", bg= "#BCEBE0",
-                      command=ocupar).grid(row=5, column=1, sticky="NSEW") #Boton para reservar y finalizar
+                      command=ocupar).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
     
 def ver_reservacion(): #Funcion para Ver la Reservacion
     global ver_rese, reserva #ver rese = pantalla de ver reserva
@@ -607,9 +634,6 @@ def validar():
     user_entry.delete(first=0,last='end') #Se limpia
     password_entry.delete(first=0,last='end') #Se limpia despues del uso
 
-    user_entry.delete(first=0,last='end') #Se limpia
-    password_entry.delete(first=0,last='end') #Se limpia despues del uso
-
 def pop_ups(texto): #Funcion para los pop ups
     global pop_up
     pop_up = Toplevel() #Encima de cualquier cosa
@@ -636,7 +660,7 @@ def pop_ups(texto): #Funcion para los pop ups
                     command=pop_up.destroy).grid(row=3, column=1, sticky="NSEW")
     
     #Imagen
-    Label(pop_up, image=imagen_cheems, bg="white").grid(row=0, column=0, rowspan=4, sticky="NSEW")
+    Label(pop_up, image=imagen_cheems, bg="white").grid(row=0, column=0, rowspan=4, sticky="NS")
 
     pop_ups.mainloop()
 
@@ -664,7 +688,7 @@ def registrar_bd(): #Funcion para el registro
         messagebox.showwarning("Error", "Introduzca su contraseña")
         return
     try:
-        has_error, error_msg = register(new_name, new_lastname, new_user, new_password)
+        has_error, error_msg = register(new_user, new_password)
         if has_error:
             messagebox.showwarning("Error", error_msg)
             return
@@ -678,9 +702,28 @@ def registrar_bd(): #Funcion para el registro
     new_password_entry.delete(first=0,last='end') #Se limpia despues del uso
     pantalla_r.destroy()
     
+#Funciones de Reservacion
 def ocupar(): #Por si se ocupa la reserva, validacion
     global reserva
     reserva=reserva+1
+
+
+def Calendario():
+    calendario=Toplevel()
+    calendario.title("Calendario")
+    cal = Calendar(calendario, selectmode = 'day', 
+               year = 2022, month = 5, 
+               day = 24)
+    cal.grid(pady = 20)
+
+    def definir_fecha():
+        fecha=cal.get_date()
+        calendario.destroy()
+        dia_rese = Button(crear_rese, text="Día:"+fecha,#Boton que indica zona de reservacion adentro
+                      font="18,bold", bg= "#BCEBE0",
+                      command=Calendario).grid(row=1, column=1, sticky="NSEW")
+
+    Button(calendario, text="Definir Fecha", command=definir_fecha).grid() 
 
 def blanklabel(ventana): #Para no escribir mucho, esta funcion crea el salto de linea
     Label(ventana, text="").grid() #Lit crea una etiqueta en blanco que se puede usar para separar elementos
