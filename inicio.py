@@ -15,7 +15,7 @@ from models.platillo import ver_menu, modificar_menu
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
-    global rol, cupos, reserva, estrellas, zona, fecha
+    global rol, cupos, reserva, estrellas, zona, fecha, hora
     pantalla=Tk() #declaramos la pantalla principal
     pantalla.geometry("300x350") #tamaño de ventana
     pantalla.title("Login") #titulo de ventana
@@ -23,11 +23,15 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     password_verify=StringVar() #indicamos el tipo de variable
     cupos=IntVar() #indicamos el tipo de variable
     reserva=IntVar() #indicamos el tipo de variable
-    zona=IntVar() #indicamos el tipo de variable
+    zona=StringVar() #indicamos el tipo de variable
     fecha=StringVar() #indicamos el tipo de variable
+    hora=StringVar() #indicamos el tipo de variable
     
-    cupos=6 #inicializamos (TEMPORALES PARA PRUEBAS)
-    estrellas=5 #limite de estrellas a dar
+    cupos=1 #inicializamos (TEMPORALES PARA PRUEBAS)
+    zona=0
+    fecha=0
+    hora=0
+    estrellas=1 #limite de estrellas a dar
     reserva=0
     
     #Configuracion para escalar los elementos de la ventana
@@ -400,7 +404,7 @@ def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (
     
     
 def crear_reservacion(): #Funcion para crear la reservacion
-    global crear_rese, reserva
+    global crear_rese, seleccion_hora, seleccion_zona
     crear_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
     crear_rese.geometry("450x500")
     crear_rese.title("Crear reservacion")
@@ -421,19 +425,29 @@ def crear_reservacion(): #Funcion para crear la reservacion
     Label(crear_rese, text="Seleccione la hora:", 
           font="15,bold").grid(column=1) #Seleccion de zonas
     
-    seleccion_zona = ttk.Combobox(crear_rese,
-            state="readonly",
-            values=["16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:00", "19:30", "20:00", "20:30"])
-    seleccion_zona.grid(column=1, sticky="NSEW")
+    def hora_nueva(event): #Funcion para otorgar la hora a esa variable
+        hora = seleccion_hora.get()
+
+    seleccion_hora = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
+            state="readonly", #No se puede editar por el usuario
+            values=["16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:00", "19:30", "20:00", "20:30"]) #Opciones
+    seleccion_hora.grid(column=1, sticky="NSEW") #Lo de posicionamiento
+    seleccion_hora.bind("<<ComboboxSelected>>",hora_nueva) #Cambia conforme las selecciones
+    
     
     #Zona de reserva
     Label(crear_rese, text="Seleccione la zona:", 
           font="15,bold").grid(column=1) #Seleccion de zonas
     
-    seleccion_zona = ttk.Combobox(crear_rese,
-            state="readonly",
-            values=["Seleccione una zona", "Green Garden", "Zona Interior"])
-    seleccion_zona.grid(column=1, sticky="NSEW")
+    def zona_nueva(event): #Funcion para otorgar la hora a esa variable
+        zona = seleccion_zona.get()
+
+    seleccion_zona = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
+            state="readonly", #No se puede editar por el usuario
+            values=["Seleccione una zona", "Green Garden", "Zona Interior"]) #Opciones
+    seleccion_zona.grid(column=1, sticky="NSEW") #Lo de posicionamiento
+    seleccion_zona.bind("<<ComboboxSelected>>",zona_nueva) #Cambia conforme las selecciones
+    
 
     #Personas para la reserva
     Label(crear_rese, text="¿Cuantas personas?\nCupo Maximo: 6", 
@@ -471,10 +485,10 @@ def crear_reservacion(): #Funcion para crear la reservacion
     reservar = Button(crear_rese, text="RESERVAR",
                       heigh="3",
                       font="18", bg= "#BCEBE0",
-                      command=ocupar).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
+                      command=lambda:ocupar(fecha,hora,zona,cupos)).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
     
 def ver_reservacion(): #Funcion para Ver la Reservacion
-    global ver_rese, reserva #ver rese = pantalla de ver reserva
+    global ver_rese, reserva, fecha, cupos, zona, hora #ver rese = pantalla de ver reserva
     
     if reserva==0: #No existe reservacion
         pop_ups("No tiene una reserva") #se cambiara a un pop up
@@ -482,7 +496,26 @@ def ver_reservacion(): #Funcion para Ver la Reservacion
         ver_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
         ver_rese.geometry("300x300")
         ver_rese.title("Ver reservacion")
-        Label(ver_rese, text="Su reserva es:").pack() #pop up donde se muestra la info PROXUMAMENTE
+        """
+        fecha=cal.get_date() #Variables y su asignacion de procedencia
+        zona = seleccion_zona.get()
+        hora = seleccion_hora.get() """
+        rowconfigure(ver_rese, 8)
+        columnconfigure(ver_rese, 1)
+
+        Label(ver_rese, text="Su reserva es:").grid() #pop up donde se muestra la info PROXUMAMENTE
+
+        Label(ver_rese, text="El dia:"+fecha).grid()
+        Label(ver_rese, text="A las:"+hora+"pm").grid()
+        Label(ver_rese, text="Su zona es:\n"+zona).grid()
+        Label(ver_rese, text="Mesa para "+str(cupos)+" personas").grid()
+
+        blanklabel(ver_rese)
+
+        Button(crear_rese, text="Volver",
+                heigh="3",
+                font="18", bg= "#BCEBE0",
+                command=crear_rese.destroy).grid(padx=80, sticky="NSEW")
     
 def menu_calificacion(user): #Interfaz de las calificaciones
     global pantalla_cali #pantalla cali = pantalla calificaciones
@@ -669,15 +702,10 @@ def pop_ups(texto): #Funcion para los pop ups
 def registrar_bd(): #Funcion para el registro
 
     new_name = new_name_entry.get() #Obtencion de datos
-    new_lastname = new_lastname_entry.get() #Obtencion de datos
     new_user = new_user_entry.get() #Obtencion de datos
     new_password = new_password_entry.get() #Obtencion de datos
     if len(new_name) == 0:
         messagebox.showwarning("Error", "Introduzca su(s) nombre(s)")
-        return
-
-    if len(new_lastname) == 0:
-        messagebox.showwarning("Error", "Introduzca su(s) apellido(s)")
         return
 
     if len(new_user) == 0:
@@ -703,12 +731,25 @@ def registrar_bd(): #Funcion para el registro
     pantalla_r.destroy()
     
 #Funciones de Reservacion
-def ocupar(): #Por si se ocupa la reserva, validacion
+def ocupar(fecha,hora,zona,cupos): #Por si se ocupa la reserva, validacion
     global reserva
-    reserva=reserva+1
+    fecha=cal.get_date() #Variables y su asignacion de procedencia
+    zona = seleccion_zona.get()
+    hora = seleccion_hora.get()
+    print(fecha) #Solo comprobar que jale las cosas
+    print(zona)
+    print(hora)
+    print(cupos)
+    if fecha == 0 or hora == 0 or zona == 0 or cupos == 0: #Si falta un campo no se reserva
+        messagebox.showwarning("Error", "Fallo en la reserva\nTiene uno o mas campos vacios")
+    else:
+        messagebox.showwarning("Reservado", "Reservacion exitosa") #Si esta todo, se reserva
+        crear_rese.destroy()
+        reserva=reserva+1
 
 
 def Calendario():
+    global fecha, calendario, cal
     calendario=Toplevel()
     calendario.title("Calendario")
     cal = Calendar(calendario, selectmode = 'day', 
@@ -719,7 +760,7 @@ def Calendario():
     def definir_fecha():
         fecha=cal.get_date()
         calendario.destroy()
-        dia_rese = Button(crear_rese, text="Día:"+fecha,#Boton que indica zona de reservacion adentro
+        dia_rese = Button(crear_rese, text="Día: "+fecha,#Boton que indica zona de reservacion adentro
                       font="18,bold", bg= "#BCEBE0",
                       command=Calendario).grid(row=1, column=1, sticky="NSEW")
 
