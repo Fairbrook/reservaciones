@@ -57,13 +57,15 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
         else:
 
             cursor = db.cursor()
-            sql_validacion3 = "SELECT COUNT(*) from reservacion where id_cliente = {} and estatus = True".format(id_cliente)
+
+            #Buscamos en la bd si existe alguna reservacion ACTIVA de este cliente, en cuanto encuentra una, termina y devuelve resultado
+            sql_validacion3 = "SELECT COUNT(*) from reservacion where id_cliente = {} and estatus = 'A' Limit 1".format(id_cliente)
             cursor.execute(sql_validacion3)
             no_valido_3 = cursor.fetchone()[0]
             cursor.close()
 
             #Ahora comprobamos que este usuario no cuente con ninguna otra reservacion ACTIVA
-            if no_valido_3 >= 1:
+            if no_valido_3 == 1: #Si existió una reservación ACTIVA, no se acepta
                 return False, "Este usuario ya cuenta con una reservación activa"
             else:
-                pass
+                return True, "GOOD SO FAR"
