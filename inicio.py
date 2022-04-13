@@ -12,6 +12,7 @@ import hashlib
 from models.administrador import login_admin
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
+from models.reservacion import validar_reservacion
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
@@ -429,8 +430,8 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
         hora = seleccion_hora.get()
 
     seleccion_hora = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
-            state="readonly", #No se puede editar por el usuario
-            values=["16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:00", "19:30", "20:00", "20:30"]) #Opciones
+        state="readonly", #No se puede editar por el usuario
+        values=["9:00", "10:00", "11:00", "12:00", "13:00", "14:00","15:00", "16:00", "17:00", "18:00"]) #Opciones
     seleccion_hora.grid(column=1, sticky="NSEW") #Lo de posicionamiento
     seleccion_hora.bind("<<ComboboxSelected>>",hora_nueva) #Cambia conforme las selecciones
     
@@ -485,7 +486,7 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     reservar = Button(crear_rese, text="RESERVAR",
                       heigh="3",
                       font="18", bg= "#BCEBE0",
-                      command=lambda:ocupar(fecha,hora,zona,cupos)).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
+                      command=lambda:validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos)).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
     
 
 
@@ -735,21 +736,21 @@ def registrar_bd(): #Funcion para el registro
     pantalla_r.destroy()
     
 #Funciones de Reservacion
-def ocupar(fecha,hora,zona,cupos): #Por si se ocupa la reserva, validacion
-    global reserva
+def validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos): #Por si se ocupa la reserva, validacion
+    #global reserva
     fecha=cal.get_date() #Variables y su asignacion de procedencia
     zona = seleccion_zona.get()
     hora = seleccion_hora.get()
-    print(fecha) #Solo comprobar que jale las cosas
-    print(zona)
-    print(hora)
-    print(cupos)
     if fecha == 0 or hora == 0 or zona == 0 or cupos == 0: #Si falta un campo no se reserva
         messagebox.showwarning("Error", "Fallo en la reserva\nTiene uno o mas campos vacios")
     else:
-        messagebox.showwarning("Reservado", "Reservacion exitosa") #Si esta todo, se reserva
+
+        confirmacion, mensaje = validar_reservacion(id_cliente, fecha, hora, zona, cupos)
+        print("confimacion: --------- ", confirmacion, " ", mensaje)
+        if confirmacion:
+            messagebox.showwarning("Reservado", "Reservacion exitosa") #Si esta todo, se reserva
         crear_rese.destroy()
-        reserva=reserva+1
+        #reserva=reserva+1
 
 
 def Calendario():
