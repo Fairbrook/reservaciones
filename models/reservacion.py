@@ -68,4 +68,5 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
             if no_valido_3 == 1: #Si existió una reservación ACTIVA, no se acepta
                 return False, "Este usuario ya cuenta con una reservación activa"
             else:
-                return True, "GOOD SO FAR"
+
+                pass
