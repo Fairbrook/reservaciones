@@ -3,8 +3,7 @@
 
 --------Horarios--------
 
-Lunes a viernes de 9:00 am a 8:00 pm
-Sabados y domingos de 9:00 am a 3:00 pm
+Lunes a domingos de 9:00 am a 6:00 pm
 
 --------Ubicacion--------
 

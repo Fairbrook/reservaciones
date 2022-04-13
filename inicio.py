@@ -423,7 +423,7 @@ def crear_reservacion(): #Funcion para crear la reservacion
     
     seleccion_zona = ttk.Combobox(crear_rese,
             state="readonly",
-            values=["16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:00", "19:30", "20:00", "20:30"])
+            values=["9:00", "10:00", "11:00", "12:00", "13:00", "14:00","15:00", "16:00", "17:00", "18:00"])
     seleccion_zona.grid(column=1, sticky="NSEW")
     
     #Zona de reserva
