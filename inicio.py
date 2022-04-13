@@ -122,7 +122,6 @@ def registro(): #Se despliega encima de iniciar sesion para dar un registro
     blanklabel(pantalla_r)
     
 def menu_cliente(id_cliente): #Menu a desplegar a todos estos usuarios de tipo cliente
-
     global pantalla_mc #Pantalla_mc = pantalla menu cliente 
     #pantalla.withdraw() #Cerramos la ventana de inicio de sesion
     pantalla_mc = Toplevel(pantalla) #Que aparezca encima de la de inicio de sesion
@@ -147,7 +146,7 @@ def menu_cliente(id_cliente): #Menu a desplegar a todos estos usuarios de tipo c
     reserva = Button(pantalla_mc, text="Reservar",
                      height="3", width="300",
                      bg= "#BCEBE0",
-                     command=lambda:menu_reservaciones(0)).grid(padx=60, sticky="NSEW")
+                     command=lambda:menu_reservaciones(0,id_cliente)).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_mc)
 
@@ -174,7 +173,7 @@ def menu_cliente(id_cliente): #Menu a desplegar a todos estos usuarios de tipo c
 
     pantalla_mc.mainloop()
     
-def menu_admin(): #Menu a desplegar al usuario de tipo admin
+def menu_admin(id_admin): #Menu a desplegar al usuario de tipo admin
     global pantalla_ma #pantalla_ma = pantalla menu admin
     #pantalla.withdraw()
     pantalla_ma = Toplevel(pantalla) #Aparece encima del inicio de sesion
@@ -198,7 +197,7 @@ def menu_admin(): #Menu a desplegar al usuario de tipo admin
     reserva = Button(pantalla_ma, text="Reservaciones",
                      height="3", width="300",
                      bg= "#BCEBE0",
-                     command=lambda:menu_reservaciones(1)).grid(padx=60, sticky="NSEW")
+                     command=lambda:menu_reservaciones(1,id_admin)).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_ma)
 
@@ -332,7 +331,7 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
             command=mostrar_info_actual).grid(column=1, row=0, pady=5, padx=5)
                    
     
-def menu_reservaciones(user): #Funcion que despliega el menu de reservaciones, recibe como parametro la id del usuario
+def menu_reservaciones(user, id): #Funcion que despliega el menu de reservaciones, recibe como parametro la id del usuario
     global pantalla_rese
     if user==1: #1 es de admin, probablemente dependiendo de la BD cambiara a ser una funcion aparte
         pantalla_rese = Toplevel(pantalla_ma) #Encima de la pantalla de menu admin
@@ -351,14 +350,14 @@ def menu_reservaciones(user): #Funcion que despliega el menu de reservaciones, r
         Button(pantalla_rese, text="Reservar",
                height="3", width="300",
                bg= "#BCEBE0",
-               command=crear_reservacion).grid(padx=60, sticky="NSEW") #Boton de Crear reservacion
+               command=lambda:crear_reservacion(id)).grid(padx=60, sticky="NSEW") #Boton de Crear reservacion
         
         blanklabel(pantalla_rese)
 
         Button(pantalla_rese, text="Ver mi reservacion",
                height="3", width="300",
                bg= "#BCEBE0",
-               command=ver_reservacion).grid(padx=60, sticky="NSEW") #Boton de Ver reservacion
+               command=lambda:ver_reservacion(id)).grid(padx=60, sticky="NSEW") #Boton de Ver reservacion
         
         blanklabel(pantalla_rese)
         
@@ -404,7 +403,7 @@ def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (
     qr.mainloop() #Lo hacemos mainloop para que se muestre la imagen, se elimina al destruir la ventana al parecer
     
     
-def crear_reservacion(): #Funcion para crear la reservacion
+def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     global crear_rese, seleccion_hora, seleccion_zona
     crear_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
     crear_rese.geometry("450x500")
@@ -488,7 +487,7 @@ def crear_reservacion(): #Funcion para crear la reservacion
                       font="18", bg= "#BCEBE0",
                       command=lambda:ocupar(fecha,hora,zona,cupos)).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
     
-def ver_reservacion(): #Funcion para Ver la Reservacion
+def ver_reservacion(id_cliente): #Funcion para Ver la Reservacion
     global ver_rese, reserva, fecha, cupos, zona, hora #ver rese = pantalla de ver reserva
     
     if reserva==0: #No existe reservacion
@@ -647,10 +646,10 @@ def validar():
     try:
         #funcion para login
         user = login(usuariovalidar, contraseñavalidar)
-        id_current_client = user["id_cliente"] #<-----ID es necesario para varias operaciones, es de suma importancia
         if user!=None:
             pantalla.iconify()
-            menu_cliente(id_current_client)
+            id_current_user = user["id_cliente"]#<----ID es necesario para varias operaciones, es de suma importancia
+            menu_cliente(id_current_user)
         else:
         #Inicio sesion admin
           admin = login_admin(usuariovalidar,contraseñavalidar)
@@ -658,7 +657,8 @@ def validar():
           if len(admin) != 0:    
         #si hay concidencias se muestra el menu de admin
             pantalla.iconify()
-            menu_admin()
+            id_admin = admin[0][0] #<--- admin es una lista de una tupla, [0][0] retorna solo id del admin
+            menu_admin(id_admin)
           elif user == None:
             messagebox.showwarning("Error", "Usuario y/o contraseña incorrectos")
     except:
@@ -726,7 +726,7 @@ def registrar_bd(): #Funcion para el registro
         return
 
     new_name_entry.delete(first=0,last='end') #Se limpia
-    #new_lastname_entry.delete(first=0,last='end') #Se limpia despues del uso
+    new_lastname_entry.delete(first=0,last='end') #Se limpia despues del uso
     new_user_entry.delete(first=0,last='end') #Se limpia despues del uso
     new_password_entry.delete(first=0,last='end') #Se limpia despues del uso
     pantalla_r.destroy()
