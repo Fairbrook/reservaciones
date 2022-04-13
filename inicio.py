@@ -487,6 +487,9 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
                       font="18", bg= "#BCEBE0",
                       command=lambda:ocupar(fecha,hora,zona,cupos)).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
     
+
+
+    
 def ver_reservacion(id_cliente): #Funcion para Ver la Reservacion
     global ver_rese, reserva, fecha, cupos, zona, hora #ver rese = pantalla de ver reserva
     
