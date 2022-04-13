@@ -16,7 +16,7 @@ from models.reservacion import validar_reservacion
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
-    global rol, cupos, reserva, estrellas, zona, fecha, hora
+    global rol, cupos, reserva, estrellas, zona, fecha, hora, uso_f, uso_h, uso_z
     pantalla=Tk() #declaramos la pantalla principal
     pantalla.geometry("300x350") #tamaño de ventana
     pantalla.title("Login") #titulo de ventana
@@ -24,14 +24,17 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     password_verify=StringVar() #indicamos el tipo de variable
     cupos=IntVar() #indicamos el tipo de variable
     reserva=IntVar() #indicamos el tipo de variable
+    uso_f=IntVar()
+    uso_h=IntVar()
+    uso_z=IntVar()
     zona=StringVar() #indicamos el tipo de variable
     fecha=StringVar() #indicamos el tipo de variable
     hora=StringVar() #indicamos el tipo de variable
     
     cupos=1 #inicializamos (TEMPORALES PARA PRUEBAS)
-    zona=0
-    fecha=0
-    hora=0
+    uso_f=0
+    uso_h=0
+    uso_z=0
     estrellas=1 #limite de estrellas a dar
     reserva=0
     
@@ -405,7 +408,7 @@ def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (
     
     
 def crear_reservacion(id_cliente): #Funcion para crear la reservacion
-    global crear_rese, seleccion_hora, seleccion_zona
+    global crear_rese, seleccion_hora, seleccion_zona, uso_h, uso_f, uso_z
     crear_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
     crear_rese.geometry("450x500")
     crear_rese.title("Crear reservacion")
@@ -420,14 +423,16 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     
     dia_rese = Button(crear_rese, text="Día:",#Boton que indica zona de reservacion adentro
                       font="18,bold", bg= "#BCEBE0",
-                      command=Calendario).grid(row=1, column=1, sticky="NSEW")
+                      command=lambda:Calendario(0)).grid(row=1, column=1, sticky="NSEW")
 
     #Hora de reserva
     Label(crear_rese, text="Seleccione la hora:", 
           font="15,bold").grid(column=1) #Seleccion de zonas
     
     def hora_nueva(event): #Funcion para otorgar la hora a esa variable
+        global uso_h
         hora = seleccion_hora.get()
+        uso_h=uso_h+1
 
     seleccion_hora = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
         state="readonly", #No se puede editar por el usuario
@@ -441,7 +446,9 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
           font="15,bold").grid(column=1) #Seleccion de zonas
     
     def zona_nueva(event): #Funcion para otorgar la hora a esa variable
+        global uso_z
         zona = seleccion_zona.get()
+        uso_z=uso_z+1
 
     seleccion_zona = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
             state="readonly", #No se puede editar por el usuario
@@ -738,10 +745,11 @@ def registrar_bd(): #Funcion para el registro
 #Funciones de Reservacion
 def validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos): #Por si se ocupa la reserva, validacion
     #global reserva
+    Calendario(1)
     fecha=cal.get_date() #Variables y su asignacion de procedencia
     zona = seleccion_zona.get()
     hora = seleccion_hora.get()
-    if fecha == 0 or hora == 0 or zona == 0 or cupos == 0: #Si falta un campo no se reserva
+    if uso_f == 0 or uso_h == 0 or uso_z == 0 or cupos == 0: #Si falta un campo no se reserva
         messagebox.showwarning("Error", "Fallo en la reserva\nTiene uno o mas campos vacios")
     else:
 
@@ -753,23 +761,30 @@ def validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos): #Por si se ocupa 
         #reserva=reserva+1
 
 
-def Calendario():
+def Calendario(comando):
     global fecha, calendario, cal
     calendario=Toplevel()
     calendario.title("Calendario")
+
     cal = Calendar(calendario, selectmode = 'day', 
-               year = 2022, month = 5, 
-               day = 24)
+            year = 2022, month = 5, 
+            day = 24)
     cal.grid(pady = 20)
 
     def definir_fecha():
+        global uso_f
         fecha=cal.get_date()
         calendario.destroy()
+        uso_f=uso_f+1
         dia_rese = Button(crear_rese, text="Día: "+fecha,#Boton que indica zona de reservacion adentro
-                      font="18,bold", bg= "#BCEBE0",
-                      command=Calendario).grid(row=1, column=1, sticky="NSEW")
+                    font="18,bold", bg= "#BCEBE0",
+                    command=Calendario).grid(row=1, column=1, sticky="NSEW")
 
-    Button(calendario, text="Definir Fecha", command=definir_fecha).grid() 
+    Button(calendario, text="Definir Fecha", command=definir_fecha).grid()
+
+    if comando==1:
+        calendario.destroy()
+
 
 def blanklabel(ventana): #Para no escribir mucho, esta funcion crea el salto de linea
     Label(ventana, text="").grid() #Lit crea una etiqueta en blanco que se puede usar para separar elementos
