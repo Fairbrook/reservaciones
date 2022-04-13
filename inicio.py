@@ -121,7 +121,8 @@ def registro(): #Se despliega encima de iniciar sesion para dar un registro
     
     blanklabel(pantalla_r)
     
-def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
+def menu_cliente(id_cliente): #Menu a desplegar a todos estos usuarios de tipo cliente
+
     global pantalla_mc #Pantalla_mc = pantalla menu cliente 
     #pantalla.withdraw() #Cerramos la ventana de inicio de sesion
     pantalla_mc = Toplevel(pantalla) #Que aparezca encima de la de inicio de sesion
@@ -129,7 +130,7 @@ def menu_cliente(): #Menu a desplegar a todos estos usuarios de tipo cliente
     imagen.subsample(2,2) #No me acuerdo, pero es de la imagen
     pantalla_mc.geometry("300x500")
     pantalla_mc.title("Menu")
-    
+
     rowconfigure(pantalla_mc,10)
     columnconfigure(pantalla_mc,1)
 
@@ -646,10 +647,10 @@ def validar():
     try:
         #funcion para login
         user = login(usuariovalidar, contraseñavalidar)
-
+        id_current_client = user["id_cliente"] #<-----ID es necesario para varias operaciones, es de suma importancia
         if user!=None:
             pantalla.iconify()
-            menu_cliente()
+            menu_cliente(id_current_client)
         else:
         #Inicio sesion admin
           admin = login_admin(usuariovalidar,contraseñavalidar)
@@ -725,7 +726,7 @@ def registrar_bd(): #Funcion para el registro
         return
 
     new_name_entry.delete(first=0,last='end') #Se limpia
-    new_lastname_entry.delete(first=0,last='end') #Se limpia despues del uso
+    #new_lastname_entry.delete(first=0,last='end') #Se limpia despues del uso
     new_user_entry.delete(first=0,last='end') #Se limpia despues del uso
     new_password_entry.delete(first=0,last='end') #Se limpia despues del uso
     pantalla_r.destroy()
