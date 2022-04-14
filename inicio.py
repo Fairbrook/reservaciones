@@ -741,7 +741,6 @@ def registrar_bd(): #Funcion para el registro
         return
 
     new_name_entry.delete(first=0,last='end') #Se limpia
-    new_lastname_entry.delete(first=0,last='end') #Se limpia despues del uso
     new_user_entry.delete(first=0,last='end') #Se limpia despues del uso
     new_password_entry.delete(first=0,last='end') #Se limpia despues del uso
     pantalla_r.destroy()
