@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -- coding: utf-8 --
 
 from re import L
 import tkinter
@@ -412,6 +412,10 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     crear_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
     crear_rese.geometry("450x500")
     crear_rese.title("Crear reservacion")
+
+    uso_h = 0
+    uso_z = 0
+    uso_f = 0
 
     #Configuracion de escalabilidad
     rowconfigure(crear_rese,10)
