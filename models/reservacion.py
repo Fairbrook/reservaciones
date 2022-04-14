@@ -48,20 +48,23 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
         cursor.execute(sql_ultima_reservacion)
         fecha_ultima_reserva = cursor.fetchone()[0]
 
-        #Se considera terminada 2 horas después de comenzada
-        sql_fecha_termino_reserva = "SELECT date_add('{}', interval 2 hour)".format(fecha_ultima_reserva)
-        cursor.execute(sql_fecha_termino_reserva)
-        termino_reserva = cursor.fetchone()[0]
+        if fecha_ultima_reserva == None: #No tiene ninguna última reservación terminada 
+            no_valido_2 = False
+        else:
+            #Se considera terminada 2 horas después de comenzada
+            sql_fecha_termino_reserva = "SELECT date_add('{}', interval 2 hour)".format(fecha_ultima_reserva)
+            cursor.execute(sql_fecha_termino_reserva)
+            termino_reserva = cursor.fetchone()[0]
 
-        sql_validacion2 = '''SELECT '{}' > date_sub(now(), interval 24 hour)'''.format(termino_reserva)
-        cursor.execute(sql_validacion2)
-        no_valido_2 = cursor.fetchone()[0]
+            sql_validacion2 = '''SELECT '{}' > date_sub(now(), interval 24 hour)'''.format(termino_reserva)
+            cursor.execute(sql_validacion2)
+            no_valido_2 = cursor.fetchone()[0]
 
         if no_valido_2:
             return False, '''Su última reservación terminó hace menos de 24 horas\n
             Vuelva una vez se haya cumplido el plazo mínimo de espera\nSu última reservación terminó: {}'''.format(termino_reserva)
         else:
-            
+            print("NO HAY RESERVACION 24hrs :)")
             sql_validacion3 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') < now()".format(fecha_hora_db)
             cursor.execute(sql_validacion3)
             no_valido_3 = cursor.fetchone()[0]
@@ -74,10 +77,45 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
                 sql_validacion4 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') > Date_add(now(), interval 8 day)".format(fecha_hora_db)
                 cursor.execute(sql_validacion4)
                 no_valido_4 = cursor.fetchone()[0]
-                cursor.close()
+                
 
                 #Ahora comprobamos que la reserva no esté más lejana que una semana
                 if no_valido_4:
                     return False, "La anticipación máxima de una reservación es de una semana"  
                 else:
-                    return True, "Todo bien"                    
+                    
+                    sql_validacion_lugar = '''SELECT COUNT(*) from reservacion where hora_fecha = 
+                                                str_to_date('{}', '%d/%m/%y %H:%i') and
+                                                zona = {} and id_restaurante = {} and estatus = 'A' '''.format(fecha_hora_db,
+                                                zona_db, id_restaurante)
+                    cursor.execute(sql_validacion_lugar)
+                    lugares_ocupados = cursor.fetchone()[0]
+                    cursor.close()
+
+                    print("CUPOS OCUPADOS: ", lugares_ocupados)
+
+                    #POR ÚLTIMO, COMPROBAMOS QUE SI HAYA CUPOS DISPONIBLES PARA ESA ZONA, HORA Y FECHA
+                    if lugares_ocupados >= limite_cupos:
+                        print("ERROR CUPOS XXX")
+                        return False, "Ya no quedan lugares disponible para dicha zona en esta fecha y hora"
+                    else:
+                        #Todo salio bien, se agenda reservacion 
+                        resultado, mensaje = insertar_reservacion_bd(fecha_hora_db, cupos, zona_db, id_cliente, id_restaurante)
+                        return resultado, mensaje
+  
+def insertar_reservacion_bd(fechayhora, personas, zona, id_cliente, id_restaurante):
+
+    try:
+        cursor = db.cursor()
+        #POR AHORA OMITIRÉ QR HASTA SABER COMO LO GENERARAN
+        sql = '''INSERT INTO reservacion(hora_fecha, zona, n_personas, id_cliente, id_restaurante, estatus)
+                VALUES(STR_TO_DATE('{}', '%d/%m/%y %H:%i'), {}, {}, {}, {}, 'A')'''.format(fechayhora, zona, personas, id_cliente, id_restaurante)
+        cursor.execute(sql)
+        db.commit()
+        cursor.close()
+    except:
+        return False, "Algo salió mal con la reservación"
+    else:
+        return True, "Éxito! Reservación fue agendada"
+
+

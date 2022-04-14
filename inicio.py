@@ -754,6 +754,7 @@ def validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos): #Por si se ocupa 
         zona = seleccion_zona.get()
         hora = seleccion_hora.get()
         if uso_f == 0 or uso_h == 0 or uso_z == 0 or cupos == 0: #Si falta un campo no se reserva
+            print("ERROR IF")
             messagebox.showwarning("Error", "Fallo en la reserva\nTiene uno o mas campos vacios")
         else:
             confirmacion, mensaje = validar_reservacion(id_cliente, fecha, hora, zona, cupos)
@@ -762,8 +763,8 @@ def validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos): #Por si se ocupa 
                 messagebox.showwarning("Reservado", "Reservacion exitosa") #Si esta todo, se reserva
             crear_rese.destroy()
     except:
+        print("ERROR EXCEPT")
         messagebox.showwarning("Error", "Fallo en la reserva\nCuenta con uno o más campos vacios")
-        
 
 
 def Calendario():
