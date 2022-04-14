@@ -118,4 +118,25 @@ def insertar_reservacion_bd(fechayhora, personas, zona, id_cliente, id_restauran
     else:
         return True, "Éxito! Reservación fue agendada"
 
+def cancelar_reservacion(id_cliente):
+    
+    try:
+        cursor = db.cursor()
+        sql = '''SELECT (id_reservacion) from reservacion where id_cliente = {} and estatus = 'A' '''.format(id_cliente)
+        cursor.execute(sql)
+        registro = cursor.fetchone()
+        cursor.close()        
+
+        if registro == None:
+            messagebox.showerror("Error", "Usted no cuenta con ninguna reservación activa")
+        else:
+            registro = registro[0]
+
+            cursor = db.cursor()
+            sql = '''Update reservacion set estatus = 'C' where id_reservacion = {}'''.format(registro)
+            cursor.execute(sql)
+            db.commit()
+            cursor.close()
+    except:
+        messagebox.showerror("Error", "Algo explotó de nuestro lado xc")
 

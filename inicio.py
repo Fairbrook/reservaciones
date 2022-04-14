@@ -12,7 +12,7 @@ import hashlib
 from models.administrador import login_admin
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
-from models.reservacion import validar_reservacion
+from models.reservacion import validar_reservacion, cancelar_reservacion
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
@@ -367,7 +367,7 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
         
         Button(pantalla_rese, text="Cancelar reservacion",
                height="3", width="300",
-               bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton de Borrar reservacion
+               bg= "#BCEBE0", command=lambda:cancelar_reservacion(id)).grid(padx=60, sticky="NSEW") #Boton de Borrar reservacion
         
         blanklabel(pantalla_rese)
 
@@ -494,7 +494,7 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
 
     blanklabel(crear_rese)
 
-    reservar = Button(crear_rese, text="RESERVAR",
+    reservar = Button(crear_rese, text="Hacer reservación",
                       heigh="3",
                       font="18", bg= "#BCEBE0",
                       command=lambda:validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos)).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
