@@ -4,7 +4,6 @@ import sys
 from tkinter import messagebox
 from functools import partial
 
-from numpy import True_
 sys.path.append('../')
 
 from db import *
@@ -46,7 +45,7 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
     else:
         
         cursor = db.cursor()
-        sql_validacion2 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') > Date_add(now(), interval 365 day)".format(fecha_hora_db)
+        sql_validacion2 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') > Date_add(now(), interval 8 day)".format(fecha_hora_db)
         cursor.execute(sql_validacion2)
         no_valido_2 = cursor.fetchone()[0]
         cursor.close()
