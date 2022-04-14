@@ -31,16 +31,18 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
     sql = "SELECT (n_mesas_z{}) FROM restaurante where id_restaurante = {}".format(zona_db, id_restaurante)
     cursor.execute(sql)    
     limite_cupos = cursor.fetchone()[0]
-    
+    print("LIMITE CUPOS ", limite_cupos)
 
     #1.- Buscamos en la bd si existe alguna reservacion ACTIVA de este cliente, en cuanto encuentra una, termina y devuelve resultado
     sql_validacion1 = "SELECT COUNT(*) from reservacion where id_cliente = {} and estatus = 'A' Limit 1".format(id_cliente)
     cursor.execute(sql_validacion1)
     no_valido_1 = cursor.fetchone()[0]
+    print("NO VALIDO 1= ", no_valido_1)
 
     if no_valido_1 == 1: #Si existió una reservación ACTIVA, no se acepta
         return False, "Este usuario ya cuenta con una reservación activa"
     else:
+        print("BIEN, no hay activo")
         #Ahora buscaremos que la última reservación terminada (ya sea TERMINADA o ASISTIDA) haya sido hace
         #más de 24 hrs, de otra manera no permitimos reservación
         sql_ultima_reservacion = '''Select MAX(hora_fecha) from reservacion where 
@@ -73,7 +75,7 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
             if no_valido_3:
                 return False, "La fecha y hora de esta reservación ya pasaron"
             else:
-                
+                print("Si es a futuro")
                 sql_validacion4 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') > Date_add(now(), interval 8 day)".format(fecha_hora_db)
                 cursor.execute(sql_validacion4)
                 no_valido_4 = cursor.fetchone()[0]
@@ -83,7 +85,7 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
                 if no_valido_4:
                     return False, "La anticipación máxima de una reservación es de una semana"  
                 else:
-                    
+                    print("BUENA anticipacion")
                     sql_validacion_lugar = '''SELECT COUNT(*) from reservacion where hora_fecha = 
                                                 str_to_date('{}', '%d/%m/%y %H:%i') and
                                                 zona = {} and id_restaurante = {} and estatus = 'A' '''.format(fecha_hora_db,
@@ -99,6 +101,7 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
                         print("ERROR CUPOS XXX")
                         return False, "Ya no quedan lugares disponible para dicha zona en esta fecha y hora"
                     else:
+                        print("VAMOS A RESERVA")
                         #Todo salio bien, se agenda reservacion 
                         resultado, mensaje = insertar_reservacion_bd(fecha_hora_db, cupos, zona_db, id_cliente, id_restaurante)
                         return resultado, mensaje
