@@ -7,6 +7,8 @@ from tkinter import  ttk
 import os
 from tkinter import *
 from tkcalendar import Calendar 
+import qrcode
+from PIL import Image
 #from models.administrador import consulta_BD
 import hashlib
 from models.administrador import login_admin
@@ -36,7 +38,7 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     uso_h=0
     uso_z=0
     estrellas=1 #limite de estrellas a dar
-    reserva=0
+    reserva=1
     
     #Configuracion para escalar los elementos de la ventana
     rowconfigure(pantalla,11)
@@ -398,14 +400,21 @@ def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (
             #Falta el pop up ;p
     else:
         qr = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
-        imagen_codigo=PhotoImage(file="QR.gif") #Importamos la imagen
-        image=imagen_codigo.subsample(2,2)
+        cadena = "wenaswenas"
+        imagen_codigo = qrcode.make(cadena) #Importamos la imagen
+        archivo_imagen = open("Codigo Reservacion",'wb')
+        imagen_codigo.save(archivo_imagen)
+        archivo_imagen.close()
+
+        codigoqr=PhotoImage(file="Codigo Reservacion") #Importamos el Logo de nuestro equipo
+        codigoqr.subsample(2,2) #No me acuerdo, pero es de la imagen        
+
+        image=codigoqr.subsample(2,2)
         qr.geometry("200x200")
         qr.title("Codigo de reservacion")
-        Label(qr, image=imagen_codigo).pack() #Si tiene reserva, se muestra el QR
+        Label(qr, image=codigoqr).pack() #Si tiene reserva, se muestra el QR
     
     qr.mainloop() #Lo hacemos mainloop para que se muestre la imagen, se elimina al destruir la ventana al parecer
-    
     
 def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     global crear_rese, seleccion_hora, seleccion_zona, uso_h, uso_f, uso_z
