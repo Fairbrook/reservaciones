@@ -423,7 +423,7 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     
     dia_rese = Button(crear_rese, text="Día:",#Boton que indica zona de reservacion adentro
                       font="18,bold", bg= "#BCEBE0",
-                      command=lambda:Calendario(0)).grid(row=1, column=1, sticky="NSEW")
+                      command=Calendario).grid(row=1, column=1, sticky="NSEW")
 
     #Hora de reserva
     Label(crear_rese, text="Seleccione la hora:", 
@@ -745,12 +745,17 @@ def registrar_bd(): #Funcion para el registro
 #Funciones de Reservacion
 def validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos): #Por si se ocupa la reserva, validacion
     #global reserva
-    Calendario(1)
-    fecha=cal.get_date() #Variables y su asignacion de procedencia
-    zona = seleccion_zona.get()
-    hora = seleccion_hora.get()
-    if uso_f == 0 or uso_h == 0 or uso_z == 0 or cupos == 0: #Si falta un campo no se reserva
-        messagebox.showwarning("Error", "Fallo en la reserva\nTiene uno o mas campos vacios")
+
+    try:
+        fecha=cal.get_date() #Variables y su asignacion de procedencia
+        zona = seleccion_zona.get()
+        hora = seleccion_hora.get()
+        if uso_f == 0 or uso_h == 0 or uso_z == 0 or cupos == 0: #Si falta un campo no se reserva
+            messagebox.showwarning("Error", "Fallo en la reserva\nTiene uno o mas campos vacios")
+
+    except:
+        messagebox.showwarning("Error", "Fallo en la reserva\nNO agrego fecha")
+        
     else:
 
         confirmacion, mensaje = validar_reservacion(id_cliente, fecha, hora, zona, cupos)
@@ -761,7 +766,7 @@ def validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos): #Por si se ocupa 
         #reserva=reserva+1
 
 
-def Calendario(comando):
+def Calendario():
     global fecha, calendario, cal
     calendario=Toplevel()
     calendario.title("Calendario")
@@ -781,9 +786,6 @@ def Calendario(comando):
                     command=Calendario).grid(row=1, column=1, sticky="NSEW")
 
     Button(calendario, text="Definir Fecha", command=definir_fecha).grid()
-
-    if comando==1:
-        calendario.destroy()
 
 
 def blanklabel(ventana): #Para no escribir mucho, esta funcion crea el salto de linea
