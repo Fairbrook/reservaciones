@@ -7,6 +7,7 @@ from tkinter import  ttk
 import os
 from tkinter import *
 from tkcalendar import Calendar 
+
 #from models.administrador import consulta_BD
 import hashlib
 from models.administrador import login_admin
@@ -774,7 +775,7 @@ def Calendario():
 
     cal = Calendar(calendario, selectmode = 'day', 
             year = 2022, month = 5, 
-            day = 24)
+            day = 24, locale = 'es')#Calendario a español
     cal.grid(pady = 20)
 
     def definir_fecha():
