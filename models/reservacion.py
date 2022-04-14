@@ -48,13 +48,18 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
         cursor.execute(sql_ultima_reservacion)
         fecha_ultima_reserva = cursor.fetchone()[0]
 
-        sql_validacion2 = '''SELECT '{}' > date_sub(now(), interval 24 hour)'''.format(fecha_ultima_reserva)
+        #Se considera terminada 2 horas después de comenzada
+        sql_fecha_termino_reserva = "SELECT date_add('{}', interval 2 hour)".format(fecha_ultima_reserva)
+        cursor.execute(sql_fecha_termino_reserva)
+        termino_reserva = cursor.fetchone()[0]
+
+        sql_validacion2 = '''SELECT '{}' > date_sub(now(), interval 24 hour)'''.format(termino_reserva)
         cursor.execute(sql_validacion2)
         no_valido_2 = cursor.fetchone()[0]
 
         if no_valido_2:
-            return False, '''Su última reservación fue hace menos de 24 horas\n
-            Vuelva una vez se haya cumplido el plazo mínimo de espera\nSu última reservación: {}'''.format(fecha_ultima_reserva)
+            return False, '''Su última reservación terminó hace menos de 24 horas\n
+            Vuelva una vez se haya cumplido el plazo mínimo de espera\nSu última reservación terminó: {}'''.format(termino_reserva)
         else:
             
             sql_validacion3 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') < now()".format(fecha_hora_db)
