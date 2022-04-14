@@ -52,7 +52,7 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
 
         #Ahora comprobamos que la reserva no esté más lejana que un año
         if no_valido_2:
-            return False, "La anticipación máxima de una reservación es de un año"  
+            return False, "La anticipación máxima de una reservación es de una semana"  
         else:
 
             cursor = db.cursor()
