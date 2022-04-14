@@ -758,9 +758,10 @@ def validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos): #Por si se ocupa 
             messagebox.showwarning("Error", "Fallo en la reserva\nTiene uno o mas campos vacios")
         else:
             confirmacion, mensaje = validar_reservacion(id_cliente, fecha, hora, zona, cupos)
-            print("confimacion: --------- ", confirmacion, " ", mensaje)
             if confirmacion:
-                messagebox.showwarning("Reservado", "Reservacion exitosa") #Si esta todo, se reserva
+                messagebox.showinfo("Éxito", mensaje) #Si esta todo, se reserva
+            else:
+                messagebox.showwarning("Error", mensaje)
             crear_rese.destroy()
     except:
         print("ERROR EXCEPT")
