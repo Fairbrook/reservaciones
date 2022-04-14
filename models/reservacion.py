@@ -122,21 +122,30 @@ def cancelar_reservacion(id_cliente):
     
     try:
         cursor = db.cursor()
-        sql = '''SELECT (id_reservacion) from reservacion where id_cliente = {} and estatus = 'A' '''.format(id_cliente)
-        cursor.execute(sql)
+        sql_id = '''SELECT id_reservacion from reservacion where id_cliente = {} and estatus = 'A' Limit 1'''.format(id_cliente)
+        cursor.execute(sql_id)
         registro = cursor.fetchone()
         cursor.close()        
 
+        print("registro: ", registro)
         if registro == None:
             messagebox.showerror("Error", "Usted no cuenta con ninguna reservación activa")
         else:
-            registro = registro[0]
+            cursor = db.cursor()
+            id_cancelar = registro[0]
+            sql_fecha = '''SELECT hora_fecha from reservacion where id_reservacion = {}'''.format(id_cancelar)
+            cursor.execute(sql_fecha)
+            fecha_hora_cancelar = cursor.fetchone()[0]
+            cursor.close()
+
+            print("Reservacion - hora", id_cancelar, " ", fecha_hora_cancelar)
 
             cursor = db.cursor()
-            sql = '''Update reservacion set estatus = 'C' where id_reservacion = {}'''.format(registro)
+            sql = '''Update reservacion set estatus = 'C' where id_reservacion = {}'''.format(id_cancelar)
             cursor.execute(sql)
             db.commit()
             cursor.close()
+            messagebox.showinfo("Cancelación", "Su reservación para el {} ha sido cancelada".format(fecha_hora_cancelar))
     except:
         messagebox.showerror("Error", "Algo explotó de nuestro lado xc")
 
