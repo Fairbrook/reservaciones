@@ -335,6 +335,7 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
     volver = Button(pantalla_rese, text="Volver",
                     height="2", width="15",
                     command=pantalla_rese.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
+
 def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (TRATAR DE HACER UN GENERADOR)
     global qr, reserva 
     
