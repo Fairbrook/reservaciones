@@ -413,6 +413,10 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     crear_rese.geometry("450x500")
     crear_rese.title("Crear reservacion")
 
+    uso_h = 0
+    uso_z = 0
+    uso_f = 0
+
     #Configuracion de escalabilidad
     rowconfigure(crear_rese,10)
     columnconfigure(crear_rese,3)
