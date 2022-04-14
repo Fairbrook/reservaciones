@@ -322,7 +322,7 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
         Button(pantalla_rese, text="Obtener codigo", 
                height="3", width="300",
                bg= "#BCEBE0",
-               command=codigo_reservacion).grid(padx=60, sticky="NSEW") #Boton Obtener el Codigo QR
+               command=lambda:codigo_reservacion(id)).grid(padx=60, sticky="NSEW") #Boton Obtener el Codigo QR
         
         blanklabel(pantalla_rese)
     else:
@@ -336,32 +336,33 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
                     height="2", width="15",
                     command=pantalla_rese.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
 
-def codigo_reservacion(): #Funcion para obtener el codigo QR de la reservacion (TRATAR DE HACER UN GENERADOR)
+def codigo_reservacion(id_cliente): #Funcion para obtener el codigo QR de la reservacion (TRATAR DE HACER UN GENERADOR)
     global qr, reserva 
     
-    if reserva==0: #TEMPORAL comprobamos si tiene una reserva, sino se despliega un pop up de error
-        pop_ups("No tiene reserva")
-            #Falta el pop up ;p
-    else:
-        qr = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
-        imagen_codigo=PhotoImage(file="QR.gif") #Importamos la imagen
-        image=imagen_codigo.subsample(2,2)
-        cadena = "wenaswenas"
-        imagen_codigo = qrcode.make(cadena) #Importamos la imagen
-        archivo_imagen = open("Codigo Reservacion",'wb')
-        imagen_codigo.save(archivo_imagen)
-        archivo_imagen.close()
 
-        codigoqr=PhotoImage(file="Codigo Reservacion") #Importamos el Logo de nuestro equipo
-        codigoqr.subsample(2,2) #No me acuerdo, pero es de la imagen        
+    # if reserva==0: #TEMPORAL comprobamos si tiene una reserva, sino se despliega un pop up de error
+    #     pop_ups("No tiene reserva")
+    #         #Falta el pop up ;p
+    # else:
+    #     qr = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
+    #     imagen_codigo=PhotoImage(file="QR.gif") #Importamos la imagen
+    #     image=imagen_codigo.subsample(2,2)
+    #     cadena = "wenaswenas"
+    #     imagen_codigo = qrcode.make(cadena) #Importamos la imagen
+    #     archivo_imagen = open("Codigo Reservacion",'wb')
+    #     imagen_codigo.save(archivo_imagen)
+    #     archivo_imagen.close()
 
-        image=codigoqr.subsample(2,2)
-        qr.geometry("200x200")
-        qr.title("Codigo de reservacion")
-        Label(qr, image=imagen_codigo).pack() #Si tiene reserva, se muestra el QR
-        Label(qr, image=codigoqr).pack() #Si tiene reserva, se muestra el QR
+    #     codigoqr=PhotoImage(file="Codigo Reservacion") #Importamos el Logo de nuestro equipo
+    #     codigoqr.subsample(2,2) #No me acuerdo, pero es de la imagen        
 
-    qr.mainloop() #Lo hacemos mainloop para que se muestre la imagen, se elimina al destruir la ventana al parecer
+    #     image=codigoqr.subsample(2,2)
+    #     qr.geometry("200x200")
+    #     qr.title("Codigo de reservacion")
+    #     Label(qr, image=imagen_codigo).pack() #Si tiene reserva, se muestra el QR
+    #     Label(qr, image=codigoqr).pack() #Si tiene reserva, se muestra el QR
+
+    # qr.mainloop() #Lo hacemos mainloop para que se muestre la imagen, se elimina al destruir la ventana al parecer
 
 
 def crear_reservacion(id_cliente): #Funcion para crear la reservacion

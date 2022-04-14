@@ -122,6 +122,14 @@ def ver_menu():
             Label(second_frame, text=descripcion, font=("Lato", 10), width=50).grid(column=2, row=row, padx=5, pady=8)
             #Aquí sacamos la imagen correspondiente de la lista y la ponemos en la etiqueta
             Label(second_frame, image=lista_imagenes[contador_imagenes], font=("Lato", 10), width=200).grid(column=3, row=row, padx=5, pady=8)
+            
+            #Una vez mostrada cada imagen, ya no la ocupamos almacenada en nuestro equipo
+            print("VAMOS A BORRAR")
+            try:
+                os.remove(almacenar_en)
+                print("IMAGEN ELIMINADA: ", almacenar_en)
+            except FileNotFoundError:
+                print("Algo salió mal")
 
         else:
             #No hay imagen, solo se ponen las primeras tres columnas
