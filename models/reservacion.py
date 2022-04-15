@@ -3,6 +3,7 @@ import os
 import sys
 from tkinter import messagebox
 from functools import partial
+import qrcode
 
 sys.path.append('../')
 
@@ -103,19 +104,20 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
                     else:
                         print("VAMOS A RESERVA")
                         #Todo salio bien, se agenda reservacion 
-                        resultado, mensaje = insertar_reservacion_bd(fecha_hora_db, cupos, zona_db, id_cliente, id_restaurante)
+                        blob_qr = generar_qr(id_cliente, fecha_hora_db, zona_db)
+                        resultado, mensaje = insertar_reservacion_bd(fecha_hora_db, cupos, zona_db, id_cliente, id_restaurante, blob_qr)
                         return resultado, mensaje
   
-def insertar_reservacion_bd(fechayhora, personas, zona, id_cliente, id_restaurante):
+def insertar_reservacion_bd(fechayhora, personas, zona, id_cliente, id_restaurante, qr):
 
     try:
         cursor = db.cursor()
-        #POR AHORA OMITIRÉ QR HASTA SABER COMO LO GENERARAN
-        sql = '''INSERT INTO reservacion(hora_fecha, zona, n_personas, id_cliente, id_restaurante, estatus)
-                VALUES(STR_TO_DATE('{}', '%d/%m/%y %H:%i'), {}, {}, {}, {}, 'A')'''.format(fechayhora, zona, personas, id_cliente, id_restaurante)
-        cursor.execute(sql)
+        sql = '''INSERT INTO RESERVACION (hora_fecha, zona, n_personas, id_cliente, id_restaurante, estatus, qr)
+                VALUES(STR_TO_DATE(%s, '%d/%m/%y %H:%i'), %s, %s, %s, %s, 'A', %s)'''
+        cursor.execute(sql, (fechayhora, zona, personas, id_cliente, id_restaurante, qr, ))
         db.commit()
         cursor.close()
+
     except:
         return False, "Algo salió mal con la reservación"
     else:
@@ -152,3 +154,26 @@ def cancelar_reservacion(id_cliente):
     except:
         messagebox.showerror("Error", "Algo explotó de nuestro lado xc")
 
+def generar_qr(id_cliente, fecha_hora, zona):
+    
+    path_qr = os.getcwd() + '\imagenes' + "\qr reservacion cliente {}.png".format(id_cliente)
+
+    string_codigo = str(id_cliente) + "-" + str(fecha_hora) + "-" + str(zona)
+    print("CODIGO: ", string_codigo) 
+    imagen_qr = qrcode.make(string_codigo)
+    archivo_qr = open(path_qr, 'wb')
+    imagen_qr.save(archivo_qr)
+    archivo_qr.close()
+
+    with open(path_qr, 'rb') as file:
+        blob = file.read()
+        file.close()
+
+    #En cuanto ya obtenemos el blob para la BD, borramos el png del equipo
+    try:
+        os.remove(path_qr)
+        print("QR eliminado de equipo: ",path_qr)
+    except FileNotFoundError:
+        print("QR a eliminar no encontrado")
+        
+    return blob

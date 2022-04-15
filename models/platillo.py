@@ -129,7 +129,7 @@ def ver_menu():
                 os.remove(almacenar_en)
                 print("IMAGEN ELIMINADA: ", almacenar_en)
             except FileNotFoundError:
-                print("Algo salió mal")
+                print("No se encontro la foto a eliminar")
 
         else:
             #No hay imagen, solo se ponen las primeras tres columnas
