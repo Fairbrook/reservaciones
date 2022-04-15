@@ -1,3 +1,4 @@
+import re
 from tkinter import *
 import os
 import sys
@@ -175,5 +176,19 @@ def generar_qr(id_cliente, fecha_hora, zona):
         print("QR eliminado de equipo: ",path_qr)
     except FileNotFoundError:
         print("QR a eliminar no encontrado")
-        
+
     return blob
+
+def consulta_reservacion_qr(id_cliente):
+    
+    cursor = db.cursor()
+
+    sql = "SELECT (qr) from reservacion where id_cliente = {} and estatus = 'A'".format(id_cliente)
+    cursor.execute(sql)
+    qr_blob = cursor.fetchone()
+
+    if qr_blob == None:
+        return False, None
+    else:
+        qr_blob = qr_blob[0]
+        return True, qr_blob

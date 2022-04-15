@@ -7,13 +7,14 @@ import os
 from tkinter import *
 from tkcalendar import Calendar 
 import qrcode
-from PIL import Image
+from PIL import Image, ImageTk
 #from models.administrador import consulta_BD
 import hashlib
 from models.administrador import login_admin
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
-from models.reservacion import validar_reservacion, cancelar_reservacion
+from models.reservacion import validar_reservacion, cancelar_reservacion, consulta_reservacion_qr
+
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
     global rol, cupos, reserva, estrellas, zona, fecha, hora, uso_f, uso_h, uso_z
@@ -197,6 +198,7 @@ def menu_admin(id_admin): #Menu a desplegar al usuario de tipo admin
     
     blanklabel(pantalla_ma)
     pantalla_ma.mainloop()
+
 def ver_info():#Funcion para ver la informacion
     global pantalla_viewinfo #Variables globales
     pantalla_viewinfo = Toplevel() #Que aparezca encima de cualquier menu
@@ -233,6 +235,7 @@ def ver_info():#Funcion para ver la informacion
         texto_info.insert("end", linea) #Declaramos las lineas y las guardamos
     
     texto_info.config(state='disabled') #El usuario no puede hacerle nada al texto, solo se muestra
+
 def modificar_info(): #Funcion para el administrador, con el cual podra modificar el archivo
     #COnfiguracion previa al crear la ventana
     global pantalla_modificar_info 
@@ -322,7 +325,7 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
         Button(pantalla_rese, text="Obtener codigo", 
                height="3", width="300",
                bg= "#BCEBE0",
-               command=lambda:codigo_reservacion(id)).grid(padx=60, sticky="NSEW") #Boton Obtener el Codigo QR
+               command=lambda:codigo_reservacion_pantalla(id)).grid(padx=60, sticky="NSEW") #Boton Obtener el Codigo QR
         
         blanklabel(pantalla_rese)
     else:
@@ -336,15 +339,40 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
                     height="2", width="15",
                     command=pantalla_rese.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
 
-def codigo_reservacion(id_cliente): #Funcion para obtener el codigo QR de la reservacion (TRATAR DE HACER UN GENERADOR)
+def codigo_reservacion_pantalla(id_cliente): #Funcion para obtener el codigo QR de la reservacion (TRATAR DE HACER UN GENERADOR)
     global qr, reserva 
     
+    tiene_reservacion, qr_blob = consulta_reservacion_qr(id_cliente)
+
+    if not tiene_reservacion:
+        messagebox.showwarning("ERROR", "Usted no cuenta con una reservación activa")
+    else:
+        print("VAMOS BIEN")
+
+        path_almacen_temporal = os.getcwd() + "\imagenes\qr_reservacion_cliente{}.png".format(id_cliente)
+
+        with open(path_almacen_temporal, 'wb') as file:
+            file.write(qr_blob)
+            file.close()
+
+        imagen = Image.open(path_almacen_temporal) 
+        imagen = ImageTk.PhotoImage(imagen)
+
+        qr = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
+        Label(qr, image=imagen).pack()
+
+        try:
+            os.remove(path_almacen_temporal)
+            print("QR eliminado de equipo: ",path_almacen_temporal)
+        except FileNotFoundError:
+            print("QR a eliminar no encontrado")
+            
+        qr.mainloop() #Lo hacemos mainloop para que se muestre la imagen, se elimina al destruir la ventana al parecer
 
     # if reserva==0: #TEMPORAL comprobamos si tiene una reserva, sino se despliega un pop up de error
     #     pop_ups("No tiene reserva")
     #         #Falta el pop up ;p
     # else:
-    #     qr = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
     #     imagen_codigo=PhotoImage(file="QR.gif") #Importamos la imagen
     #     image=imagen_codigo.subsample(2,2)
     #     cadena = "wenaswenas"
@@ -361,8 +389,6 @@ def codigo_reservacion(id_cliente): #Funcion para obtener el codigo QR de la res
     #     qr.title("Codigo de reservacion")
     #     Label(qr, image=imagen_codigo).pack() #Si tiene reserva, se muestra el QR
     #     Label(qr, image=codigoqr).pack() #Si tiene reserva, se muestra el QR
-
-    # qr.mainloop() #Lo hacemos mainloop para que se muestre la imagen, se elimina al destruir la ventana al parecer
 
 
 def crear_reservacion(id_cliente): #Funcion para crear la reservacion
@@ -510,6 +536,7 @@ def menu_calificacion(user): #Interfaz de las calificaciones
     volver = Button(pantalla_cali, text="Volver",
                     height="2", width="15",
                     command=pantalla_cali.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
+
 def crear_calificacion():
     global pantalla_crear_cali, new_opinion, opinion_entry #pantalla_crear_cali = pantalla crear calificacion
     pantalla_crear_cali = Toplevel(pantalla_cali)
@@ -607,6 +634,7 @@ def validar():
     
     user_entry.delete(first=0,last='end') #Se limpia
     password_entry.delete(first=0,last='end') #Se limpia despues del uso
+
 def pop_ups(texto): #Funcion para los pop ups
     global pop_up
     pop_up = Toplevel() #Encima de cualquier cosa
@@ -680,6 +708,7 @@ def validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos): #Por si se ocupa 
     except:
         print("ERROR EXCEPT")
         messagebox.showwarning("Error", "Fallo en la reserva\nCuenta con uno o más campos vacios")
+
 def Calendario():
     global fecha, calendario, cal
     calendario=Toplevel()
