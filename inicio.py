@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 #from models.administrador import consulta_BD
 import hashlib
 from models.administrador import login_admin
-from models.restaurante import set_cupos_zonas_db, set_horarios_db
+from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
 from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr
@@ -304,14 +304,25 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
         
         archivo.close()
 
-        
+        horarios = get_horarios_db(1)
+        inicio = horarios[0]
+        ultimo = horarios[1]
+        cupos = get_cupos_zonas_db(1)
+        zona1 = cupos[0]
+        zona2 = cupos[1]
+
+        texto_horarios_cupos.delete("1.0", "end")
+        texto_horarios_cupos.insert("end", "Horario: de "+str(inicio)+" a "+str(ultimo)+" horas\n" )
+        texto_horarios_cupos.insert("end", "Cupos:\nZona interior cuenta con "+str(zona1) + " mesas" + "\nGreen garden cuenta con "+str(zona2)+" mesas")
+
     
     #Funcion para modificar la informacion que esta mostrada
     def actualizar_info():
         archivo = open("informacion.txt", 'w') #W de write
         nuevo_texto = texto_info.get(1.0, "end")
         archivo.write(nuevo_texto)
-
+        archivo.close()
+        
         primer_horario = entry_h1.get()
         ultimo_horario = entry_h2.get()
         cupos_zona1 = entry_z1.get()
@@ -707,7 +718,7 @@ def pop_ups(texto): #Funcion para los pop ups
     pop_up = Toplevel() #Encima de cualquier cosa
     imagen_cheems=PhotoImage(file="cheems.png") #Importamos la imagen
     image=imagen_cheems.subsample(2,2)
-    pop_up.geometry("550x330")
+    pop_up.geometry("650x330")
     pop_up.title("Errorm")
     pop_up.configure(bg="white") #fondo blanco limdom
     rowconfigure(pop_up,4)
