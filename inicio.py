@@ -13,7 +13,7 @@ import hashlib
 from models.administrador import login_admin
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
-from models.reservacion import validar_reservacion, cancelar_reservacion, consulta_reservacion_qr
+from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
@@ -345,9 +345,8 @@ def codigo_reservacion_pantalla(id_cliente): #Funcion para obtener el codigo QR 
     tiene_reservacion, qr_blob = consulta_reservacion_qr(id_cliente)
 
     if not tiene_reservacion:
-        messagebox.showwarning("ERROR", "Usted no cuenta con una reservación activa")
+        pop_ups("Esta cuenta no posee una reservación activa! :c")
     else:
-        print("VAMOS BIEN")
 
         path_almacen_temporal = os.getcwd() + "\imagenes\qr_reservacion_cliente{}.png".format(id_cliente)
 
@@ -366,7 +365,7 @@ def codigo_reservacion_pantalla(id_cliente): #Funcion para obtener el codigo QR 
             print("QR eliminado de equipo: ",path_almacen_temporal)
         except FileNotFoundError:
             print("QR a eliminar no encontrado")
-            
+
         qr.mainloop() #Lo hacemos mainloop para que se muestre la imagen, se elimina al destruir la ventana al parecer
 
     # if reserva==0: #TEMPORAL comprobamos si tiene una reserva, sino se despliega un pop up de error
@@ -475,30 +474,40 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     
     
 def ver_reservacion(id_cliente): #Funcion para Ver la Reservacion
-    global ver_rese, reserva, fecha, cupos, zona, hora #ver rese = pantalla de ver reserva
-    
-    if reserva==0: #No existe reservacion
+    #global ver_rese, reserva, fecha, cupos, zona, hora #ver rese = pantalla de ver reserva
+    global ver_rese
+
+    resultado = consultar_reservacion(id_cliente)
+
+    if resultado == None: #No existe reservacion
         pop_ups("No tiene una reserva") #se cambiara a un pop up
     else:
         ver_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
         ver_rese.geometry("300x300")
         ver_rese.title("Ver reservacion")
-        """
-        fecha=cal.get_date() #Variables y su asignacion de procedencia
-        zona = seleccion_zona.get()
-        hora = seleccion_hora.get() """
+
+        id_reserva = resultado[0]
+        fecha_hora = resultado[1]
+        zona = resultado[2]
+        if zona == 1:
+            zona = "Zona Interior"
+        else:
+            zona = "Green Garden"
+        personas = resultado[3]
+
+
         rowconfigure(ver_rese, 8)
         columnconfigure(ver_rese, 1)
-        Label(ver_rese, text="Su reserva es:").grid() #pop up donde se muestra la info PROXUMAMENTE
-        Label(ver_rese, text="El dia:"+fecha).grid()
-        Label(ver_rese, text="A las:"+hora+"pm").grid()
-        Label(ver_rese, text="Su zona es:\n"+zona).grid()
-        Label(ver_rese, text="Mesa para "+str(cupos)+" personas").grid()
+        Label(ver_rese, text="Información de su reservación:").grid(column=0, row=0, pady=10) #pop up donde se muestra la info PROXUMAMENTE
+        Label(ver_rese, text="ID de reservación: " + str(id_reserva)).grid(column=0, row=1, pady=10)
+        Label(ver_rese, text="Fecha y hora: "+ str(fecha_hora)).grid(column=0, row= 2, pady=10)
+        Label(ver_rese, text="Su zona es: "+ str(zona)).grid(column=0, row=3, pady=10)
+        Label(ver_rese, text="Mesa para " + str(personas) + " personas").grid(column=0, row=4, pady=10)
         blanklabel(ver_rese)
-        Button(crear_rese, text="Volver",
+        Button(ver_rese, text="Volver",
                 heigh="3",
                 font="18", bg= "#BCEBE0",
-                command=crear_rese.destroy).grid(padx=80, sticky="NSEW")
+                command=ver_rese.destroy).grid(column=0, row = 5,padx=80, sticky="NSEW")
     
 def menu_calificacion(user): #Interfaz de las calificaciones
     global pantalla_cali #pantalla cali = pantalla calificaciones

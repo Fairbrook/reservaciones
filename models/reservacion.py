@@ -33,18 +33,15 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
     sql = "SELECT (n_mesas_z{}) FROM restaurante where id_restaurante = {}".format(zona_db, id_restaurante)
     cursor.execute(sql)    
     limite_cupos = cursor.fetchone()[0]
-    print("LIMITE CUPOS ", limite_cupos)
 
     #1.- Buscamos en la bd si existe alguna reservacion ACTIVA de este cliente, en cuanto encuentra una, termina y devuelve resultado
     sql_validacion1 = "SELECT COUNT(*) from reservacion where id_cliente = {} and estatus = 'A' Limit 1".format(id_cliente)
     cursor.execute(sql_validacion1)
     no_valido_1 = cursor.fetchone()[0]
-    print("NO VALIDO 1= ", no_valido_1)
 
     if no_valido_1 == 1: #Si existió una reservación ACTIVA, no se acepta
         return False, "Este usuario ya cuenta con una reservación activa"
     else:
-        print("BIEN, no hay activo")
         #Ahora buscaremos que la última reservación terminada (ya sea TERMINADA o ASISTIDA) haya sido hace
         #más de 24 hrs, de otra manera no permitimos reservación
         sql_ultima_reservacion = '''Select MAX(hora_fecha) from reservacion where 
@@ -68,7 +65,6 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
             return False, '''Su última reservación terminó hace menos de 24 horas\n
             Vuelva una vez se haya cumplido el plazo mínimo de espera\nSu última reservación terminó: {}'''.format(termino_reserva)
         else:
-            print("NO HAY RESERVACION 24hrs :)")
             sql_validacion3 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') < now()".format(fecha_hora_db)
             cursor.execute(sql_validacion3)
             no_valido_3 = cursor.fetchone()[0]
@@ -77,7 +73,6 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
             if no_valido_3:
                 return False, "La fecha y hora de esta reservación ya pasaron"
             else:
-                print("Si es a futuro")
                 sql_validacion4 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') > Date_add(now(), interval 8 day)".format(fecha_hora_db)
                 cursor.execute(sql_validacion4)
                 no_valido_4 = cursor.fetchone()[0]
@@ -87,7 +82,6 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
                 if no_valido_4:
                     return False, "La anticipación máxima de una reservación es de una semana"  
                 else:
-                    print("BUENA anticipacion")
                     sql_validacion_lugar = '''SELECT COUNT(*) from reservacion where hora_fecha = 
                                                 str_to_date('{}', '%d/%m/%y %H:%i') and
                                                 zona = {} and id_restaurante = {} and estatus = 'A' '''.format(fecha_hora_db,
@@ -96,14 +90,10 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
                     lugares_ocupados = cursor.fetchone()[0]
                     cursor.close()
 
-                    print("CUPOS OCUPADOS: ", lugares_ocupados)
-
                     #POR ÚLTIMO, COMPROBAMOS QUE SI HAYA CUPOS DISPONIBLES PARA ESA ZONA, HORA Y FECHA
                     if lugares_ocupados >= limite_cupos:
-                        print("ERROR CUPOS XXX")
                         return False, "Ya no quedan lugares disponible para dicha zona en esta fecha y hora"
                     else:
-                        print("VAMOS A RESERVA")
                         #Todo salio bien, se agenda reservacion 
                         blob_qr = generar_qr(id_cliente, fecha_hora_db, zona_db)
                         resultado, mensaje = insertar_reservacion_bd(fecha_hora_db, cupos, zona_db, id_cliente, id_restaurante, blob_qr)
@@ -133,7 +123,6 @@ def cancelar_reservacion(id_cliente):
         registro = cursor.fetchone()
         cursor.close()        
 
-        print("registro: ", registro)
         if registro == None:
             messagebox.showerror("Error", "Usted no cuenta con ninguna reservación activa")
         else:
@@ -143,8 +132,6 @@ def cancelar_reservacion(id_cliente):
             cursor.execute(sql_fecha)
             fecha_hora_cancelar = cursor.fetchone()[0]
             cursor.close()
-
-            print("Reservacion - hora", id_cancelar, " ", fecha_hora_cancelar)
 
             cursor = db.cursor()
             sql = '''Update reservacion set estatus = 'C' where id_reservacion = {}'''.format(id_cancelar)
@@ -160,7 +147,6 @@ def generar_qr(id_cliente, fecha_hora, zona):
     path_qr = os.getcwd() + '\imagenes' + "\qr reservacion cliente {}.png".format(id_cliente)
 
     string_codigo = str(id_cliente) + "-" + str(fecha_hora) + "-" + str(zona)
-    print("CODIGO: ", string_codigo) 
     imagen_qr = qrcode.make(string_codigo)
     archivo_qr = open(path_qr, 'wb')
     imagen_qr.save(archivo_qr)
@@ -192,3 +178,18 @@ def consulta_reservacion_qr(id_cliente):
     else:
         qr_blob = qr_blob[0]
         return True, qr_blob
+
+def consultar_reservacion(id_cliente):
+
+    cursor = db.cursor()
+
+    sql = '''SELECT id_reservacion, hora_fecha, zona, n_personas 
+    from reservacion where id_cliente = {} and estatus = 'A' '''.format(id_cliente)
+    cursor.execute(sql)
+    registro = cursor.fetchone()
+    cursor.close()
+
+    if registro == None:
+        return None
+    else:
+        return registro
