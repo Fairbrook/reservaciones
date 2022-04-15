@@ -129,7 +129,7 @@ def menu_cliente(id_cliente): #Menu a desplegar a todos estos usuarios de tipo c
                   command=ver_info).grid(padx=60, sticky="NSEW")
     blanklabel(pantalla_mc)
     #Boton llamado reserva y sus caracteristicas
-    reserva = Button(pantalla_mc, text="Reservar",
+    reserva = Button(pantalla_mc, text="Reservaciones",
                      height="3", width="300",
                      bg= "#BCEBE0",
                      command=lambda:menu_reservaciones(0,id_cliente)).grid(padx=60, sticky="NSEW")
@@ -250,15 +250,19 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     #Se crea el frame donde se modificara la informacion
     frame_info = Frame(pantalla_modificar_info, bg= "white")
     frame_info.grid(column=0, row=1)
+    #Frame donde estarán los spinbox de la información (cupos, horario inicio y horario cierre)
+    frame_variables = Frame(pantalla_modificar_info, bg = "white")
+    frame_variables.grid(column=0, row=2)
+    #Frame para botones
     frame_boton = Frame(pantalla_modificar_info, bg="white")
-    frame_boton.grid(column=0, row=2)
+    frame_boton.grid(column=0, row=3)
     #Texto que contendra el frame
-    texto_info = Text(frame_info, height=30, width=70, font=("Lato", 10))
+    texto_info = Text(frame_info, height=22, width=70, font=("Lato", 10))
     texto_info.grid(column=0,row=0, padx=20,pady=10)
     #Implementacion de la barra de scroll tanto vertical como horizontal
     ladoy = Scrollbar(frame_info, orient =VERTICAL)
     ladox = Scrollbar(frame_info, orient= HORIZONTAL)
-    #Espaciado entre las casillas de la tabla
+    #Ubicamos los scroll en panntalla
     ladox.grid(column=0, row = 1, sticky='ew') 
     ladoy.grid(column = 1, row = 0, sticky='ns')
     #Configura el texto junto al scroll
@@ -426,7 +430,7 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
         uso_h=uso_h+1 #Cambio de bandera
     seleccion_hora = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
         state="readonly", #No se puede editar por el usuario
-        values=["9:00", "10:00", "11:00", "12:00", "13:00", "14:00","15:00", "16:00", "17:00", "18:00"]) #Opciones
+        values=["9:00", "11:00", "13:00", "15:00", "17:00", "19:00"]) #Opciones
     seleccion_hora.grid(column=1, sticky="NSEW") #Lo de posicionamiento
     seleccion_hora.bind("<<ComboboxSelected>>",hora_nueva) #Cambia conforme las selecciones
     

@@ -62,8 +62,7 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
             no_valido_2 = cursor.fetchone()[0]
 
         if no_valido_2:
-            return False, '''Su última reservación terminó hace menos de 24 horas\n
-            Vuelva una vez se haya cumplido el plazo mínimo de espera\nSu última reservación terminó: {}'''.format(termino_reserva)
+            return False, '''Su última reservación terminó hace menos de 24 horas. Vuelva una vez se haya cumplido el plazo mínimo de espera. Su última reservación terminó: {}'''.format(termino_reserva)
         else:
             sql_validacion3 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') < now()".format(fecha_hora_db)
             cursor.execute(sql_validacion3)
@@ -146,7 +145,7 @@ def generar_qr(id_cliente, fecha_hora, zona):
     
     path_qr = os.getcwd() + '\imagenes' + "\qr reservacion cliente {}.png".format(id_cliente)
 
-    string_codigo = str(id_cliente) + "-" + str(fecha_hora) + "-" + str(zona)
+    string_codigo = "Cliente: " + str(id_cliente) + " Fecha_hora: " + str(fecha_hora) + " Zona: " + str(zona)
     imagen_qr = qrcode.make(string_codigo)
     archivo_qr = open(path_qr, 'wb')
     imagen_qr.save(archivo_qr)
