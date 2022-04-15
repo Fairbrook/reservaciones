@@ -1,4 +1,5 @@
 # -- coding: utf-8 --
+from msilib import text
 from re import L
 import tkinter
 from tkinter import  messagebox
@@ -11,6 +12,7 @@ from PIL import Image, ImageTk
 #from models.administrador import consulta_BD
 import hashlib
 from models.administrador import login_admin
+from models.restaurante import set_cupos_zonas_db, set_horarios_db
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
 from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr
@@ -238,27 +240,49 @@ def ver_info():#Funcion para ver la informacion
 
 def modificar_info(): #Funcion para el administrador, con el cual podra modificar el archivo
     #COnfiguracion previa al crear la ventana
-    global pantalla_modificar_info 
+
+    global pantalla_modificar_info
     pantalla_modificar_info = Toplevel()
-    pantalla_modificar_info.geometry("590x650")
+    pantalla_modificar_info.geometry("630x650")
     pantalla_modificar_info.config(bg="white")
     pantalla_modificar_info.title("Modificar información")
     pantalla_modificar_info.resizable(0,0)
     pantalla_modificar_info = Frame(pantalla_modificar_info, bg = "white")
     pantalla_modificar_info.grid(column=0,row=0)
     Label(pantalla_modificar_info, text="Información", font=("Arial", 20), fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
-    #Se crea el frame donde se modificara la informacion
+    #Se crea el frame donde se modificara la informacion general (sin incluir horarios ni cupos)
     frame_info = Frame(pantalla_modificar_info, bg= "white")
     frame_info.grid(column=0, row=1)
+    #Se crea frame donde se visualizan cupos y horarios, es en un lugar diferente porque son variables indepenndientes
+    frame_horarios_cupos = Frame(pantalla_modificar_info, bg="white")
+    frame_horarios_cupos.grid(column=0, row=2)
     #Frame donde estarán los spinbox de la información (cupos, horario inicio y horario cierre)
     frame_variables = Frame(pantalla_modificar_info, bg = "white")
-    frame_variables.grid(column=0, row=2)
+    frame_variables.grid(column=0, row=3)
+
+    entry_z1 = IntVar() #Entry Spinbox zona 1
+    entry_z2 = IntVar() #Entry Spinbox zona 2
+    entry_h1 = IntVar() #Entry Spinbox horario de inicio
+    entry_h2 = IntVar() #Entry Spinbox ultimo horario
+
+    Label(frame_variables, text="Seleccione el primer y último horario disponible para el cliente (Formato 24hrs)", font=("Arial", 10), bg="white").grid(column=0, row=0, columnspan=4, pady=10)
+    Label(frame_variables,text="1er horario (Formato 24hrs): ", font=("Lato", 8), bg="white").grid(column=0, row=1)
+    spin_inicio = Spinbox(frame_variables, textvariable= entry_h1, from_=8, to=20).grid(column=1, row=1, padx=5)
+    Label(frame_variables,text="último horario (Formato 24hrs): ", font=("Lato", 8), bg="white").grid(column=2, row=1)
+    spin_fin = Spinbox(frame_variables, textvariable= entry_h2 ,from_=10, to=22).grid(column=3, row=1, padx=5)
+    Label(frame_variables, text="Mesas en zona interior: ", font=("Lato", 8), bg="white").grid(column=0, row=2, padx=5, pady=8)
+    spin_zona1 = Spinbox(frame_variables, textvariable=entry_z1 ,from_=1, to=50).grid(column=1, row=2, padx=5)
+    Label(frame_variables, text="Mesas en Green Garden: ", font=("Lato", 8), bg="white").grid(column=2, row=2, padx=5, pady=8)
+    spin_zona2 = Spinbox(frame_variables, textvariable=entry_z2 ,from_=1, to=50).grid(column=3, row=2, padx=5)
     #Frame para botones
     frame_boton = Frame(pantalla_modificar_info, bg="white")
-    frame_boton.grid(column=0, row=3)
-    #Texto que contendra el frame
-    texto_info = Text(frame_info, height=22, width=70, font=("Lato", 10))
+    frame_boton.grid(column=0, row=4)
+    #Texto que contendra info general
+    texto_info = Text(frame_info, height=15, width=70, font=("Lato", 10))
     texto_info.grid(column=0,row=0, padx=20,pady=10)
+    #Texto que contendrá info sobre cupos y horarios
+    texto_horarios_cupos = Text(frame_horarios_cupos, height=4, width=70, font=("Lato", 10))
+    texto_horarios_cupos.grid(column=0, row=0, padx=20,pady=10)
     #Implementacion de la barra de scroll tanto vertical como horizontal
     ladoy = Scrollbar(frame_info, orient =VERTICAL)
     ladox = Scrollbar(frame_info, orient= HORIZONTAL)
@@ -270,6 +294,7 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     texto_info.config(xscrollcommand= ladox.set)
     ladoy.config(command=texto_info.yview)
     ladox.config(command=texto_info.xview)
+
     #Funcion para mostrar la informacion que existe actualmente
     def mostrar_info_actual():
         archivo = open("informacion.txt", 'r') #R de read
@@ -278,12 +303,27 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
             texto_info.insert("end", linea)
         
         archivo.close()
+
+        
     
     #Funcion para modificar la informacion que esta mostrada
     def actualizar_info():
         archivo = open("informacion.txt", 'w') #W de write
         nuevo_texto = texto_info.get(1.0, "end")
         archivo.write(nuevo_texto)
+
+        primer_horario = entry_h1.get()
+        ultimo_horario = entry_h2.get()
+        cupos_zona1 = entry_z1.get()
+        cupos_zona2 = entry_z2.get()
+
+        if primer_horario > ultimo_horario:
+            pop_ups("El horario de inicio no puede ser más tarde que el último horario disponible")
+        else:
+            set_cupos_zonas_db(cupos_zona1, cupos_zona2, 1) #id restaurante es siempre 1 en nuestro proyecto
+            set_horarios_db(primer_horario, ultimo_horario, 1)
+
+
     #Botones para ejecutar las dos funciones previas
     Button(frame_boton, text = "Actualizar info",
             bg= "#47525E", fg="white", 

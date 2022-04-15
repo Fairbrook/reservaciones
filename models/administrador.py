@@ -24,3 +24,4 @@ def login_admin(user_name, password):
     cur.close()
     #devolvemos los registros
     return admin
+
