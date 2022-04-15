@@ -61,7 +61,7 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     #boton para iniciar sesion
     Button(pantalla, text='Iniciar Sesión',
              height="2", width="20",
-             bg= "#BCEBE0",
+             bg= "#30B68B",
              command=validar).grid(padx=60, sticky="NSEW")
     blanklabel(pantalla)
     #boton para registrar
@@ -106,7 +106,7 @@ def registro(): #Se despliega encima de iniciar sesion para dar un registro
     #Registra al nuevo usuario y contraseña
     Button(pantalla_r, text='REGISTRAR',
              height="3", width="20",
-             bg= "#BCEBE0",
+             bg= "#30B68B",
              command=registrar_bd).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_r)
@@ -335,8 +335,15 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
                bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para Ver las reservaciones totales
         
         blanklabel(pantalla_rese)
+
+        Button(pantalla_rese, text="Modificar parametros",
+               height="3", width="300",
+               bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para Ver las reservaciones totales
+        
+        blanklabel(pantalla_rese)
     volver = Button(pantalla_rese, text="Volver",
                     height="2", width="15",
+                    bg= "#47525E", fg="white",
                     command=pantalla_rese.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
 
 def codigo_reservacion_pantalla(id_cliente): #Funcion para obtener el codigo QR de la reservacion (TRATAR DE HACER UN GENERADOR)
@@ -395,18 +402,19 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     crear_rese = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
     crear_rese.geometry("450x500")
     crear_rese.title("Crear reservacion")
+    #reiniciamos variables
     uso_h = 0
     uso_z = 0
     uso_f = 0
     #Configuracion de escalabilidad
-    rowconfigure(crear_rese,10)
+    rowconfigure(crear_rese,11)
     columnconfigure(crear_rese,3)
     #Calendario de seleccion de día para la reserva
     Label(crear_rese, text="Seleccione el día:", 
           font="15,bold").grid(column=1) #Seleccion del día
     
     dia_rese = Button(crear_rese, text="Día:",#Boton que indica zona de reservacion adentro
-                      font="18,bold", bg= "#BCEBE0",
+                      font="18,bold", bg= "#37E3AC",
                       command=Calendario).grid(row=1, column=1, sticky="NSEW")
     #Hora de reserva
     Label(crear_rese, text="Seleccione la hora:", 
@@ -414,14 +422,13 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     
     def hora_nueva(event): #Funcion para otorgar la hora a esa variable
         global uso_h
-        hora = seleccion_hora.get()
-        uso_h=uso_h+1
+        hora = seleccion_hora.get() #Obtiene el valor del combox
+        uso_h=uso_h+1 #Cambio de bandera
     seleccion_hora = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
         state="readonly", #No se puede editar por el usuario
         values=["9:00", "10:00", "11:00", "12:00", "13:00", "14:00","15:00", "16:00", "17:00", "18:00"]) #Opciones
     seleccion_hora.grid(column=1, sticky="NSEW") #Lo de posicionamiento
     seleccion_hora.bind("<<ComboboxSelected>>",hora_nueva) #Cambia conforme las selecciones
-    
     
     #Zona de reserva
     Label(crear_rese, text="Seleccione la zona:", 
@@ -429,8 +436,8 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     
     def zona_nueva(event): #Funcion para otorgar la hora a esa variable
         global uso_z
-        zona = seleccion_zona.get()
-        uso_z=uso_z+1
+        zona = seleccion_zona.get() #Obtiene el valor del combox
+        uso_z=uso_z+1 #Cambio de bandera
     seleccion_zona = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
             state="readonly", #No se puede editar por el usuario
             values=["Seleccione una zona", "Green Garden", "Zona Interior"]) #Opciones
@@ -469,8 +476,13 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     blanklabel(crear_rese)
     reservar = Button(crear_rese, text="Hacer reservación",
                       heigh="3",
-                      font="18", bg= "#BCEBE0",
+                      font="18", bg= "#30B68B",
                       command=lambda:validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos)).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
+    
+    volver = Button(pantalla_rese, text="Volver",
+                    height="2", width="15",
+                    bg= "#47525E", fg="white",
+                    command=crear_rese.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
     
     
 def ver_reservacion(id_cliente): #Funcion para Ver la Reservacion
@@ -505,8 +517,8 @@ def ver_reservacion(id_cliente): #Funcion para Ver la Reservacion
         Label(ver_rese, text="Mesa para " + str(personas) + " personas").grid(column=0, row=4, pady=10)
         blanklabel(ver_rese)
         Button(ver_rese, text="Volver",
-                heigh="3",
-                font="18", bg= "#BCEBE0",
+                heigh="3", font="18",
+                bg= "#47525E", fg="white",
                 command=ver_rese.destroy).grid(column=0, row = 5,padx=80, sticky="NSEW")
     
 def menu_calificacion(user): #Interfaz de las calificaciones
@@ -544,6 +556,7 @@ def menu_calificacion(user): #Interfaz de las calificaciones
     blanklabel(pantalla_cali)
     volver = Button(pantalla_cali, text="Volver",
                     height="2", width="15",
+                    bg= "#47525E", fg="white",
                     command=pantalla_cali.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
 
 def crear_calificacion():
@@ -589,12 +602,13 @@ def crear_calificacion():
     blanklabel(pantalla_crear_cali)
     submit = Button(pantalla_crear_cali, text="Registrar calificacion",
                     height="3", width="20",
-                    bg= "#BCEBE0",
+                    bg= "#30B68B",
                     command=pantalla_crear_cali.destroy).grid(column=1)
     Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3, padx=60, sticky="NSEW")
     
     volver = Button(pantalla_crear_cali, text="Volver",
                     height="2", width="15",
+                    bg= "#47525E", fg="white",
                     command=pantalla_crear_cali.destroy).grid(column=1, padx=80, sticky="NSEW") #Boton para regresar al menu de calificar
     
 # Funcion para hacer validaciones e iniciar sesión
