@@ -1,3 +1,4 @@
+
 # -- coding: utf-8 --
 from msilib import text
 from re import L
@@ -12,7 +13,7 @@ from PIL import Image, ImageTk
 #from models.administrador import consulta_BD
 import hashlib
 from models.administrador import login_admin
-from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db
+from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db, get_horarios_formateados
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
 from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr
@@ -236,6 +237,15 @@ def ver_info():#Funcion para ver la informacion
     for linea in archivo:
         texto_info.insert("end", linea) #Declaramos las lineas y las guardamos
     
+    horarios = get_horarios_db(1)
+    inicio = horarios[0]
+    ultimo = horarios[1]
+    cupos = get_cupos_zonas_db(1)
+    zona1 = cupos[0]
+    zona2 = cupos[1]
+
+    texto_info.insert("end", "Horario: de "+str(inicio)+" a "+str(ultimo)+" horas\n" )
+    texto_info.insert("end", "Cupos:\nZona interior cuenta con "+str(zona1) + " mesas" + "\nGreen garden cuenta con "+str(zona2)+" mesas")    
     texto_info.config(state='disabled') #El usuario no puede hacerle nada al texto, solo se muestra
 
 def modificar_info(): #Funcion para el administrador, con el cual podra modificar el archivo
@@ -266,14 +276,22 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     entry_h2 = IntVar() #Entry Spinbox ultimo horario
 
     Label(frame_variables, text="Seleccione el primer y último horario disponible para el cliente (Formato 24hrs)", font=("Arial", 10), bg="white").grid(column=0, row=0, columnspan=4, pady=10)
+
+    opciones_spin_inicio = (8,10,12,14,16,18,20) #Opciones que tendrán los spinbox de horarios
+    opciones_spin_fin = (10,12,14,16,18,20,22)
+
     Label(frame_variables,text="1er horario (Formato 24hrs): ", font=("Lato", 8), bg="white").grid(column=0, row=1)
-    spin_inicio = Spinbox(frame_variables, textvariable= entry_h1, from_=8, to=20).grid(column=1, row=1, padx=5)
+    spin_inicio = Spinbox(frame_variables, textvariable= entry_h1, values=opciones_spin_inicio).grid(column=1, row=1, padx=5)
+
     Label(frame_variables,text="último horario (Formato 24hrs): ", font=("Lato", 8), bg="white").grid(column=2, row=1)
-    spin_fin = Spinbox(frame_variables, textvariable= entry_h2 ,from_=10, to=22).grid(column=3, row=1, padx=5)
+    spin_fin = Spinbox(frame_variables, textvariable= entry_h2 ,values=opciones_spin_fin).grid(column=3, row=1, padx=5)
+
     Label(frame_variables, text="Mesas en zona interior: ", font=("Lato", 8), bg="white").grid(column=0, row=2, padx=5, pady=8)
     spin_zona1 = Spinbox(frame_variables, textvariable=entry_z1 ,from_=1, to=50).grid(column=1, row=2, padx=5)
+    
     Label(frame_variables, text="Mesas en Green Garden: ", font=("Lato", 8), bg="white").grid(column=2, row=2, padx=5, pady=8)
     spin_zona2 = Spinbox(frame_variables, textvariable=entry_z2 ,from_=1, to=50).grid(column=3, row=2, padx=5)
+
     #Frame para botones
     frame_boton = Frame(pantalla_modificar_info, bg="white")
     frame_boton.grid(column=0, row=4)
@@ -318,11 +336,13 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     
     #Funcion para modificar la informacion que esta mostrada
     def actualizar_info():
+
+        mostrar_info_actual()
         archivo = open("informacion.txt", 'w') #W de write
         nuevo_texto = texto_info.get(1.0, "end")
         archivo.write(nuevo_texto)
         archivo.close()
-        
+
         primer_horario = entry_h1.get()
         ultimo_horario = entry_h2.get()
         cupos_zona1 = entry_z1.get()
@@ -475,13 +495,16 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     Label(crear_rese, text="Seleccione la hora:", 
           font="15,bold").grid(column=1) #Seleccion de zonas
     
+    values_horarios = get_horarios_formateados(1)
+    print(values_horarios)
+
     def hora_nueva(event): #Funcion para otorgar la hora a esa variable
         global uso_h
         hora = seleccion_hora.get() #Obtiene el valor del combox
         uso_h=uso_h+1 #Cambio de bandera
     seleccion_hora = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
         state="readonly", #No se puede editar por el usuario
-        values=["9:00", "11:00", "13:00", "15:00", "17:00", "19:00"]) #Opciones
+        values=values_horarios) #Opciones
     seleccion_hora.grid(column=1, sticky="NSEW") #Lo de posicionamiento
     seleccion_hora.bind("<<ComboboxSelected>>",hora_nueva) #Cambia conforme las selecciones
     

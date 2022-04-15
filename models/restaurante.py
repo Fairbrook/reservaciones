@@ -57,3 +57,21 @@ def get_cupos_zonas_db(id_restaurante):
         messagebox.showerror("ERROR", "Este restaurante no existe")
 
 
+def get_horarios_formateados(id_restaurante):
+
+    horarios = get_horarios_db(id_restaurante)
+
+    inicio = horarios[0]
+    fin = horarios[1]
+
+    values = []
+
+    current = inicio
+
+    while current<=fin:
+
+        horario_formateado = str(current) + ":00"
+        values.append(horario_formateado)
+        current += 2 #Saltamos de dos en dos horas
+    
+    return values
