@@ -513,12 +513,13 @@ def validar_cupos_aux_todos(fecha,hora,zona): #Por si se ocupa la reserva, valid
         
 
         resultado_cup = cupos_disp(fecha, hora, zona)
+        
         print(resultado_cup)
 
 
 
 def cupos_disponibles(id_cliente):
-    global cupos_dis,selec_hora, selec_zona, uso_h1, uso_f1, uso_z1
+    global cupos_dis,selec_hora, selec_zona, uso_h1, uso_f1, uso_z1,frame_calendario
     cupos_dis = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
     cupos_dis.geometry("550x600")
     cupos_dis.title("Cupos disponibles")
@@ -654,6 +655,7 @@ def cupos_disponibles(id_cliente):
                 validar_cupos_aux_todos(horarios,fecha1,zona3)
                 
                 a = resultado_cup
+                
                 c = hora_values+str(a)
                 tabla.insert('',i, text="", values = (hora_values,zona2,a))
                 i=i+1
@@ -692,7 +694,7 @@ def Calendario_cupos():
         fecha1=cale.get_date()
         calendario_cupos.destroy()
         uso_f1=uso_f1+1
-        dia_cupos = Button(cupos_dis, text="Día: "+fecha1,#Boton que indica zona de reservacion adentro
+        dia_cupos = Button(frame_calendario, text="Día: "+fecha1,#Boton que indica zona de reservacion adentro
                     font="18,bold", bg= "#BCEBE0",
                     command=Calendario_cupos,width = 20).grid(row=3, column=0)
     Button(calendario_cupos, text="Definir Fecha", command=definir_fecha_cupos).grid()
