@@ -94,10 +94,73 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
                         return False, "Ya no quedan lugares disponible para dicha zona en esta fecha y hora"
                     else:
                         #Todo salio bien, se agenda reservacion 
+                        cupos_disponibles = limite_cupos - lugares_ocupados
+                        print("Cupos disponibles: ",cupos_disponibles)
+    
                         blob_qr = generar_qr(id_cliente, fecha_hora_db, zona_db)
                         resultado, mensaje = insertar_reservacion_bd(fecha_hora_db, cupos, zona_db, id_cliente, id_restaurante, blob_qr)
+   
                         return resultado, mensaje
-  
+'''def cupos_general():
+     #Consultamos en la BD cuál es el número de mesas en total que se pueden ocupar (o sea, nuestro límite de reservaciones)
+    #en la zona que requiere usuario
+    cursor = db.cursor()
+    sql = "SELECT (n_mesas_z1) FROM restaurante where id_restaurante = {}".format(id_restaurante=1)
+    cursor.execute(sql)    
+    limite_cupos_general = cursor.fetchone()
+    return limite_cupos_general
+   '''
+def cupos_disp(fecha,hora,zona):
+    #Damos formato adecuado a fecha y zona para interactuar con DB 
+    fecha_hora_db = fecha + " " + hora
+
+    if zona == "Zona Interior" :  #Zona interior será identificada como 1 y la Green como 2
+        zona_db = 1
+    else:
+        zona_db = 2
+    
+    id_restaurante = 1 #Solo tenemos un restaurante, siempre será el número 1
+
+    print("FECHA HORA DB: ",fecha_hora_db)
+    print("ZONA DB: ",zona_db)
+    
+
+    #Consultamos en la BD cuál es el número de mesas en total que se pueden ocupar (o sea, nuestro límite de reservaciones)
+    #en la zona que requiere usuario
+    cursor = db.cursor()
+    sql = "SELECT (n_mesas_z{}) FROM restaurante where id_restaurante = {}".format(zona_db, id_restaurante)
+    cursor.execute(sql)    
+    limite_cupos = cursor.fetchone()[0]
+
+    sql_validacion3 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') < now()".format(fecha_hora_db)
+    cursor.execute(sql_validacion3)
+    no_valido_3 = cursor.fetchone()[0]
+
+            #Comprobamos que la reservacion sea en una fecha/hora futura
+    if no_valido_3:
+         return False, "La fecha y hora de esta reservación ya pasaron"
+    else:
+        sql_validacion4 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') > Date_add(now(), interval 8 day)".format(fecha_hora_db)
+        cursor.execute(sql_validacion4)
+        no_valido_4 = cursor.fetchone()[0]
+                
+
+            #Ahora comprobamos que la reserva no esté más lejana que una semana
+        if no_valido_4:
+                return False, "La anticipación máxima de una reservación es de una semana"  
+        else:
+                sql_validacion_lugar = '''SELECT COUNT(*) from reservacion where hora_fecha = 
+                                                str_to_date('{}', '%d/%m/%y %H:%i') and
+                                                zona = {} and id_restaurante = {} and estatus = 'A' '''.format(fecha_hora_db,
+                                                zona_db, id_restaurante)
+                cursor.execute(sql_validacion_lugar)
+                lugares_ocupados = cursor.fetchone()[0]
+                cursor.close()
+
+   
+    #POR ÚLTIMO, COMPROBAMOS QUE SI HAYA CUPOS DISPONIBLES PARA ESA ZONA, HORA Y FECHA
+                cupos_disponibles = limite_cupos - lugares_ocupados
+                return cupos_disponibles
 def insertar_reservacion_bd(fechayhora, personas, zona, id_cliente, id_restaurante, qr):
 
     try:
