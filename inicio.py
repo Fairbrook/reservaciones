@@ -20,12 +20,13 @@ from models.reservacion import consultar_reservacion, validar_reservacion, cance
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
-    global rol, cupos, reserva, estrellas, zona, fecha, hora, uso_f, uso_h, uso_z
+    global cupos_max, cupos, reserva, estrellas, zona, fecha, hora, uso_f, uso_h, uso_z
     pantalla=Tk() #declaramos la pantalla principal
     pantalla.geometry("300x350") #tamaño de ventana
     pantalla.title("Login") #titulo de ventana
     user_verify=StringVar() #indicamos el tipo de variable
     password_verify=StringVar() #indicamos el tipo de variable
+    cupos_max=IntVar()
     cupos=IntVar() #indicamos el tipo de variable
     reserva=IntVar() #indicamos el tipo de variable
     uso_f=IntVar()
@@ -35,6 +36,7 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     fecha=StringVar() #indicamos el tipo de variable
     hora=StringVar() #indicamos el tipo de variable
     
+    cupos_max=6
     cupos=1 #inicializamos (TEMPORALES PARA PRUEBAS)
     uso_f=0
     uso_h=0
@@ -209,6 +211,10 @@ def ver_info():#Funcion para ver la informacion
     pantalla_viewinfo.config(bg="white") #Fondo de la ventana
     pantalla_viewinfo.title("Visualizar información")
     pantalla_viewinfo.resizable(0,0)
+
+    rowconfigure(frame_info, 2)
+    columnconfigure(frame_info, 2)
+
     #Se declara un frame de fondo blanco
     frame_titulo = Frame(pantalla_viewinfo, bg = "white") 
     frame_titulo.grid(column=0,row=0)
@@ -250,6 +256,9 @@ def ver_info():#Funcion para ver la informacion
 
 def modificar_info(): #Funcion para el administrador, con el cual podra modificar el archivo
     #COnfiguracion previa al crear la ventana
+
+    rowconfigure(frame_info, 2)
+    columnconfigure(frame_info, 2)
 
     global pantalla_modificar_info
     pantalla_modificar_info = Toplevel()
@@ -336,6 +345,9 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     
     #Funcion para modificar la informacion que esta mostrada
     def actualizar_info():
+
+        rowconfigure(frame_boton, 1)
+        columnconfigure(frame_boton, 2)
 
         mostrar_info_actual()
         archivo = open("informacion.txt", 'w') #W de write
@@ -531,13 +543,13 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
                           font="18").grid(row=7, column=1) #Estara en el centro, son los cupos existentes
     
     def cupos_disp(operacion): #Funcion para ver los cupos disponibles y delimitar los botones
-        global cupos
+        global cupos, cupos_max
         if operacion==0 and cupos>0: #Si es 0 o menor no se puede disminuir
             cupos=cupos-1
             mostrar_cupos = Label(crear_rese, text=str(cupos),
                                   height="2", width="4",
                                   font="18").grid(row=7, column=1) #muestra los cupos 
-        elif operacion==1 and cupos<6: #Si es 10 o mas no se puede aumentar
+        elif operacion==1 and cupos<cupos_max: #Si es 10 o mas no se puede aumentar
             cupos=cupos+1
             mostrar_cupos = Label(crear_rese, text=str(cupos),
                                   height="2", width="4",
@@ -557,7 +569,7 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
                       font="18", bg= "#30B68B",
                       command=lambda:validar_reservacion_aux(id_cliente,fecha,hora,zona,cupos)).grid(column=1, sticky="NSEW") #Boton para reservar y finalizar
     
-    volver = Button(pantalla_rese, text="Volver",
+    volver = Button(crear_rese, text="Volver",
                     height="2", width="15",
                     bg= "#47525E", fg="white",
                     command=crear_rese.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
