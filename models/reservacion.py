@@ -44,11 +44,13 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
     else:
         #Ahora buscaremos que la última reservación terminada (ya sea TERMINADA o ASISTIDA) haya sido hace
         #más de 24 hrs, de otra manera no permitimos reservación
-        sql_ultima_reservacion = '''Select MAX(hora_fecha) from reservacion where 
-                                    id_cliente = {} and estatus = 'S' or estatus = 'T' '''.format(id_cliente)
+
+        sql_ultima_reservacion = '''Select MAX(hora_fecha) from reservacion where (id_cliente = {} and estatus = 'S') 
+        or (estatus = 'T' and id_cliente = {}) '''.format(id_cliente, id_cliente)
+
         cursor.execute(sql_ultima_reservacion)
         fecha_ultima_reserva = cursor.fetchone()[0]
-
+        
         if fecha_ultima_reserva == None: #No tiene ninguna última reservación terminada 
             no_valido_2 = False
         else:
