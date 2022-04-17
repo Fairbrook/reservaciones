@@ -216,12 +216,14 @@ def menu_admin(id_admin): #Menu a desplegar al usuario de tipo admin
     pantalla_ma.mainloop()
 
 def ver_info():#Funcion para ver la informacion
-    global pantalla_viewinfo #Variables globales
+    global pantalla_viewinfo#Variables globales
     pantalla_viewinfo = Toplevel() #Que aparezca encima de cualquier menu
     pantalla_viewinfo.geometry("590x600")
     pantalla_viewinfo.config(bg="white") #Fondo de la ventana
     pantalla_viewinfo.title("Visualizar información")
     pantalla_viewinfo.resizable(0,0)
+    frame_info = Frame(pantalla_viewinfo, bg= "white")
+    frame_info.grid(column=0, row=1)
     rowconfigure(frame_info, 2)
     columnconfigure(frame_info, 2)
     #Se declara un frame de fondo blanco
@@ -230,8 +232,6 @@ def ver_info():#Funcion para ver la informacion
     #Etiqueta de titulo del frame
     Label(frame_titulo, text="Información", font=("Arial", 20),
           fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
-    frame_info = Frame(pantalla_viewinfo, bg= "white")
-    frame_info.grid(column=0, row=1)
     #Texto que contendra el frame
     texto_info = Text(frame_info, height=30, width=70, font=("Lato", 10))
     texto_info.grid(column=0,row=0, padx=20,pady=10)
@@ -265,9 +265,11 @@ def ver_info():#Funcion para ver la informacion
 
 def modificar_info(): #Funcion para el administrador, con el cual podra modificar el archivo
     #COnfiguracion previa al crear la ventana
+    global pantalla_modificar_info
+    frame_info = Frame(pantalla_modificar_info, bg= "white")
+    frame_info.grid(column=0, row=1)
     rowconfigure(frame_info, 2)
     columnconfigure(frame_info, 2)
-    global pantalla_modificar_info
     pantalla_modificar_info = Toplevel()
     pantalla_modificar_info.geometry("630x650")
     pantalla_modificar_info.config(bg="white")
@@ -277,8 +279,6 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     pantalla_modificar_info.grid(column=0,row=0)
     Label(pantalla_modificar_info, text="Información", font=("Arial", 20), fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
     #Se crea el frame donde se modificara la informacion general (sin incluir horarios ni cupos)
-    frame_info = Frame(pantalla_modificar_info, bg= "white")
-    frame_info.grid(column=0, row=1)
     #Se crea frame donde se visualizan cupos y horarios, es en un lugar diferente porque son variables indepenndientes
     frame_horarios_cupos = Frame(pantalla_modificar_info, bg="white")
     frame_horarios_cupos.grid(column=0, row=2)
