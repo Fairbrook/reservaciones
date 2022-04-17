@@ -1,3 +1,38 @@
-Interfaz reservaciones Calendario, personas, hora y zona
-Generador codigos QR
-Nueva ventana de reservaciones para el admin pueda cambiar
+Nueva ventana de reservaciones para el admin pueda cambiar parametros de la reservacion
+Mejorar calidad y colores de la interfaz
+Ayudar a Pau en lo que ocupe
+Ayudar a Kevin en lo que ocupe
+Mejorar la interfaz de crear calificacion y hacer funcional el "revelado" que son las lineas --- del medio 
+que mostraran el promedio de las estrellas otorgadas en las calificaciones
+Integrar lo necesario de las otras opciones
+Integrar las calificaciones para que el admin pueda hacer cosas de admin
+
+-------------------POR EL MOMENTO ES TODO-------------------------------------------------------------------
+────────────────────██████──────────
+──────────────────██▓▓▓▓▓▓██────────
+────────────────██▓▓▓▓▒▒▒▒██────────
+────────────────██▓▓▒▒▒▒▒▒██────────
+──────────────██▓▓▓▓▒▒▒▒██──────────
+──────────────██▓▓▒▒▒▒▒▒██──────────
+────────────██▓▓▓▓▒▒▒▒▒▒██──────────
+────────────████▒▒████▒▒██──────────
+────────────██▓▓▒▒▒▒▒▒▒▒██──────────
+──────────██────▒▒────▒▒██──────────
+──────────████──▒▒██──▒▒██──────────
+──────────██────▒▒────▒▒██──────────
+──────────██▒▒▒▒▒▒▒▒▒▒▒▒██──────────
+──────────████████████▒▒▒▒██────────
+────────██▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒██──────
+──────██▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒▒██────
+────██▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒▒▒▒██──
+──██▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒▒▒▒██
+██▓▓▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒▒▒▒██
+██▓▓▒▒▓▓▒▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒▒▒▒▓▓▓▓▒▒██
+██▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓██
+──████▐▌▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▐▌▐▌████──
+────██▐▌▐▌▌▌▌▌▌▌▌▌▐▌▐▌▐▌▐▌▌▌▐▌██────
+────██▌▌▐▌▐▌▌▌▐▌▌▌▌▌▐▌▌▌▌▌▌▌▌▌██────
+──────██▌▌▐▌▐▌▐▌▐▌▐▌▐▌▐▌▌▌▌▌██──────
+──────██▐▌▐▌▐▌████████▐▌▌▌▌▌██──────
+────────██▒▒██────────██▒▒██────────
+────────██████────────██████────────
