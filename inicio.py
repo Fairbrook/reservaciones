@@ -505,6 +505,10 @@ def validar_cupos_aux(fecha,hora,zona):
         if uso_f1 == 0 or uso_h1 == 0 or uso_z1 == 0: #Si falta un campo no se realiza la busqueda
             print("ERROR IF")
             messagebox.showwarning("Error", "Fallo en la busqueda\nTiene uno o mas campos vacios")
+            resultado_cup = ''
+            fecha = ''
+            zona = ''
+            hora = ''
         else:
             resultado_cup = cupos_disp(fecha, hora, zona)
         
