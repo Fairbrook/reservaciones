@@ -222,10 +222,12 @@ def ver_info():#Funcion para ver la informacion
     pantalla_viewinfo.config(bg="white") #Fondo de la ventana
     pantalla_viewinfo.title("Visualizar información")
     pantalla_viewinfo.resizable(0,0)
+    #Escalabiidad
+    rowconfigure(pantalla_viewinfo, 2)
+    columnconfigure(pantalla_viewinfo, 2)
+
     frame_info = Frame(pantalla_viewinfo, bg= "white")
     frame_info.grid(column=0, row=1)
-    rowconfigure(frame_info, 2)
-    columnconfigure(frame_info, 2)
     #Se declara un frame de fondo blanco
     frame_titulo = Frame(pantalla_viewinfo, bg = "white") 
     frame_titulo.grid(column=0,row=0)
@@ -266,10 +268,7 @@ def ver_info():#Funcion para ver la informacion
 def modificar_info(): #Funcion para el administrador, con el cual podra modificar el archivo
     #COnfiguracion previa al crear la ventana
     global pantalla_modificar_info
-    frame_info = Frame(pantalla_modificar_info, bg= "white")
-    frame_info.grid(column=0, row=1)
-    rowconfigure(frame_info, 2)
-    columnconfigure(frame_info, 2)
+
     pantalla_modificar_info = Toplevel()
     pantalla_modificar_info.geometry("630x650")
     pantalla_modificar_info.config(bg="white")
@@ -278,6 +277,13 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     pantalla_modificar_info = Frame(pantalla_modificar_info, bg = "white")
     pantalla_modificar_info.grid(column=0,row=0)
     Label(pantalla_modificar_info, text="Información", font=("Arial", 20), fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
+    #Esacalabilidad
+    rowconfigure(pantalla_modificar_info, 2)
+    columnconfigure(pantalla_modificar_info, 2)
+
+    frame_info = Frame(pantalla_modificar_info, bg= "white")
+    frame_info.grid(column=0, row=1)
+
     #Se crea el frame donde se modificara la informacion general (sin incluir horarios ni cupos)
     #Se crea frame donde se visualizan cupos y horarios, es en un lugar diferente porque son variables indepenndientes
     frame_horarios_cupos = Frame(pantalla_modificar_info, bg="white")
