@@ -138,7 +138,10 @@ def cupos_disp(fecha,hora,zona):
 
             #Comprobamos que la reservacion sea en una fecha/hora futura
     if no_valido_3:
-         return False, "La fecha y hora de esta reservación ya pasaron"
+         messagebox.showerror("error", "La fecha de reservación ya pasó")
+         fecha_venc = 'FC'
+         return fecha_venc #retornamos una variable mostrar el mensaje en el main
+         
     else:
         sql_validacion4 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') > Date_add(now(), interval 8 day)".format(fecha_hora_db)
         cursor.execute(sql_validacion4)
@@ -147,7 +150,9 @@ def cupos_disp(fecha,hora,zona):
 
             #Ahora comprobamos que la reserva no esté más lejana que una semana
         if no_valido_4:
-                return False, "La anticipación máxima de una reservación es de una semana"  
+                messagebox.showerror( "Error", "La anticipación máxima de busqueda es de una semana")
+                fecha_antic = 'NC'  
+                return fecha_antic 
         else:
                 sql_validacion_lugar = '''SELECT COUNT(*) from reservacion where hora_fecha = 
                                                 str_to_date('{}', '%d/%m/%y %H:%i') and

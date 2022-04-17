@@ -257,10 +257,10 @@ def ver_info():#Funcion para ver la informacion
     ultimo = horarios[1]
     cupos = get_cupos_zonas_db(1)
     zona1 = cupos[0]
-    zona2 = cupos[1]
+    op_zona = cupos[1]
 
     texto_info.insert("end", "Horario: de "+str(inicio)+" a "+str(ultimo)+" horas\n" )
-    texto_info.insert("end", "Cupos:\nZona interior cuenta con "+str(zona1) + " mesas" + "\nGreen garden cuenta con "+str(zona2)+" mesas")    
+    texto_info.insert("end", "Cupos:\nZona interior cuenta con "+str(zona1) + " mesas" + "\nGreen garden cuenta con "+str(op_zona)+" mesas")    
     texto_info.config(state='disabled') #El usuario no puede hacerle nada al texto, solo se muestra
 
 def modificar_info(): #Funcion para el administrador, con el cual podra modificar el archivo
@@ -343,11 +343,11 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
         ultimo = horarios[1]
         cupos = get_cupos_zonas_db(1)
         zona1 = cupos[0]
-        zona2 = cupos[1]
+        op_zona = cupos[1]
 
         texto_horarios_cupos.delete("1.0", "end")
         texto_horarios_cupos.insert("end", "Horario: de "+str(inicio)+" a "+str(ultimo)+" horas\n" )
-        texto_horarios_cupos.insert("end", "Cupos:\nZona interior cuenta con "+str(zona1) + " mesas" + "\nGreen garden cuenta con "+str(zona2)+" mesas")
+        texto_horarios_cupos.insert("end", "Cupos:\nZona interior cuenta con "+str(zona1) + " mesas" + "\nGreen garden cuenta con "+str(op_zona)+" mesas")
 
     
     #Funcion para modificar la informacion que esta mostrada
@@ -495,26 +495,44 @@ def codigo_reservacion_pantalla(id_cliente): #Funcion para obtener el codigo QR 
     #     Label(qr, image=codigoqr).pack() #Si tiene reserva, se muestra el QR
 
 #Funciones de cupos
-def validar_cupos_aux(fecha,hora,zona): #Por si se ocupa la reserva, validacion
-        global resultado_cup
+def validar_cupos_aux(fecha,hora,zona): 
+    global resultado_cup
+    try:
         fecha= cale.get_date() #Variables y su asignacion de procedencia
         zona = selec_zona.get()
         hora = selec_hora.get()
         
+        if uso_f1 == 0 or uso_h1 == 0 or uso_z1 == 0: #Si falta un campo no se realiza la busqueda
+            print("ERROR IF")
+            messagebox.showwarning("Error", "Fallo en la busqueda\nTiene uno o mas campos vacios")
+        else:
+            resultado_cup = cupos_disp(fecha, hora, zona)
+        
+    except:
+        print("ERROR EXCEPT")
+        messagebox.showwarning("Error", "Fallo en la busqueda\nCuenta con uno o más campos vacios")
+        
+    print(resultado_cup)
 
-        resultado_cup = cupos_disp(fecha, hora, zona)
-        print(resultado_cup)
-   
-def validar_cupos_aux_todos(fecha,hora,zona): #Por si se ocupa la reserva, validacion
-        global resultado_cup
+def validar_cupos_aux_todos(fecha,hora,zona): 
+    global resultado_cup
+        
+    try:
         fecha= cale.get_date() #Variables y su asignacion de procedencia
-        zona = zona2
+        zona = op_zona
         hora = hora_values
         
-
-        resultado_cup = cupos_disp(fecha, hora, zona)
+        if uso_f1 == 0: #Si falta campo de fecha no se realiza la busqueda
+            print("ERROR IF")
+            messagebox.showwarning("Error", "No seleccionó una fecha")
+        else:
+            resultado_cup = cupos_disp(fecha, hora, zona)
         
-        print(resultado_cup)
+    except:
+        print("ERROR EXCEPT")
+        messagebox.showwarning("Error", "Fallo en la busqueda\nCuenta con uno o más campos vacios")
+        
+    print(resultado_cup)
 
 
 
@@ -567,7 +585,6 @@ def cupos_disponibles(id_cliente):
     uso_h1 = 0
     uso_z1 = 0
     uso_f1 = 0
-    hola ="hola"
     #frame boton cupos disponibles
     frame_boton_cupos = Frame(cupos_dis)
     frame_boton_cupos.grid(column=0, row=8)
@@ -629,37 +646,42 @@ def cupos_disponibles(id_cliente):
         tabla.delete(*tabla.get_children())
         
         validar_cupos_aux(fecha1,hora1,zona1)
-        global a
-        a = resultado_cup
-        tabla.insert('', 1, text="", values = (selec_hora.get(),selec_zona.get(),a))
-        print(selec_zona.get())  
+        
+        cupos_individual = resultado_cup
+        if cupos_individual != 'FC' and cupos_individual != 'NC':
+            tabla.insert('', 1, text="", values = (selec_hora.get(),selec_zona.get(),cupos_individual))
+            print(selec_zona.get())  
        
     def boton_todos():
         tabla.delete(*tabla.get_children())
         global i,j
-        global hora_values,zona2
+        global hora_values,op_zona
         i=0
         j=0
-        zona_cup = "Zona Interior"
-        zona_cup1 = "Green Garden"
-        zona_cup3 = ["Zona Interior","Green Garden"]
+        zona_cupos = ["Zona Interior","Green Garden"]
        
-        for zona3 in zona_cup3:
-            zona2= zona_cup3[j] 
-            zona3 =zona2
+        for op_zona_cpy in zona_cupos:
+            op_zona= zona_cupos[j] 
+            op_zona_cpy =op_zona
             i=0
             for horarios in values_horarios:   
                 hora_values = values_horarios[i]
                 horarios = hora_values
                 
-                validar_cupos_aux_todos(horarios,fecha1,zona3)
+                validar_cupos_aux_todos(horarios,fecha1,op_zona_cpy)
+                cupos_general = resultado_cup
+                if cupos_general != 'FC' and cupos_general != 'NC':#posible valor de retorno de la funcion validar_cupos en reservacion.impide que el usuario vea la fecha de mas de 7 dias.
+                    
+                    tabla.insert('',i, text="", values = (hora_values,op_zona,cupos_general))
+                    i=i+1
+                else:
+                    break
+            if cupos_general != 'FC' and cupos_general != 'NC':
                 
-                a = resultado_cup
-                
-                c = hora_values+str(a)
-                tabla.insert('',i, text="", values = (hora_values,zona2,a))
-                i=i+1
-            j=j+1
+                j=j+1
+            else:
+                break
+            
                   
     blanklabel(cupos_dis)
        
