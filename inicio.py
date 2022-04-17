@@ -216,7 +216,7 @@ def menu_admin(id_admin): #Menu a desplegar al usuario de tipo admin
     pantalla_ma.mainloop()
 
 def ver_info():#Funcion para ver la informacion
-    global pantalla_viewinfo#Variables globales
+    global pantalla_viewinfo #Variables globales
     pantalla_viewinfo = Toplevel() #Que aparezca encima de cualquier menu
     pantalla_viewinfo.geometry("590x600")
     pantalla_viewinfo.config(bg="white") #Fondo de la ventana
@@ -225,7 +225,6 @@ def ver_info():#Funcion para ver la informacion
     #Escalabiidad
     rowconfigure(pantalla_viewinfo, 2)
     columnconfigure(pantalla_viewinfo, 2)
-
     frame_info = Frame(pantalla_viewinfo, bg= "white")
     frame_info.grid(column=0, row=1)
     #Se declara un frame de fondo blanco
@@ -234,6 +233,8 @@ def ver_info():#Funcion para ver la informacion
     #Etiqueta de titulo del frame
     Label(frame_titulo, text="Información", font=("Arial", 20),
           fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
+    frame_info = Frame(pantalla_viewinfo, bg= "white")
+    frame_info.grid(column=0, row=1)
     #Texto que contendra el frame
     texto_info = Text(frame_info, height=30, width=70, font=("Lato", 10))
     texto_info.grid(column=0,row=0, padx=20,pady=10)
@@ -268,7 +269,7 @@ def ver_info():#Funcion para ver la informacion
 def modificar_info(): #Funcion para el administrador, con el cual podra modificar el archivo
     #COnfiguracion previa al crear la ventana
     global pantalla_modificar_info
-
+    
     pantalla_modificar_info = Toplevel()
     pantalla_modificar_info.geometry("630x650")
     pantalla_modificar_info.config(bg="white")
@@ -277,13 +278,11 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     pantalla_modificar_info = Frame(pantalla_modificar_info, bg = "white")
     pantalla_modificar_info.grid(column=0,row=0)
     Label(pantalla_modificar_info, text="Información", font=("Arial", 20), fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
-    #Esacalabilidad
+     #Esacalabilidad
     rowconfigure(pantalla_modificar_info, 2)
     columnconfigure(pantalla_modificar_info, 2)
-
     frame_info = Frame(pantalla_modificar_info, bg= "white")
     frame_info.grid(column=0, row=1)
-
     #Se crea el frame donde se modificara la informacion general (sin incluir horarios ni cupos)
     #Se crea frame donde se visualizan cupos y horarios, es en un lugar diferente porque son variables indepenndientes
     frame_horarios_cupos = Frame(pantalla_modificar_info, bg="white")
@@ -535,6 +534,10 @@ def validar_cupos_aux_todos(fecha,hora,zona):
         if uso_f1 == 0: #Si falta campo de fecha no se realiza la busqueda
             print("ERROR IF")
             messagebox.showwarning("Error", "No seleccionó una fecha")
+            fecha = ''
+            zona = ''
+            hora = ''
+       
         else:
             resultado_cup = cupos_disp(fecha, hora, zona)
         
@@ -549,21 +552,55 @@ def validar_cupos_aux_todos(fecha,hora,zona):
 def cupos_disponibles(id_cliente):
     global cupos_dis,selec_hora, selec_zona, uso_h1, uso_f1, uso_z1,frame_calendario
     cupos_dis = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
-    cupos_dis.geometry("550x600")
+    cupos_dis.geometry("550x650")
     cupos_dis.title("Cupos disponibles")
-    
-
     frame_tabla = Frame(cupos_dis)
-    frame_tabla.grid(column=0, row= 7)
+     #frame boton cupos disponibles
+    frame_boton_cupos = Frame(cupos_dis)
+    #Calendario de seleccion de día para la reserva
+    frame_calendario = Frame(cupos_dis)
+    #frame zona y hora
+    frame_zh = Frame(cupos_dis)
+    
+   
+    frame_zh.grid(column=0, row=7 )
+    
+    frame_zh.grid_forget()
+    frame_zh.grid_forget()
     #frame titulo
     frame_titulo = Frame(cupos_dis) 
     frame_titulo.grid(column=0,row=0)
-    
+    frame_tabla.grid(column=0, row= 7)
+    frame_boton_cupos.grid(column=0, row=8)
+        
+    Op =0   
     #Etiqueta de titulo del frame
     Label(frame_titulo, text="Cupos Disponibles", font=("Lato", 20),
           fg="Black").grid(column=0,row=0, padx=150, pady=10)
     frame_info = Frame(cupos_dis)
     frame_info.grid(column=0, row=1)
+    Label(frame_info, text="Consultar por:", 
+          font="15,bold").grid(column=1,row =1) #Seleccion del día
+    def bus_fecha():
+        
+        frame_zh.grid(column=0, row=4 )
+        Op =1
+        tabla.delete(*tabla.get_children())
+            
+        
+        print(Op)
+    def bus_fecha1():
+        
+        frame_zh.grid_forget()
+        Op = 0
+        tabla.delete(*tabla.get_children())
+        
+        
+    defi_op = Button(frame_info, text="Fecha", 
+          font="15,bold", command=bus_fecha1, width= 15, bg= "#475251").grid(column=3,row =2)
+    defi_op1 = Button(frame_info, text="Fecha, hora y zona", 
+          font="15,bold", command=bus_fecha, width= 15,bg= "#475251").grid(column=0,row =2)
+   
     #Frame 
   #  texto_info = Text(frame_info, height=30, width=70, font=("Lato", 10))
    # texto_info.grid(column=0,row=0, padx=20,pady=10)
@@ -595,31 +632,24 @@ def cupos_disponibles(id_cliente):
     uso_h1 = 0
     uso_z1 = 0
     uso_f1 = 0
-    #frame boton cupos disponibles
-    frame_boton_cupos = Frame(cupos_dis)
-    frame_boton_cupos.grid(column=0, row=8)
     blanklabel(cupos_dis)
    
-    
-    #Calendario de seleccion de día para la reserva
-    frame_calendario = Frame(cupos_dis)
     frame_calendario.grid(column=0, row=3 )
-    #frame zona y hora
-    frame_zh = Frame(cupos_dis, bg="white")
-    frame_zh.grid(column=0, row=4 )
     Label(frame_calendario, text="Seleccione una Fecha", 
-          font="15,bold").grid(column=0,row =1) #Seleccion del día
+          font="15,bold").grid(column=0,row =0) #Seleccion del día
    
     blanklabel(cupos_dis)
     dia_cupo = Button(frame_calendario, text="Día:",#Boton que indica zona de reservacion adentro
                       font="18,bold", bg= "#37E3AC",
-                      command=Calendario_cupos,  width = 20).grid(row=3, column=0)
+                      command=Calendario_cupos,  width = 20)
+    dia_cupo.grid(row=2, column=0)
        
     
     #imagen_empleado = PhotoImage(file = "cupos.png")
     #Label(cupos_dis, image=imagen_empleado, bg="white").grid(padx=60, sticky="NSEW")
     #imagen_empleado1 = ImageTk.PhotoImage(imagen_empleado)
  #Hora de reserva
+    
     Label(frame_zh, text="Seleccione la hora:", 
           font="15,bold").grid(column=0) #Seleccion de zonas
     
@@ -652,63 +682,61 @@ def cupos_disponibles(id_cliente):
     blanklabel(cupos_dis)
    
     
-    def boton():
-        tabla.delete(*tabla.get_children())
-        
-        validar_cupos_aux(fecha1,hora1,zona1)
-        
-        cupos_individual = resultado_cup
-        if cupos_individual != 'FC' and cupos_individual != 'NC':
-            tabla.insert('', 1, text="", values = (selec_hora.get(),selec_zona.get(),cupos_individual))
-            print(selec_zona.get())  
-       
-    def boton_todos():
-        tabla.delete(*tabla.get_children())
-        global i,j
-        global hora_values,op_zona
-        i=0
-        j=0
-        zona_cupos = ["Zona Interior","Green Garden"]
-       
-        for op_zona_cpy in zona_cupos:
-            op_zona= zona_cupos[j] 
-            op_zona_cpy =op_zona
+    def elegir():
+        if uso_h1 != 0 and uso_z1 !=0 and Op !=0:
+           
+            tabla.delete(*tabla.get_children())
+            
+            validar_cupos_aux(fecha1,hora1,zona1)
+            
+            cupos_individual = resultado_cup
+            if cupos_individual != 'FC' and cupos_individual != 'NC':
+                tabla.insert('', 1, text="", values = (selec_hora.get(),selec_zona.get(),cupos_individual))
+                print(selec_zona.get())  
+        else:
+            tabla.delete(*tabla.get_children())
+            global i,j
+            global hora_values,op_zona
             i=0
-            for horarios in values_horarios:   
-                hora_values = values_horarios[i]
-                horarios = hora_values
-                
-                validar_cupos_aux_todos(horarios,fecha1,op_zona_cpy)
-                cupos_general = resultado_cup
-                if cupos_general != 'FC' and cupos_general != 'NC':#posible valor de retorno de la funcion validar_cupos en reservacion.impide que el usuario vea la fecha de mas de 7 dias.
+            j=0
+            zona_cupos = ["Zona Interior","Green Garden"]
+        
+            for op_zona_cpy in zona_cupos:
+                op_zona= zona_cupos[j] 
+                op_zona_cpy =op_zona
+                i=0
+                for horarios in values_horarios:   
+                    hora_values = values_horarios[i]
+                    horarios = hora_values
                     
-                    tabla.insert('',i, text="", values = (hora_values,op_zona,cupos_general))
-                    i=i+1
+                    validar_cupos_aux_todos(horarios,fecha1,op_zona_cpy)
+                    cupos_general = resultado_cup
+                    if cupos_general != 'FC' and cupos_general != 'NC':#posible valor de retorno de la funcion validar_cupos en reservacion.impide que el usuario vea la fecha de mas de 7 dias.
+                        
+                        tabla.insert('',i, text="", values = (hora_values,op_zona,cupos_general))
+                        i=i+1
+                    else:
+                        break
+                if cupos_general != 'FC' and cupos_general != 'NC':
+                    
+                    j=j+1
                 else:
                     break
-            if cupos_general != 'FC' and cupos_general != 'NC':
                 
-                j=j+1
-            else:
-                break
-            
-                  
-    blanklabel(cupos_dis)
-       
-    ver_cupos = Button(frame_boton_cupos, text="ver cupos",
+                    
+    
+        
+    ver_cupos = Button(frame_boton_cupos, text="Cupos disponibles",
                       heigh="2",
                       font="18", bg= "#30B68B",
-                      command=boton).grid(column=1, row = 10 ,padx=10, pady=30) #Boton para reservar y finalizar
-    todos = Button(frame_boton_cupos, text="Todos los cupos",
-                      heigh="2",
-                      font="18", bg= "#30B68B",command = boton_todos
-                      ).grid(column=2, row =10, pady=30) #Boton para reservar y finalizar
-         
+                      command=elegir).grid(column=1, row = 10 ,padx=10, pady=30) #Boton para reservar y finalizar
+        
         
     volver = Button(cupos_dis, text="Volver",
                     height="2", width="30",
                     bg= "#47525E", fg="white",
-                    command=cupos_dis.destroy).grid(column=0,row =9) #Boton para regresar al menu de opciones
+                    command=cupos_dis.destroy)
+    volver.grid(column=0,row =9) #Boton para regresar al menu de opciones
     
     
         
@@ -728,7 +756,7 @@ def Calendario_cupos():
         uso_f1=uso_f1+1
         dia_cupos = Button(frame_calendario, text="Día: "+fecha1,#Boton que indica zona de reservacion adentro
                     font="18,bold", bg= "#BCEBE0",
-                    command=Calendario_cupos,width = 20).grid(row=3, column=0)
+                    command=Calendario_cupos,width = 20).grid(row=2, column=0)
     Button(calendario_cupos, text="Definir Fecha", command=definir_fecha_cupos).grid()
    
   
