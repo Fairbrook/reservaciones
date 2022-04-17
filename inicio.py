@@ -810,7 +810,7 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
     volver = Button(crear_rese, text="Volver",
                     height="2", width="15",
                     bg= "#47525E", fg="white",
-                    command=crear_rese.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
+                    command=crear_rese.destroy).grid(column=1, padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
     
     
 def ver_reservacion(id_cliente): #Funcion para Ver la Reservacion
