@@ -640,7 +640,7 @@ def cupos_disponibles(id_cliente):
         uso_z1=uso_z1+1 #Cambio de bandera
     selec_zona = ttk.Combobox(frame_zh, #Crea la lista desplegable en esta ventana
             state="readonly", #No se puede editar por el usuario
-            values=["Seleccione una zona", "Green Garden", "Zona Interior"]) #Opciones
+            values=["Green Garden", "Zona Interior"]) #Opciones
     selec_zona.grid(column=0, sticky="NSEW") #Lo de posicionamiento
     selec_zona.bind("<<ComboboxSelected>>",zona_nueva) #Cambia conforme las selecciones
     blanklabel(cupos_dis)
@@ -772,7 +772,7 @@ def crear_reservacion(id_cliente): #Funcion para crear la reservacion
         uso_z=uso_z+1 #Cambio de bandera
     seleccion_zona = ttk.Combobox(crear_rese, #Crea la lista desplegable en esta ventana
             state="readonly", #No se puede editar por el usuario
-            values=["Seleccione una zona", "Green Garden", "Zona Interior"]) #Opciones
+            values=["Green Garden", "Zona Interior"]) #Opciones
     seleccion_zona.grid(column=1, sticky="NSEW") #Lo de posicionamiento
     seleccion_zona.bind("<<ComboboxSelected>>",zona_nueva) #Cambia conforme las selecciones
     
