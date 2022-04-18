@@ -556,24 +556,25 @@ def cupos_disponibles(id_cliente):
     cupos_dis = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
     cupos_dis.geometry("550x670")
     cupos_dis.title("Cupos disponibles")
-    frame_tabla = Frame(cupos_dis)
-     #frame boton cupos disponibles
+    #frame boton cupos disponibles
     frame_boton_cupos = Frame(cupos_dis)
     #Calendario de seleccion de día para la reserva
     frame_calendario = Frame(cupos_dis)
     #frame zona y hora
     frame_zh = Frame(cupos_dis)
+    frame_zh.grid(column=0, row=8 )
     
-   
-    frame_zh.grid(column=0, row=7 )
+    rowconfigure(cupos_dis,13)
+    columnconfigure(cupos_dis,1)
+    rowconfigure(frame_zh,5)
+    columnconfigure(frame_zh,1)
+    rowconfigure(frame_boton_cupos,3)
+    columnconfigure(frame_boton_cupos,1)
     
     frame_zh.grid_forget()
     frame_zh.grid_forget()
-    #frame titulo
-    frame_titulo = Frame(cupos_dis) 
-    frame_titulo.grid(column=0,row=0)
-    frame_tabla.grid(column=0, row= 7)
-    frame_boton_cupos.grid(column=0, row=8)
+
+    frame_boton_cupos.grid(column=0, row=9, sticky="NSWE")
     
     #reiniciamos variables
     uso_h1 = 0
@@ -581,12 +582,17 @@ def cupos_disponibles(id_cliente):
     uso_f1 = 0   
      
     #Etiqueta de titulo del frame
-    Label(frame_titulo, text="Cupos Disponibles", font=("Lato", 20),
-          fg="Black").grid(column=0,row=0, padx=150, pady=10)
+    Label(cupos_dis, text="Cupos Disponibles", font=("Lato", 20),
+          fg="Black").grid(column=0,row=0, pady=10)
     frame_info = Frame(cupos_dis)
-    frame_info.grid(column=0, row=1)
-    Label(frame_info, text="Consultar por:", 
-          font="15,bold").grid(column=1,row =1) #Seleccion del día
+    frame_info.grid(column=0, row=2, sticky="NSWE")
+
+    rowconfigure(frame_info,2)
+    columnconfigure(frame_info,3)
+
+    Label(cupos_dis, text="Consultar por:", 
+          font="15,bold").grid(column=0, row =1, sticky="NSWE") #Seleccion del día
+          
     
     #Frame 
   #  texto_info = Text(frame_info, height=30, width=70, font=("Lato", 10))
@@ -594,8 +600,8 @@ def cupos_disponibles(id_cliente):
     
 
     #Tabla cupos
-    tabla = ttk.Treeview(frame_tabla, height=7)
-    tabla.grid(column=0, row=6,pady=20)
+    tabla = ttk.Treeview(cupos_dis, height=10)
+    tabla.grid(column=0, row=7, padx=20, pady=20, sticky="NSWE")
     tabla['columns'] = ('horario','zona','Cupos Disponibles')
 
     tabla.column('#0', minwidth=0, width=0, anchor='center')
@@ -617,15 +623,17 @@ def cupos_disponibles(id_cliente):
     
     blanklabel(cupos_dis)
    
-    frame_calendario.grid(column=0, row=3 )
+    frame_calendario.grid(column=0, row=3, sticky="NSWE")
+    rowconfigure(frame_calendario,5)
+    columnconfigure(frame_calendario,1)
     Label(frame_calendario, text="Seleccione una Fecha", 
-          font="15,bold").grid(column=0,row =0) #Seleccion del día
+          font="15,bold").grid(column=0,row =0, sticky="NSWE") #Seleccion del día
    
     blanklabel(cupos_dis)
     dia_cupo = Button(frame_calendario, text="Día:",#Boton que indica zona de reservacion adentro
                       font="18,bold", bg= "#37E3AC",
                       command=Calendario_cupos,  width = 20)
-    dia_cupo.grid(row=2, column=0)
+    dia_cupo.grid(row=2, column=0, sticky="NS")
        
     
     #imagen_empleado = PhotoImage(file = "cupos.png")
@@ -634,7 +642,7 @@ def cupos_disponibles(id_cliente):
  #Hora de reserva
     
     Label(frame_zh, text="Seleccione la hora:", 
-          font="15,bold").grid(column=0) #Seleccion de zonas
+          font="15,bold").grid(column=0, sticky="NSWE") #Seleccion de zonas
     
     values_horarios = get_horarios_formateados(1)
     print(values_horarios)
@@ -662,7 +670,9 @@ def cupos_disponibles(id_cliente):
             values=["Green Garden", "Zona Interior"]) #Opciones
     selec_zona.grid(column=0, sticky="NSEW") #Lo de posicionamiento
     selec_zona.bind("<<ComboboxSelected>>",zona_nueva) #Cambia conforme las selecciones
+
     blanklabel(cupos_dis)
+
     global opc
     opc = 1
     def bus_fecha(opcion_bus):
@@ -683,9 +693,11 @@ def cupos_disponibles(id_cliente):
                      
         
     defi_op = Button(frame_info, text="Fecha", 
-          font="15,bold", command= lambda : bus_fecha(1), width= 15, bg= "#475251").grid(column=3,row =2)
+          font="15,bold", command= lambda : bus_fecha(1), 
+          width= 15, bg= "#475251").grid(column=2, row =2, padx=10, sticky="NS")
     defi_op1 = Button(frame_info, text="Fecha, hora y zona", 
-          font="15,bold", command= lambda :bus_fecha(2), width= 15,bg= "#475251").grid(column=0,row =2)
+          font="15,bold", command= lambda :bus_fecha(2), 
+          width= 15,bg= "#475251").grid(column=0, row =2, padx=10, sticky="NS")
    
     def elegir():
         global opc
@@ -734,16 +746,17 @@ def cupos_disponibles(id_cliente):
     
         
     ver_cupos = Button(frame_boton_cupos, text="Cupos disponibles",
-                      heigh="2",
+                      heigh="2", width="40",
                       font="18", bg= "#30B68B",
-                      command=elegir).grid(column=1, row = 9 ,padx=10, pady=30) #Boton para reservar y finalizar
-        
-        
-    volver = Button(cupos_dis, text="Volver",
+                      command=elegir).grid(column=0, row = 0, sticky="NS") #Boton para reservar y finalizar
+    
+    blanklabel(frame_boton_cupos)
+
+    volver = Button(frame_boton_cupos, text="Volver",
                     height="2", width="30",
                     bg= "#47525E", fg="white",
                     command=cupos_dis.destroy)
-    volver.grid(column=0,row =9) #Boton para regresar al menu de opciones
+    volver.grid(column=0,row=2, sticky="NS") #Boton para regresar al menu de opciones
     
     
         
