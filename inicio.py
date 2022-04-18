@@ -17,11 +17,11 @@ from models.administrador import login_admin
 from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db, get_horarios_formateados
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
-from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr,cupos_disp
+from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr,cupos_disp, cupos_disp_todos
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
-    global cupos_max, cupos, reserva, estrellas, zona, fecha, hora, uso_f, uso_h, uso_z, fecha1,hora1,zona1
+    global cupos_max, cupos, reserva, estrellas, zona, fecha, hora, uso_f, uso_h, uso_z, fecha1,hora1,zona1,Op
     pantalla=Tk() #declaramos la pantalla principal
     pantalla.geometry("300x350") #tamaño de ventana
     pantalla.title("Login") #titulo de ventana
@@ -33,6 +33,7 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     uso_f=IntVar()
     uso_h=IntVar()
     uso_z=IntVar()
+    opc = IntVar()
     zona=StringVar() #indicamos el tipo de variable
     fecha=StringVar() #indicamos el tipo de variable
     hora=StringVar() #indicamos el tipo de variable
@@ -51,6 +52,7 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     uso_f1=0
     uso_h1=0
     uso_z1=0
+    
     
     estrellas=1 #limite de estrellas a dar
     reserva=1
@@ -539,7 +541,7 @@ def validar_cupos_aux_todos(fecha,hora,zona):
             hora = ''
        
         else:
-            resultado_cup = cupos_disp(fecha, hora, zona)
+            resultado_cup = cupos_disp_todos(fecha, hora, zona)
         
     except:
         print("ERROR EXCEPT")
@@ -550,9 +552,9 @@ def validar_cupos_aux_todos(fecha,hora,zona):
 
 
 def cupos_disponibles(id_cliente):
-    global cupos_dis,selec_hora, selec_zona, uso_h1, uso_f1, uso_z1,frame_calendario
+    global cupos_dis,selec_hora, selec_zona, uso_h1, uso_f1, uso_z1,frame_calendario,Op
     cupos_dis = Toplevel(pantalla_rese) #Encima de la ventana de reservaciones
-    cupos_dis.geometry("550x650")
+    cupos_dis.geometry("550x670")
     cupos_dis.title("Cupos disponibles")
     frame_tabla = Frame(cupos_dis)
      #frame boton cupos disponibles
@@ -572,8 +574,12 @@ def cupos_disponibles(id_cliente):
     frame_titulo.grid(column=0,row=0)
     frame_tabla.grid(column=0, row= 7)
     frame_boton_cupos.grid(column=0, row=8)
-        
-    Op =0   
+    
+    #reiniciamos variables
+    uso_h1 = 0
+    uso_z1 = 0
+    uso_f1 = 0   
+     
     #Etiqueta de titulo del frame
     Label(frame_titulo, text="Cupos Disponibles", font=("Lato", 20),
           fg="Black").grid(column=0,row=0, padx=150, pady=10)
@@ -581,26 +587,7 @@ def cupos_disponibles(id_cliente):
     frame_info.grid(column=0, row=1)
     Label(frame_info, text="Consultar por:", 
           font="15,bold").grid(column=1,row =1) #Seleccion del día
-    def bus_fecha():
-        
-        frame_zh.grid(column=0, row=4 )
-        Op =1
-        tabla.delete(*tabla.get_children())
-            
-        
-        print(Op)
-    def bus_fecha1():
-        
-        frame_zh.grid_forget()
-        Op = 0
-        tabla.delete(*tabla.get_children())
-        
-        
-    defi_op = Button(frame_info, text="Fecha", 
-          font="15,bold", command=bus_fecha1, width= 15, bg= "#475251").grid(column=3,row =2)
-    defi_op1 = Button(frame_info, text="Fecha, hora y zona", 
-          font="15,bold", command=bus_fecha, width= 15,bg= "#475251").grid(column=0,row =2)
-   
+    
     #Frame 
   #  texto_info = Text(frame_info, height=30, width=70, font=("Lato", 10))
    # texto_info.grid(column=0,row=0, padx=20,pady=10)
@@ -627,11 +614,7 @@ def cupos_disponibles(id_cliente):
     estilo.configure("Treeview", font= ('lato', 10, 'bold'), foreground='black',  background='white')
     estilo.map('Treeview',background=[('selected', 'lato')], foreground=[('selected','green')] )
 
-    a=0
-    #reiniciamos variables
-    uso_h1 = 0
-    uso_z1 = 0
-    uso_f1 = 0
+    
     blanklabel(cupos_dis)
    
     frame_calendario.grid(column=0, row=3 )
@@ -680,20 +663,44 @@ def cupos_disponibles(id_cliente):
     selec_zona.grid(column=0, sticky="NSEW") #Lo de posicionamiento
     selec_zona.bind("<<ComboboxSelected>>",zona_nueva) #Cambia conforme las selecciones
     blanklabel(cupos_dis)
+    global opc
+    opc = 1
+    def bus_fecha(opcion_bus):
+        
+         if  opcion_bus == 1:
+            global opc
+            frame_zh.grid_forget()
+            opc = 1
+            tabla.delete(*tabla.get_children())
+            print(opc)
+       
+         if  opcion_bus==2:
+            
+            frame_zh.grid(column=0, row=4 )
+            opc = 2
+            tabla.delete(*tabla.get_children())
+            print(opc)   
+                     
+        
+    defi_op = Button(frame_info, text="Fecha", 
+          font="15,bold", command= lambda : bus_fecha(1), width= 15, bg= "#475251").grid(column=3,row =2)
+    defi_op1 = Button(frame_info, text="Fecha, hora y zona", 
+          font="15,bold", command= lambda :bus_fecha(2), width= 15,bg= "#475251").grid(column=0,row =2)
    
-    
     def elegir():
-        if uso_h1 != 0 and uso_z1 !=0 and Op !=0:
-           
+        global opc
+        if opc == 2:
+
             tabla.delete(*tabla.get_children())
             
             validar_cupos_aux(fecha1,hora1,zona1)
             
             cupos_individual = resultado_cup
             if cupos_individual != 'FC' and cupos_individual != 'NC':
-                tabla.insert('', 1, text="", values = (selec_hora.get(),selec_zona.get(),cupos_individual))
-                print(selec_zona.get())  
-        else:
+                if uso_h1 !=0 and uso_z1 !=0:
+                    tabla.insert('', 1, text="", values = (selec_hora.get(),selec_zona.get(),cupos_individual))
+                    print(selec_zona.get())  
+        elif opc == 1:
             tabla.delete(*tabla.get_children())
             global i,j
             global hora_values,op_zona
@@ -729,7 +736,7 @@ def cupos_disponibles(id_cliente):
     ver_cupos = Button(frame_boton_cupos, text="Cupos disponibles",
                       heigh="2",
                       font="18", bg= "#30B68B",
-                      command=elegir).grid(column=1, row = 10 ,padx=10, pady=30) #Boton para reservar y finalizar
+                      command=elegir).grid(column=1, row = 9 ,padx=10, pady=30) #Boton para reservar y finalizar
         
         
     volver = Button(cupos_dis, text="Volver",
