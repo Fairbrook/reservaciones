@@ -168,6 +168,7 @@ def cupos_disp(fecha,hora,zona):
     #POR ÚLTIMO, COMPROBAMOS QUE SI HAYA CUPOS DISPONIBLES PARA ESA ZONA, HORA Y FECHA
                 cupos_disponibles = limite_cupos - lugares_ocupados
                 return cupos_disponibles
+                
 def insertar_reservacion_bd(fechayhora, personas, zona, id_cliente, id_restaurante, qr):
 
     try:
