@@ -1058,9 +1058,9 @@ def pop_ups(texto): #Funcion para los pop ups
     #Ponemos la label en la segunda columna, para que en la primera este la imagen
     Label(pop_up, text="¡Oh no!", height="3",
          font="Arial,48,bold", bg="white").grid(row=0, column=1, sticky="NSEW")
-    Label(pop_up, text="Emcomtramste el errorm:\n"+str(texto),
+    Label(pop_up, text="Oh no!\n"+str(texto),
          height="3", font="Arial,32,bold", bg="white").grid(row=1, column=1, sticky="NSEW")
-    Label(pop_up, text="Emstamos trabajandom\npara remparmlo",
+    Label(pop_up, text="Intentelo nuevamente",
          height="3", font="Arial,32,bold", bg="white").grid(row=2, column=1, sticky="NSEW")
     #Boton para que se cierre con picar el boton
     Entendido = Button(pop_up, text="Entendido",
