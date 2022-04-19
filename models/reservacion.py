@@ -1,3 +1,4 @@
+from lib2to3.pgen2.pgen import generate_grammar
 import re
 from tkinter import *
 import os
@@ -99,8 +100,7 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
                         cupos_disponibles = limite_cupos - lugares_ocupados
                         print("Cupos disponibles: ",cupos_disponibles)
     
-                        blob_qr = generar_qr(id_cliente, fecha_hora_db, zona_db)
-                        resultado, mensaje = insertar_reservacion_bd(fecha_hora_db, cupos, zona_db, id_cliente, id_restaurante, blob_qr)
+                        resultado, mensaje = insertar_reservacion_bd(fecha_hora_db, cupos, zona_db, id_cliente, id_restaurante)
    
                         return resultado, mensaje
 '''def cupos_general():
@@ -226,20 +226,40 @@ def cupos_disp_todos(fecha,hora,zona):
                 cupos_disponibles = limite_cupos - lugares_ocupados
                 return cupos_disponibles
 
-def insertar_reservacion_bd(fechayhora, personas, zona, id_cliente, id_restaurante, qr):
+def insertar_reservacion_bd(fechayhora, personas, zona, id_cliente, id_restaurante):
+
+    cursor = db.cursor()
+    sql = '''INSERT INTO RESERVACION (hora_fecha, zona, n_personas, id_cliente, id_restaurante, estatus)
+            VALUES(STR_TO_DATE('{}', '%d/%m/%y %H:%i'), {}, {}, {}, {}, 'A')'''.format(fechayhora, zona, personas, id_cliente, id_restaurante)
+    cursor.execute(sql)
+    db.commit()
+    cursor.close()
+
+    cursor = db.cursor()
+    sql_id = '''SELECT id_reservacion from reservacion where id_cliente = {} and id_restaurante = {} and 
+    hora_fecha = STR_TO_DATE('{}', '%d/%m/%y %H:%i') and zona = {}'''.format(id_cliente, id_restaurante, fechayhora, zona)
+    cursor.execute(sql_id)
+    id_reservacion = cursor.fetchone()
+    cursor.close()
 
     try:
-        cursor = db.cursor()
-        sql = '''INSERT INTO RESERVACION (hora_fecha, zona, n_personas, id_cliente, id_restaurante, estatus, qr)
-                VALUES(STR_TO_DATE(%s, '%d/%m/%y %H:%i'), %s, %s, %s, %s, 'A', %s)'''
-        cursor.execute(sql, (fechayhora, zona, personas, id_cliente, id_restaurante, qr, ))
-        db.commit()
-        cursor.close()
-
+        id_reservacion = id_reservacion[0]
     except:
-        return False, "Algo salió mal con la reservación"
+        return False, "Algo salió mal con la reservacion (id invalido)"
     else:
-        return True, "Éxito! Reservación fue agendada"
+        
+        qr_generado = generar_qr(id_cliente, fechayhora, zona, id_reservacion)
+
+        try:
+            cursor = db.cursor()
+            sql_agregar_qr = '''UPDATE reservacion set qr = %s where id_reservacion = %s'''
+            cursor.execute(sql_agregar_qr, (qr_generado, id_reservacion, ))
+            db.commit()
+            cursor.close()
+        except:
+            return False, "Insercion de qr fallida"
+        else:
+            return True, "Reservacion exitosa"
 
 def cancelar_reservacion(id_cliente):
     
@@ -269,11 +289,11 @@ def cancelar_reservacion(id_cliente):
     except:
         messagebox.showerror("Error", "Algo explotó de nuestro lado xc")
 
-def generar_qr(id_cliente, fecha_hora, zona):
+def generar_qr(id_cliente, fecha_hora, zona, id_reservacion):
     
     path_qr = os.getcwd() + '\imagenes' + "\qr reservacion cliente {}.png".format(id_cliente)
 
-    string_codigo = "Cliente: " + str(id_cliente) + " Fecha_hora: " + str(fecha_hora) + " Zona: " + str(zona)
+    string_codigo = "id_reservacion: " + str(id_reservacion) + "Cliente: " + str(id_cliente) + " Fecha_hora: " + str(fecha_hora) + " Zona: " + str(zona) 
     imagen_qr = qrcode.make(string_codigo)
     archivo_qr = open(path_qr, 'wb')
     imagen_qr.save(archivo_qr)
@@ -289,6 +309,8 @@ def generar_qr(id_cliente, fecha_hora, zona):
         print("QR eliminado de equipo: ",path_qr)
     except FileNotFoundError:
         print("QR a eliminar no encontrado")
+    except:
+        print("Pasó algo no esperado")
 
     return blob
 
@@ -320,3 +342,15 @@ def consultar_reservacion(id_cliente):
         return None
     else:
         return registro
+
+def registrar_asistencia():
+    
+    global pantalla_registrar_asis
+
+    pantalla_registrar_asis = Toplevel()
+    pantalla_registrar_asis.title("Registrar asistencia")
+    pantalla_registrar_asis.geometry("500x600")
+    
+    frame_1 = Frame(pantalla_registrar_asis, bg="white")
+    frame_1.grid(column=0, row=0)
+

@@ -17,7 +17,7 @@ from models.administrador import login_admin
 from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db, get_horarios_formateados
 from models.usuario import login, register
 from models.platillo import ver_menu, modificar_menu
-from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr,cupos_disp, cupos_disp_todos
+from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr,cupos_disp, cupos_disp_todos, registrar_asistencia
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
@@ -441,6 +441,11 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
         
         blanklabel(pantalla_rese)
 
+        Button(pantalla_rese, text = "Registrar asistencia",
+        height= 3, width= 300, bg = "#BCEBE0", command=registrar_asistencia).grid(padx=60, sticky="NSEW") #Boton para registrar asistencia
+
+        blanklabel(pantalla_rese)
+
         Button(pantalla_rese, text="Modificar parametros",
                height="3", width="300",
                bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para Ver las reservaciones totales
@@ -539,7 +544,7 @@ def validar_cupos_aux_todos(fecha,hora,zona):
             fecha = ''
             zona = ''
             hora = ''
-       
+        
         else:
             resultado_cup = cupos_disp_todos(fecha, hora, zona)
         
