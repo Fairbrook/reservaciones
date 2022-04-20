@@ -61,7 +61,7 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     rowconfigure(pantalla,11)
     columnconfigure(pantalla,1)
     #Label = etiqueta
-    Label(pantalla, text="Ingrese su usuario y constraseña", bg="medium aquamarine",
+    Label(pantalla, text="Ingrese su usuario y contraseña", bg="medium aquamarine",
         font="Arial,16,bold").grid(sticky="NSEW")
     #Label en blanco para salto, definida en su funcion
     blanklabel(pantalla)
@@ -88,6 +88,13 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
              bg= "#BCEBE0",
              command=registro).grid(padx=60, sticky="NSEW")  
     
+    blanklabel(pantalla)
+
+    Button(pantalla, text = "Ver Menú", 
+            height="3", width="20", 
+            bg = "#EC8326",
+            command=ver_menu).grid(padx=60, sticky="NSEW")
+
     blanklabel(pantalla)
    #depuramos la pantalla como iniciador del programa 
     pantalla.mainloop()
