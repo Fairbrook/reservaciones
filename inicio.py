@@ -15,9 +15,10 @@ from PIL import Image, ImageTk
 import hashlib
 from models.administrador import login_admin
 from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db, get_horarios_formateados
-from models.usuario import login, register
+from models.usuario import login, register, crear_calificacion
 from models.platillo import ver_menu, modificar_menu
 from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr,cupos_disp, cupos_disp_todos, registrar_asistencia
+from db import db
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
@@ -137,6 +138,16 @@ def registro(): #Se despliega encima de iniciar sesion para dar un registro
     blanklabel(pantalla_r)
     
 def menu_cliente(id_cliente): #Menu a desplegar a todos estos usuarios de tipo cliente
+
+    #Primero revisaremos si este cliente tiene una calificación pendiente
+    cursor = db.cursor()
+    sql_cal_pendiente = "Select cal_pendiente from usuario where id_cliente = {}".format(id_cliente)
+    cursor.execute(sql_cal_pendiente)
+    pendiente = cursor.fetchone()[0]
+
+    if pendiente: #Si tiene calificación pendiente, primero se abre ventana para pedirle de una calificacion
+        crear_calificacion(id_cliente)
+
     global pantalla_mc #Pantalla_mc = pantalla menu cliente 
     #pantalla.withdraw() #Cerramos la ventana de inicio de sesion
     pantalla_mc = Toplevel(pantalla) #Que aparezca encima de la de inicio de sesion
@@ -149,36 +160,36 @@ def menu_cliente(id_cliente): #Menu a desplegar a todos estos usuarios de tipo c
     #Los siguientes cuatro Button son para los botones que redirigen a los menus correspondientes al nombre
     #Boton llamado info (informacion) y sus caracteristicas
     info = Button(pantalla_mc, text="Informacion", 
-                  height="3", width="300",
-                  bg= "#BCEBE0",
-                  command=ver_info).grid(padx=60, sticky="NSEW")
+                height="3", width="300",
+                bg= "#BCEBE0",
+                command=ver_info).grid(padx=60, sticky="NSEW")
     blanklabel(pantalla_mc)
     #Boton llamado reserva y sus caracteristicas
     reserva = Button(pantalla_mc, text="Reservaciones",
-                     height="3", width="300",
-                     bg= "#BCEBE0",
-                     command=lambda:menu_reservaciones(0,id_cliente)).grid(padx=60, sticky="NSEW")
+                    height="3", width="300",
+                    bg= "#BCEBE0",
+                    command=lambda:menu_reservaciones(0,id_cliente)).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_mc)
     #Boton llamado calificar y sus caracteristicas
-    calificar = Button(pantalla_mc, text="Calificar",
-                       height="3", width="300",
-                       bg= "#BCEBE0",
-                       command=lambda:menu_calificacion(0)).grid(padx=60, sticky="NSEW")
+    calificar = Button(pantalla_mc, text="Ver reseñas",
+                    height="3", width="300",
+                    bg= "#BCEBE0",
+                    command=lambda:ver_calificaciones()).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_mc)
     #Boton llamado menu y sus caracteristicas
     menu = Button(pantalla_mc, text="Menu",
-                       height="3", width="300",
-                       bg= "#BCEBE0",                  
-                       command=ver_menu).grid(padx=60, sticky="NSEW")                 
+                    height="3", width="300",
+                    bg= "#BCEBE0",                  
+                    command=ver_menu).grid(padx=60, sticky="NSEW")                 
     
     blanklabel(pantalla_mc)
     #Imagen de nuestro equipo
     Label(pantalla_mc, image=imagen).grid()
     blanklabel(pantalla_mc)
     pantalla_mc.mainloop()
-    
+        
 def menu_admin(id_admin): #Menu a desplegar al usuario de tipo admin
     global pantalla_ma #pantalla_ma = pantalla menu admin
     #pantalla.withdraw()
@@ -192,30 +203,30 @@ def menu_admin(id_admin): #Menu a desplegar al usuario de tipo admin
     #Igual, 4 bototones para las weas de acciones
     #Boton de informacion
     info = Button(pantalla_ma, text="Modificar\ninformación", 
-                  height="3", width="300",
-                  bg= "#BCEBE0",
-                  command=modificar_info).grid(padx=60, sticky="NSEW")
+                height="3", width="300",
+                bg= "#BCEBE0",
+                command=modificar_info).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_ma)
     #Boton de reservaciones
     reserva = Button(pantalla_ma, text="Reservaciones",
-                     height="3", width="300",
-                     bg= "#BCEBE0",
-                     command=lambda:menu_reservaciones(1,id_admin)).grid(padx=60, sticky="NSEW")
+                    height="3", width="300",
+                    bg= "#BCEBE0",
+                    command=lambda:menu_reservaciones(1,id_admin)).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_ma)
     #Boton de calificaciones
-    calificar = Button(pantalla_ma, text="Calificaciones",
-                       height="3", width="300",
-                       bg= "#BCEBE0",
-                       command=lambda:menu_calificacion(1)).grid(padx=60, sticky="NSEW")
+    calificar = Button(pantalla_ma, text="Ver reseñas",
+                    height="3", width="300",
+                    bg= "#BCEBE0",
+                    command=lambda:ver_calificaciones()).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_ma)
     #Boton de menu de comida
     menu = Button(pantalla_ma, text="Modificar menú",
-                       height="3", width="300",
-                       bg= "#BCEBE0",                   
-                       command=modificar_menu).grid(padx=60, sticky="NSEW")                   
+                    height="3", width="300",
+                    bg= "#BCEBE0",                   
+                    command=modificar_menu).grid(padx=60, sticky="NSEW")                   
     
     blanklabel(pantalla_ma)
     #Cargamos la imagen en la ventana
@@ -919,95 +930,23 @@ def ver_reservacion(id_cliente): #Funcion para Ver la Reservacion
                 bg= "#47525E", fg="white",
                 command=ver_rese.destroy).grid(column=0, row = 5,padx=80, sticky="NSEW")
     
-def menu_calificacion(user): #Interfaz de las calificaciones
+def ver_calificaciones(): #Interfaz de las calificaciones
+
     global pantalla_cali #pantalla cali = pantalla calificaciones
-    if user==1: #Si es admin
-        pantalla_cali = Toplevel(pantalla_ma)
-        rowconfigure(pantalla_cali, 7)
-        columnconfigure(pantalla_cali, 1)
-    else: #Si es cliente
-        pantalla_cali = Toplevel(pantalla_mc)
-        rowconfigure(pantalla_cali, 9)
-        columnconfigure(pantalla_cali, 1)
-    pantalla_cali.geometry("300x320")
+    
+    pantalla_cali = Toplevel()
+    rowconfigure(pantalla_cali, 7)
+    columnconfigure(pantalla_cali, 1)
+    pantalla_cali.geometry("500x650")
     pantalla_cali.title("Calificacion")
     
-    if user!=1: #Si el usuario no es admin se muestra la opcion de calificar
-        Button(pantalla_cali, text="Calificar",
-               height="3", width="300",
-               bg= "#BCEBE0",
-               command=crear_calificacion).grid(padx=60, pady=20,sticky="NSEW")
-        
-        blanklabel(pantalla_cali)
-    Button(pantalla_cali, text="Ver calificaciones",
-           height="3", width="300",
-           bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para ver la calificacion
-    
-    blanklabel(pantalla_cali)
+    #PENDIENTE
     
     volver = Button(pantalla_cali, text="Volver",
                     height="2", width="15",
                     bg= "#47525E", fg="white",
                     command=pantalla_cali.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
 
-def crear_calificacion():
-
-    global pantalla_crear_cali #pantalla_crear_cali = pantalla crear calificacion
-    pantalla_crear_cali = Toplevel(pantalla_cali)
-    pantalla_crear_cali.geometry("450x350")
-    pantalla_crear_cali.title("Crear Calificacion")
-    rowconfigure(pantalla_crear_cali,10)
-    columnconfigure(pantalla_crear_cali,3)
-    Label(pantalla_crear_cali, text="Seleccione la Puntuacion:",
-          font="15,bold").grid(column=1, pady=8) #Muestra los cupos disponibles
-    #Una etiqueta con dos botones adyacentes para subir o disminuir el numero de cupos a reservar
-    puntuacion = Label(pantalla_crear_cali, text=str(estrellas),
-                          height="2", width="4",
-                          font="18").grid(row=3, column=1) #Estara en el centro, son los cupos existentes
-    
-    def dar_puntos(operacion): #Funcion para ver los cupos disponibles y delimitar los botones
-        global estrellas
-
-        if operacion==0 and estrellas>0: #Si es 0 o menor no se puede disminuir
-            estrellas=estrellas - 0.5
-            puntuacion = Label(pantalla_crear_cali, text=str(estrellas),
-                                  height="2", width="4",
-                                  font="18").grid(row=3, column=1) #muestra las estrellas
-
-        elif operacion==1 and estrellas<5: #Si es 5 o mas no se puede aumentar
-            estrellas=estrellas + 0.5
-            puntuacion = Label(pantalla_crear_cali, text=str(estrellas),
-                                  height="2", width="4",
-                                  font="18").grid(row=3, column=1) #muestra las estrellas
-
-    resta = Button(pantalla_crear_cali, text="-",
-                   height="2", width="4",
-                   bg= "#EC2926", fg= "white",
-                   font="18", command=lambda:dar_puntos(0)).grid(row=3, column=0, padx=15, sticky="NSEW") #Boton de resta
-    suma = Button(pantalla_crear_cali, text="+",
-                  height="2", width="4",
-                  bg= "#29AE36",
-                  font="18", command=lambda:dar_puntos(1)).grid(row=3, column=2, padx=15, sticky="NSEW") #Boton de suma
-    blanklabel(pantalla_crear_cali)
-
-    Label(pantalla_crear_cali, text="Comentario :",
-          font="15,bold").grid(column=0, columnspan=3, pady=5) #Para ingresar un comentario
-
-    opinion_text = Text(pantalla_crear_cali, width=45, height=3)
-    opinion_text.grid(column=0, columnspan=3, padx=30)
-
-    blanklabel(pantalla_crear_cali)
-    submit = Button(pantalla_crear_cali, text="Registrar calificacion",
-                    height="3", width="20",
-                    bg= "#30B68B",
-                    command=pantalla_crear_cali.destroy).grid(column=1)
-    Label(pantalla_crear_cali, text="").grid(column=0, columnspan=3, padx=60, sticky="NSEW")
-    
-    volver = Button(pantalla_crear_cali, text="Volver",
-                    height="2", width="15",
-                    bg= "#47525E", fg="white",
-                    command=pantalla_crear_cali.destroy).grid(column=1, padx=80, sticky="NSEW") #Boton para regresar al menu de calificar
-    
 # Funcion para hacer validaciones e iniciar sesión
 def validar(): 
     """
@@ -1080,7 +1019,7 @@ def pop_ups(texto): #Funcion para los pop ups
     
     #Imagen
     Label(pop_up, image=imagen_cheems, bg="white").grid(row=0, column=0, rowspan=4, sticky="NS")
-    pop_ups.mainloop()
+    #pop_ups.mainloop() lanzaba error
             
 def registrar_bd(): #Funcion para el registro
     new_name = new_name_entry.get() #Obtencion de datos
@@ -1146,6 +1085,7 @@ def Calendario():
                     font="18,bold", bg= "#BCEBE0",
                     command=Calendario).grid(row=1, column=1, sticky="NSEW")
     Button(calendario, text="Definir Fecha", command=definir_fecha).grid()
+
 def blanklabel(ventana): #Para no escribir mucho, esta funcion crea el salto de linea
     Label(ventana, text="").grid() #Lit crea una etiqueta en blanco que se puede usar para separar elementos
 #Funciones para automatizar los escalados
