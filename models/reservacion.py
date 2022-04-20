@@ -280,12 +280,18 @@ def cancelar_reservacion(id_cliente):
             fecha_hora_cancelar = cursor.fetchone()[0]
             cursor.close()
 
-            cursor = db.cursor()
-            sql = '''Update reservacion set estatus = 'C' where id_reservacion = {}'''.format(id_cancelar)
-            cursor.execute(sql)
-            db.commit()
-            cursor.close()
-            messagebox.showinfo("Cancelación", "Su reservación para el {} ha sido cancelada".format(fecha_hora_cancelar))
+            #preguntamos al usuario si está seguro de querer cancelar
+            confirmar = messagebox.askokcancel("Confirmación", "Está seguro de cancelar su reservación para el {}?".format(fecha_hora_cancelar))
+
+            if confirmar:
+                cursor = db.cursor()
+                sql = '''Update reservacion set estatus = 'C' where id_reservacion = {}'''.format(id_cancelar)
+                cursor.execute(sql)
+                db.commit()
+                cursor.close()
+                messagebox.showinfo("Cancelación", "Su reservación para el {} ha sido cancelada".format(fecha_hora_cancelar))
+            else:
+                pass
     except:
         messagebox.showerror("Error", "Algo explotó de nuestro lado xc")
 
@@ -387,6 +393,8 @@ def registrar_asistencia():
             
             if estatus == 'S': #Si esta reservación ya se había confirmado que se habia asistido, avisamos
                 messagebox.showerror("ERROR", "Esta reservación ya había sido confirmada como atendida")
+            elif estatus == 'C':
+                messagebox.showerror("ERROR", "Esta reservación ya había sido cancelada")
             else:
                 #como queremos mostrar el nombre real de la persona y no solo su id, consultaremos su nombre
                 cursor = db.cursor()
@@ -409,7 +417,7 @@ def registrar_asistencia():
                     cursor.execute(sql_estatus_nuevo)
                     db.commit()
                     cursor.close()
-                    
+
                     messagebox.showinfo("Éxito", "Asistencia confirmada")
                 else:
                     pass
