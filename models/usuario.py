@@ -1,5 +1,3 @@
-from email import message
-from string import punctuation
 from tkinter import *
 import os
 import sys
@@ -84,7 +82,7 @@ def crear_calificacion(id_cliente):
           font="15,bold").grid(column=0, columnspan=3, pady=5) #Para ingresar un comentario
 
     opinion_text = Text(pantalla_crear_cali, width=45, height=3)
-    opinion_text.grid(column=0, columnspan=3, padx=30)
+    opinion_text.grid(column=0, columnspan=3, padx=30)    
 
     blanklabel(pantalla_crear_cali)
     submit = Button(pantalla_crear_cali, text="Registrar calificacion",
@@ -111,22 +109,98 @@ def dar_puntos(operacion): #Funcion para ver los cupos disponibles y delimitar l
 
 def registrar_feedback(calificacion, comentario, id_cliente):
     
-    try:
-        cursor = db.cursor()
-        sql = '''Insert into resena (fecha_calificacion, calificacion, id_cliente, comentario)
-                Values (curdate(), {}, {}, '{}')'''.format(calificacion, id_cliente, comentario)
-        cursor.execute(sql)
-        db.commit()
-
-        sql_cal_pendiente = "Update usuario set cal_pendiente = False where id_cliente = {}".format(id_cliente)
-        cursor.execute(sql_cal_pendiente)
-        db.commit()
-        cursor.close()
-    except:
-        messagebox.showerror("ERROR", "Ocurrió un error de nuestro lado, una disculpa :c")
+    if len(comentario) >= 250:
+        messagebox.showwarning("Límite de caracteres", "Este comentario es demasiado extenso, inténtelo de nuevo")
     else:
-        messagebox.showinfo("Calificación", "Muchas gracias por su retroalimentación, conocer su experiencia es importante para nosostros!")
-        pantalla_crear_cali.destroy()
+        try:
+            cursor = db.cursor()
+            sql = '''Insert into resena (fecha_calificacion, calificacion, id_cliente, comentario)
+                    Values (curdate(), {}, {}, '{}')'''.format(calificacion, id_cliente, comentario)
+            cursor.execute(sql)
+            db.commit()
+
+            sql_cal_pendiente = "Update usuario set cal_pendiente = False where id_cliente = {}".format(id_cliente)
+            cursor.execute(sql_cal_pendiente)
+            db.commit()
+            cursor.close()
+        except:
+            messagebox.showerror("ERROR", "Ocurrió un error de nuestro lado, una disculpa :c")
+        else:
+            messagebox.showinfo("Calificación", "Muchas gracias por su retroalimentación, conocer su experiencia es importante para nosostros!")
+            pantalla_crear_cali.destroy()
+
+
+def ver_calificaciones_cliente():
+    
+    global pantalla_ver_cal
+
+    pantalla_ver_cal = Toplevel()
+    pantalla_ver_cal.geometry("700x500")
+    pantalla_ver_cal.title("Reseñas")
+
+    main_frame = Frame(pantalla_ver_cal, bg="white")
+    main_frame.pack(fill=BOTH, expand=1)
+
+    my_canvas = Canvas(main_frame, bg="white")
+    my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+
+    my_scrollbar = Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
+    my_scrollbar.pack(side=RIGHT, fill=Y)
+
+    my_canvas.configure(yscrollcommand=my_scrollbar.set)
+    my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion = my_canvas.bbox("all")))
+
+    second_frame = Frame(my_canvas, bg= "white")
+    
+    my_canvas.create_window((0,0), window=second_frame, anchor="nw")
+
+    #Queremos saber cual es el promedio actual de calificaciones
+    cursor = db.cursor()
+    sql_promedio = "SELECT AVG(calificacion) from resena"
+    cursor.execute(sql_promedio)
+    promedio = cursor.fetchone()[0]
+    color = None
+
+    #Dependiendo qué tan alta o baja sea la calificación, la desplegaremos en pantalla con color diferente
+    if promedio >= 0.0 and promedio <= 2.0:
+        color = "red"
+    elif promedio >= 2.1 and promedio <= 3.9:
+        color = "yellow"
+    elif promedio >= 4.0 and promedio <= 5.0:
+        color = "green"
+
+    Label(second_frame, text = "Calificaciones y opiniones", font=("Arial, 15"), bg="white").grid(column=0, row=0, padx=100, pady=5)
+    Label(second_frame, text ="Promedio: {}".format(promedio), font=("Arial", 25), bg="white", fg=color).grid(column=0, row=1, padx=100, pady=5)
+
+    #Traemos una lista de todas las reseñas registradas
+    
+    sql_get_resenas = '''select id_cliente, calificacion, Date_format(fecha_calificacion, '%d/%m/%Y'), comentario
+    from resena'''
+    cursor.execute(sql_get_resenas)
+    lista_resenas = cursor.fetchall()
+
+    row = 2 #Comenzamos el conteo de filas desde 2
+
+    #Por cada reseña, desglosamos datos
+    for resena in lista_resenas:
+
+        id_cliente = resena[0]
+        calificacion = resena[1]
+        fecha = resena[2]
+        comentario = resena[3]
+        #También queremos que se vea el nombre del usuario que hizo dicha reseña, por lo que lo traemos
+        sql_get_nombreuser = '''select nombre_usuario from usuario where id_cliente = {}'''.format(id_cliente)
+        cursor.execute(sql_get_nombreuser)
+        nombre_user = cursor.fetchone()[0]
+
+        texto = "Usuario: " + str(nombre_user) + "\nPuntuación: " + str(calificacion) + "\t" + str(fecha) +"\n" + comentario
+
+        Label(second_frame, text = texto, justify=LEFT, wraplength=500, width=70, font= ("Lato", 11),
+        relief=GROOVE, anchor="w").grid(column=0, row=row, pady=15, padx=5)
+
+        row += 1
+
+    cursor.close()
 
 
 def blanklabel(ventana): #Para no escribir mucho, esta funcion crea el salto de linea

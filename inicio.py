@@ -13,9 +13,9 @@ import qrcode
 from PIL import Image, ImageTk
 #from models.administrador import consulta_BD
 import hashlib
-from models.administrador import login_admin
+from models.administrador import login_admin, ver_calificaciones_admin
 from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db, get_horarios_formateados
-from models.usuario import login, register, crear_calificacion
+from models.usuario import login, register, crear_calificacion, ver_calificaciones_cliente
 from models.platillo import ver_menu, modificar_menu
 from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr,cupos_disp, cupos_disp_todos, registrar_asistencia
 from db import db
@@ -175,7 +175,7 @@ def menu_cliente(id_cliente): #Menu a desplegar a todos estos usuarios de tipo c
     calificar = Button(pantalla_mc, text="Ver reseñas",
                     height="3", width="300",
                     bg= "#BCEBE0",
-                    command=lambda:ver_calificaciones()).grid(padx=60, sticky="NSEW")
+                    command=lambda:ver_calificaciones_cliente()).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_mc)
     #Boton llamado menu y sus caracteristicas
@@ -219,7 +219,7 @@ def menu_admin(id_admin): #Menu a desplegar al usuario de tipo admin
     calificar = Button(pantalla_ma, text="Ver reseñas",
                     height="3", width="300",
                     bg= "#BCEBE0",
-                    command=lambda:ver_calificaciones()).grid(padx=60, sticky="NSEW")
+                    command=ver_calificaciones_admin).grid(padx=60, sticky="NSEW")
     
     blanklabel(pantalla_ma)
     #Boton de menu de comida
@@ -930,22 +930,6 @@ def ver_reservacion(id_cliente): #Funcion para Ver la Reservacion
                 bg= "#47525E", fg="white",
                 command=ver_rese.destroy).grid(column=0, row = 5,padx=80, sticky="NSEW")
     
-def ver_calificaciones(): #Interfaz de las calificaciones
-
-    global pantalla_cali #pantalla cali = pantalla calificaciones
-    
-    pantalla_cali = Toplevel()
-    rowconfigure(pantalla_cali, 7)
-    columnconfigure(pantalla_cali, 1)
-    pantalla_cali.geometry("500x650")
-    pantalla_cali.title("Calificacion")
-    
-    #PENDIENTE
-    
-    volver = Button(pantalla_cali, text="Volver",
-                    height="2", width="15",
-                    bg= "#47525E", fg="white",
-                    command=pantalla_cali.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
 
 # Funcion para hacer validaciones e iniciar sesión
 def validar(): 
