@@ -349,8 +349,77 @@ def registrar_asistencia():
 
     pantalla_registrar_asis = Toplevel()
     pantalla_registrar_asis.title("Registrar asistencia")
-    pantalla_registrar_asis.geometry("500x600")
+    pantalla_registrar_asis.geometry("500x400")
     
-    frame_1 = Frame(pantalla_registrar_asis, bg="white")
+    frame_1 = Frame(pantalla_registrar_asis)
     frame_1.grid(column=0, row=0)
 
+    frame_2 = Frame(pantalla_registrar_asis)
+    frame_2.grid(column=0, row=1)
+
+    id_reservacion = StringVar()
+
+    def confirmar(): #Función invocada por el boton de confirmar asistencia (Hace todo lo importante c:)
+
+        id = id_reservacion.get()
+        cursor = db.cursor()
+        #Traemos la información más importante de la reservación para ser mostrada a la hora de confirmar
+        sql_reservacion = "SELECT id_cliente, hora_fecha, zona, estatus from reservacion where id_reservacion = {}".format(id)
+        cursor.execute(sql_reservacion)
+        reservacion_info = cursor.fetchone()
+        cursor.close()
+
+        #El id de la reservación a registrar por asistida es erroneo
+        if reservacion_info == None:
+            messagebox.showwarning("Ninguna coincidencia", "No hay ninguna reservación con el id {}".format(id))
+        #Si se encontró esta reservacion
+        else:
+            #Obtenemos datos de la consulta
+            id_cliente = reservacion_info[0]
+            fecha = reservacion_info[1]
+            zona = reservacion_info[2]
+            estatus = reservacion_info[3]
+
+            if zona == 1:
+                zona = "Zona interior"
+            elif zona == 2:
+                zona = "Green Garden"
+            
+            if estatus == 'S': #Si esta reservación ya se había confirmado que se habia asistido, avisamos
+                messagebox.showerror("ERROR", "Esta reservación ya había sido confirmada como atendida")
+            else:
+                #como queremos mostrar el nombre real de la persona y no solo su id, consultaremos su nombre
+                cursor = db.cursor()
+                sql_nombre = "Select nombre_personal from usuario where id_cliente = {}".format(id_cliente)
+                cursor.execute(sql_nombre)
+                nombre_cliente = cursor.fetchone()[0]
+                cursor.close()
+                #Desplegamos un cuadro de aviso, dando detalles de la reservación y preguntando si se desea continuar
+                proceder = messagebox.askokcancel("Confirmar", '''Información de reservación a confirmar:\nId cliente: {}\nNombre: {}\nZona: {}\nFecha y hora de reservación: {}\n¿Continuar con registro de asistencia?'''.
+                format(id_cliente, nombre_cliente, zona, fecha))
+
+                if proceder:
+                    cursor = db.cursor()
+                    #Si todo sale bien, entonces confirmamos asistencia y establecemos que usuario tiene calificación pendiente que dar para su sig login
+                    sql_poner_cal_pendiente = "Update usuario set cal_pendiente = True where id_cliente = {}".format(id_cliente)
+                    cursor.execute(sql_poner_cal_pendiente)
+                    db.commit()
+                    #Marcamos esta reservación como 'S' (si hubo asistencia)
+                    sql_estatus_nuevo = "Update reservacion set estatus = 'S' where id_reservacion = {}".format(id)
+                    cursor.execute(sql_estatus_nuevo)
+                    db.commit()
+                    cursor.close()
+                    
+                    messagebox.showinfo("Éxito", "Asistencia confirmada")
+                else:
+                    pass
+
+
+    Label(frame_1, text = "Registro de asistencia", font = ("Lato", 20), fg = "navy blue").grid(column=0, row=0, pady=20, padx=100)
+    Label(frame_1, text = "Ingrese el ID de la reservación\nen la cual se registrará asistencia", font = ("Lato", 15), fg = "black").grid(column=0, row=1, pady=5, padx=100)
+
+    Label(frame_2, text = "Id reservación: ").grid(column=0, row=0)
+    Entry(frame_2, textvariable=id_reservacion, width=30).grid(column=1, row=0, padx=5, pady=20)
+    Button(frame_2, text= "Confirmar asistencia", bg = "#404040", fg="white", command=confirmar).grid(column=0, row=1, pady=6, columnspan=2)
+
+    
