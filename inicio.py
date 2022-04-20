@@ -936,37 +936,30 @@ def menu_calificacion(user): #Interfaz de las calificaciones
         Button(pantalla_cali, text="Calificar",
                height="3", width="300",
                bg= "#BCEBE0",
-               command=crear_calificacion).grid(padx=60, sticky="NSEW")
+               command=crear_calificacion).grid(padx=60, pady=20,sticky="NSEW")
         
         blanklabel(pantalla_cali)
-    Button(pantalla_cali, text="Ver calificacion",
+    Button(pantalla_cali, text="Ver calificaciones",
            height="3", width="300",
            bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para ver la calificacion
     
     blanklabel(pantalla_cali)
-    puntuacion = Label(pantalla_cali, text="...").grid() #Promedio de calificacion no visible
     
-    blanklabel(pantalla_cali)
-    Button(pantalla_cali, text="Ver Opiniones",
-           height="3", width="300",
-           bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para ver las opiniones
-    
-    blanklabel(pantalla_cali)
     volver = Button(pantalla_cali, text="Volver",
                     height="2", width="15",
                     bg= "#47525E", fg="white",
                     command=pantalla_cali.destroy).grid(padx=80, sticky="NSEW") #Boton para regresar al menu de opciones
 
 def crear_calificacion():
-    global pantalla_crear_cali, new_opinion, opinion_entry #pantalla_crear_cali = pantalla crear calificacion
+
+    global pantalla_crear_cali #pantalla_crear_cali = pantalla crear calificacion
     pantalla_crear_cali = Toplevel(pantalla_cali)
-    pantalla_crear_cali.geometry("450x300")
+    pantalla_crear_cali.geometry("450x350")
     pantalla_crear_cali.title("Crear Calificacion")
-    new_opinion=StringVar()
     rowconfigure(pantalla_crear_cali,10)
     columnconfigure(pantalla_crear_cali,3)
     Label(pantalla_crear_cali, text="Seleccione la Puntuacion:",
-          font="15,bold").grid(column=1) #Muestra los cupos disponibles
+          font="15,bold").grid(column=1, pady=8) #Muestra los cupos disponibles
     #Una etiqueta con dos botones adyacentes para subir o disminuir el numero de cupos a reservar
     puntuacion = Label(pantalla_crear_cali, text=str(estrellas),
                           height="2", width="4",
@@ -974,29 +967,35 @@ def crear_calificacion():
     
     def dar_puntos(operacion): #Funcion para ver los cupos disponibles y delimitar los botones
         global estrellas
-        if estrellas==0 and estrellas>0: #Si es 0 o menor no se puede disminuir
-            estrellas=estrellas-1
+
+        if operacion==0 and estrellas>0: #Si es 0 o menor no se puede disminuir
+            estrellas=estrellas - 0.5
             puntuacion = Label(pantalla_crear_cali, text=str(estrellas),
                                   height="2", width="4",
                                   font="18").grid(row=3, column=1) #muestra las estrellas
+
         elif operacion==1 and estrellas<5: #Si es 5 o mas no se puede aumentar
-            estrellas=estrellas+1
+            estrellas=estrellas + 0.5
             puntuacion = Label(pantalla_crear_cali, text=str(estrellas),
                                   height="2", width="4",
                                   font="18").grid(row=3, column=1) #muestra las estrellas
+
     resta = Button(pantalla_crear_cali, text="-",
                    height="2", width="4",
-                   bg= "#BCEBE0",
+                   bg= "#EC2926", fg= "white",
                    font="18", command=lambda:dar_puntos(0)).grid(row=3, column=0, padx=15, sticky="NSEW") #Boton de resta
     suma = Button(pantalla_crear_cali, text="+",
                   height="2", width="4",
-                  bg= "#BCEBE0",
+                  bg= "#29AE36",
                   font="18", command=lambda:dar_puntos(1)).grid(row=3, column=2, padx=15, sticky="NSEW") #Boton de suma
     blanklabel(pantalla_crear_cali)
-    Label(pantalla_crear_cali, text="Comentario:",
-          font="15,bold").grid(column=0, columnspan=3) #Para ingresar un comentario
-    opinion_entry = Entry(pantalla_crear_cali, textvariable=new_opinion, width="30")
-    opinion_entry.grid(column=1)
+
+    Label(pantalla_crear_cali, text="Comentario :",
+          font="15,bold").grid(column=0, columnspan=3, pady=5) #Para ingresar un comentario
+
+    opinion_text = Text(pantalla_crear_cali, width=45, height=3)
+    opinion_text.grid(column=0, columnspan=3, padx=30)
+
     blanklabel(pantalla_crear_cali)
     submit = Button(pantalla_crear_cali, text="Registrar calificacion",
                     height="3", width="20",
