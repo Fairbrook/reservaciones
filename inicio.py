@@ -241,23 +241,28 @@ def ver_info():#Funcion para ver la informacion
     pantalla_viewinfo.geometry("590x600")
     pantalla_viewinfo.config(bg="white") #Fondo de la ventana
     pantalla_viewinfo.title("Visualizar información")
-    pantalla_viewinfo.resizable(0,0)
     #Escalabiidad
     rowconfigure(pantalla_viewinfo, 2)
-    columnconfigure(pantalla_viewinfo, 2)
+    columnconfigure(pantalla_viewinfo, 1)
     frame_info = Frame(pantalla_viewinfo, bg= "white")
     frame_info.grid(column=0, row=1)
+    rowconfigure(frame_info, 1)
+    columnconfigure(frame_info, 1)
     #Se declara un frame de fondo blanco
     frame_titulo = Frame(pantalla_viewinfo, bg = "white") 
     frame_titulo.grid(column=0,row=0)
+    rowconfigure(frame_titulo, 2)
+    columnconfigure(frame_titulo, 1)
     #Etiqueta de titulo del frame
     Label(frame_titulo, text="Información", font=("Arial", 20),
           fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
     frame_info = Frame(pantalla_viewinfo, bg= "white")
-    frame_info.grid(column=0, row=1)
+    frame_info.grid(column=0, row=1, sticky='NSEW')
+    rowconfigure(frame_info, 2)
+    columnconfigure(frame_info, 1)
     #Texto que contendra el frame
     texto_info = Text(frame_info, height=30, width=70, font=("Lato", 10))
-    texto_info.grid(column=0,row=0, padx=20,pady=10)
+    texto_info.grid(column=0,row=0, padx=20,pady=10,sticky='NSEW')
     #Implementacion de la barra de scroll tanto vertical como horizontal
     ladoy = Scrollbar(frame_info, orient =VERTICAL)
     ladox = Scrollbar(frame_info, orient= HORIZONTAL)
@@ -294,22 +299,33 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     pantalla_modificar_info.geometry("630x650")
     pantalla_modificar_info.config(bg="white")
     pantalla_modificar_info.title("Modificar información")
-    pantalla_modificar_info.resizable(0,0)
+
+    #Esacalabilidad
+    rowconfigure(pantalla_modificar_info, 5)
+    columnconfigure(pantalla_modificar_info, 1)
+
     pantalla_modificar_info = Frame(pantalla_modificar_info, bg = "white")
-    pantalla_modificar_info.grid(column=0,row=0)
-    Label(pantalla_modificar_info, text="Información", font=("Arial", 20), fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10)
-     #Esacalabilidad
+    pantalla_modificar_info.grid(column=0,row=0, sticky='NSEW')
     rowconfigure(pantalla_modificar_info, 2)
-    columnconfigure(pantalla_modificar_info, 2)
+    columnconfigure(pantalla_modificar_info, 1)
+    Label(pantalla_modificar_info, text="Información", 
+            font=("Arial", 20), fg="navy blue", bg="white").grid(column=0,row=0, padx=150, pady=10, sticky='NSEW')
+
     frame_info = Frame(pantalla_modificar_info, bg= "white")
-    frame_info.grid(column=0, row=1)
+    frame_info.grid(column=0, row=1, sticky='NSEW')
+    rowconfigure(frame_info, 2)
+    columnconfigure(frame_info, 1)
     #Se crea el frame donde se modificara la informacion general (sin incluir horarios ni cupos)
     #Se crea frame donde se visualizan cupos y horarios, es en un lugar diferente porque son variables indepenndientes
     frame_horarios_cupos = Frame(pantalla_modificar_info, bg="white")
-    frame_horarios_cupos.grid(column=0, row=2)
+    frame_horarios_cupos.grid(column=0, row=2, sticky='NSEW')
+    rowconfigure(frame_horarios_cupos, 1)
+    columnconfigure(frame_horarios_cupos, 1)
     #Frame donde estarán los spinbox de la información (cupos, horario inicio y horario cierre)
     frame_variables = Frame(pantalla_modificar_info, bg = "white")
-    frame_variables.grid(column=0, row=3)
+    frame_variables.grid(column=0, row=3, sticky='NSEW')
+    rowconfigure(frame_variables, 4)
+    columnconfigure(frame_variables, 4)
 
     entry_z1 = IntVar() #Entry Spinbox zona 1
     entry_z2 = IntVar() #Entry Spinbox zona 2
@@ -321,27 +337,37 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     opciones_spin_inicio = (8,10,12,14,16,18,20) #Opciones que tendrán los spinbox de horarios
     opciones_spin_fin = (10,12,14,16,18,20,22)
 
-    Label(frame_variables,text="1er horario (Formato 24hrs): ", font=("Lato", 8), bg="white").grid(column=0, row=1)
-    spin_inicio = Spinbox(frame_variables, textvariable= entry_h1, values=opciones_spin_inicio).grid(column=1, row=1, padx=5)
+    Label(frame_variables,text="1er horario (Formato 24hrs): ", 
+            font=("Lato", 8), bg="white").grid(column=0, row=1, sticky='NSEW')
+    spin_inicio = Spinbox(frame_variables, textvariable= entry_h1, 
+            values=opciones_spin_inicio).grid(column=1, row=1, padx=5, sticky='NSEW')
 
-    Label(frame_variables,text="último horario (Formato 24hrs): ", font=("Lato", 8), bg="white").grid(column=2, row=1)
-    spin_fin = Spinbox(frame_variables, textvariable= entry_h2 ,values=opciones_spin_fin).grid(column=3, row=1, padx=5)
+    Label(frame_variables,text="último horario (Formato 24hrs): ", 
+            font=("Lato", 8), bg="white").grid(column=2, row=1, sticky='NSEW')
+    spin_fin = Spinbox(frame_variables, textvariable= entry_h2 ,
+            values=opciones_spin_fin).grid(column=3, row=1, padx=5, sticky='NSEW')
 
-    Label(frame_variables, text="Mesas en zona interior: ", font=("Lato", 8), bg="white").grid(column=0, row=2, padx=5, pady=8)
-    spin_zona1 = Spinbox(frame_variables, textvariable=entry_z1 ,from_=1, to=50).grid(column=1, row=2, padx=5)
+    Label(frame_variables, text="Mesas en zona interior: ", 
+            font=("Lato", 8), bg="white").grid(column=0, row=2, padx=5, pady=8, sticky='NSEW')
+    spin_zona1 = Spinbox(frame_variables, textvariable=entry_z1 ,
+            from_=1, to=50).grid(column=1, row=2, padx=5, sticky='NSEW')
     
-    Label(frame_variables, text="Mesas en Green Garden: ", font=("Lato", 8), bg="white").grid(column=2, row=2, padx=5, pady=8)
-    spin_zona2 = Spinbox(frame_variables, textvariable=entry_z2 ,from_=1, to=50).grid(column=3, row=2, padx=5)
+    Label(frame_variables, text="Mesas en Green Garden: ", 
+            font=("Lato", 8), bg="white").grid(column=2, row=2, padx=5, pady=8, sticky='NSEW')
+    spin_zona2 = Spinbox(frame_variables, textvariable=entry_z2 ,
+            from_=1, to=50).grid(column=3, row=2, padx=5, sticky='NSEW')
     
     #Frame para botones
     frame_boton = Frame(pantalla_modificar_info, bg="white")
-    frame_boton.grid(column=0, row=4)
+    frame_boton.grid(column=0, row=4, sticky='NSEW')
+    rowconfigure(frame_boton, 1)
+    columnconfigure(frame_boton, 2)
     #Texto que contendra info general
     texto_info = Text(frame_info, height=15, width=70, font=("Lato", 10))
-    texto_info.grid(column=0,row=0, padx=20,pady=10)
+    texto_info.grid(column=0,row=0, padx=20,pady=10, sticky='NSEW')
     #Texto que contendrá info sobre cupos y horarios
     texto_horarios_cupos = Text(frame_horarios_cupos, height=4, width=70, font=("Lato", 10))
-    texto_horarios_cupos.grid(column=0, row=0, padx=20,pady=10)
+    texto_horarios_cupos.grid(column=0, row=0, padx=20,pady=10, sticky='NSEW')
     #Implementacion de la barra de scroll tanto vertical como horizontal
     ladoy = Scrollbar(frame_info, orient =VERTICAL)
     ladox = Scrollbar(frame_info, orient= HORIZONTAL)
@@ -400,10 +426,10 @@ def modificar_info(): #Funcion para el administrador, con el cual podra modifica
     #Botones para ejecutar las dos funciones previas
     Button(frame_boton, text = "Actualizar info",
             bg= "#47525E", fg="white", 
-            command=actualizar_info).grid(column=0, row=0, pady=5, padx=5)
+            command=actualizar_info).grid(column=0, row=0, pady=5, padx=25, sticky='NSEW')
     Button(frame_boton, text = "Mostrar info",
             bg= "#47525E", fg="white", 
-            command=mostrar_info_actual).grid(column=1, row=0, pady=5, padx=5)
+            command=mostrar_info_actual).grid(column=1, row=0, pady=5, padx=25, sticky='NSEW')
                    
     
 def menu_reservaciones(user, id): #Funcion que despliega el menu de reservaciones, recibe como parametro la id del usuario
