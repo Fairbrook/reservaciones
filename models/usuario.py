@@ -159,15 +159,20 @@ def ver_calificaciones_cliente():
     sql_promedio = "SELECT AVG(calificacion) from resena"
     cursor.execute(sql_promedio)
     promedio = cursor.fetchone()[0]
-    color = None
 
-    #Dependiendo qué tan alta o baja sea la calificación, la desplegaremos en pantalla con color diferente
-    if promedio >= 0.0 and promedio <= 2.0:
-        color = "red"
-    elif promedio >= 2.1 and promedio <= 3.9:
-        color = "yellow"
-    elif promedio >= 4.0 and promedio <= 5.0:
-        color = "green"
+    if promedio == None:
+        promedio = "No hay calificaciones"
+        color = "black"
+    else:
+        promedio = round(promedio, 1)
+        color = None
+        #Dependiendo qué tan alta o baja sea la calificación, la desplegaremos en pantalla con color diferente
+        if promedio >= 0.0 and promedio <= 2.0:
+            color = "red"
+        elif promedio >= 2.1 and promedio <= 3.9:
+            color = "yellow"
+        elif promedio >= 4.0 and promedio <= 5.0:
+            color = "green"
 
     Label(second_frame, text = "Calificaciones y opiniones", font=("Arial, 15"), bg="white").grid(column=0, row=0, padx=100, pady=5)
     Label(second_frame, text ="Promedio: {}".format(promedio), font=("Arial", 25), bg="white", fg=color).grid(column=0, row=1, padx=100, pady=5)
