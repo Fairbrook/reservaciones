@@ -18,7 +18,7 @@ from models.administrador import login_admin, ver_calificaciones_admin
 from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db, get_horarios_formateados
 from models.usuario import login, register, crear_calificacion, ver_calificaciones_cliente
 from models.platillo import ver_menu, modificar_menu
-from models.reservacion import consultar_reservacion, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr,cupos_disp, cupos_disp_todos, registrar_asistencia
+from models.reservacion import consultar_reservacion, get_all_reservations, get_estatus, get_reservation, update_estatus, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr,cupos_disp, cupos_disp_todos, registrar_asistencia
 from db import db
 
 def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio de sesion
@@ -978,25 +978,38 @@ def administrar_reservaciones():
     #Tabla para ver las reservaciones existentes
     tabla = ttk.Treeview(admin_rese, height=10)
     tabla.grid(column=0, row=2, padx=20, pady=20, sticky="NSWE")
-    tabla['columns'] = ('horario','zona','Personas','Sello')
+    tabla['columns'] = ('id','horario','zona','personas','sello')
 
-    tabla.column('#0', minwidth=0, width=0, anchor='center')
-    tabla.column('horario', minwidth=70, width=80 , anchor='center')
-    tabla.column('zona', minwidth=120, width=160 , anchor='center')
-    tabla.column('Personas', minwidth=90, width=130 , anchor='center')
-    tabla.column('Sello', minwidth=40, width=50 , anchor='center')
     
+    tabla.column("#0", width=0,  stretch=NO)
+    tabla.column('id', minwidth=10, width=10, anchor='center')
+    tabla.column('horario', minwidth=120, width=130 , anchor='center')
+    tabla.column('zona', minwidth=10, width=10 , anchor='center')
+    tabla.column('personas', minwidth=90, width=130 , anchor='center')
+    tabla.column('sello', minwidth=40, width=50 , anchor='center')
 
+    tabla.heading("#0",text="",anchor=CENTER)
+    tabla.heading('id', text='id', anchor ='center')
     tabla.heading('horario', text='Horario', anchor ='center')
-    tabla.heading('zona', text='zona', anchor ='center')
-    tabla.heading('Personas', text='Personas', anchor ='center')
-    tabla.heading('Sello', text='Sello', anchor ='center')
-    
+    tabla.heading('zona', text='Zona', anchor ='center')
+    tabla.heading('personas', text='Personas', anchor ='center')
+    tabla.heading('sello', text='Sello', anchor ='center')
+
     estilo = ttk.Style(admin_rese)
     estilo.theme_use('clam') #  ('clam', 'alt', 'default', 'classic')
     estilo.configure(".",font= ('lato', 10, 'bold'), foreground='black')        
     estilo.configure("Treeview", font= ('lato', 10, 'bold'), foreground='black',  background='white')
     estilo.map('Treeview',background=[('selected', 'lato')], foreground=[('selected','green')] )
+
+    reservaciones = get_all_reservations()
+    for reservation in reservaciones:
+        tabla.insert(parent='', index='end', iid=reservation['id'], text='', values=(
+            f'#{reservation["id"]}',
+            reservation['hora_fecha'],
+            reservation["zona"],
+            reservation["n_personas"],
+            reservation["estatus"]
+        ))
 
     blanklabel(admin_rese)
 
@@ -1008,15 +1021,40 @@ def administrar_reservaciones():
     id_rese_entry = Entry(frame_parametros, textvariable=id_rese, width="25")#Entry para hacer busqueda
     id_rese_entry.grid(column=0, row=1, padx=30, sticky="NSEW")
 
-    def sello_nuevo(event): #Da el valor del sello
-        global sello
+    def sello_nuevo(*args): #Da el valor del sello
         sello = seleccion_sello.get()
+        id = id_rese.get()
+        update_estatus(id, sello)
+        seleccion_sello.set(sello)
+        updated_reservation = get_reservation(id)
+        print(updated_reservation)
+        tabla.item(id,text="",values=(
+            f"#{updated_reservation['id']}",
+            updated_reservation["hora_fecha"],
+            updated_reservation["zona"], 
+            updated_reservation["n_personas"],
+            updated_reservation["estatus"]
+        ))
+
+
     seleccion_sello = ttk.Combobox(frame_parametros, #Crea la lista desplegable en esta ventana
             state="readonly", #No se puede editar por el usuario
             values=["T", "C", "S"],
             width="25") #Opciones
     seleccion_sello.grid(column=2, row=1, sticky="NSEW") #Lo de posicionamiento
     seleccion_sello.bind("<<ComboboxSelected>>",sello_nuevo) #Cambia conforme las selecciones
+
+    def on_id_change(*args):
+        try:
+            id = id_rese.get()
+            estatus = get_estatus(id)
+            seleccion_sello.set(estatus)
+        except:
+            seleccion_sello.set("")
+            pass
+    
+
+    id_rese.trace('rwua', on_id_change)
 
     blanklabel(admin_rese)
     Button(admin_rese, text="Volver",
@@ -1052,9 +1090,10 @@ def validar():
         #funcion para login
         user = login(usuariovalidar, contraseñavalidar)
         if user!=None:
-            pantalla.iconify()
+            # pantalla.iconify()
             id_current_user = user["id_cliente"]#<----ID es necesario para varias operaciones, es de suma importancia
             menu_cliente(id_current_user)
+            
         else:
         #Inicio sesion admin
           admin = login_admin(usuariovalidar,contraseñavalidar)

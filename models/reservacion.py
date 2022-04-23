@@ -431,3 +431,58 @@ def registrar_asistencia():
     Button(frame_2, text= "Confirmar asistencia", bg = "#404040", fg="white", command=confirmar).grid(column=0, row=1, pady=6, columnspan=2)
 
     
+def get_all_reservations():
+    query = "SELECT * FROM reservacion"
+    cursor = db.cursor()
+    cursor.execute(query)
+    reservaciones = []
+    for reservacion in cursor:
+        (id_reservacion, hora_fecha, zona, n_personas, id_cliente, id_restaurante, qr, estatus) = reservacion
+        reservaciones.append({
+            "id": id_reservacion,
+            "hora_fecha": hora_fecha,
+            "zona": zona,
+            "n_personas": n_personas,
+            "cliente": id_cliente,
+            "id_restaurante": id_restaurante,
+            "qr": qr,
+            "estatus": estatus
+        })
+    return reservaciones
+
+def update_estatus(id, estatus):
+    query = "UPDATE reservacion SET estatus=%s WHERE id_reservacion=%s"
+    cursor = db.cursor()
+    cursor.execute(query, (estatus, id))
+    db.commit()
+    cursor.close()
+
+def get_estatus(id):
+    query = "SELECT estatus FROM reservacion WHERE id_reservacion=%s"
+    cursor = db.cursor()
+    cursor.execute(query,(id,))
+    reservations = list(cursor)
+    cursor.close()
+    if(len(reservations)>0):
+        (estatus,) = reservations[0]
+        return estatus
+    return ""
+
+def get_reservation(id):
+    query = "SELECT * FROM reservacion WHERE id_reservacion=%s"
+    cursor = db.cursor()
+    cursor.execute(query,(id,))
+    reservations = list(cursor)
+    cursor.close()
+    if(len(reservations)>0):
+        (id_reservacion, hora_fecha, zona, n_personas, id_cliente, id_restaurante, qr, estatus) = reservations[0]
+        return{
+            "id": id_reservacion,
+            "hora_fecha": hora_fecha,
+            "zona": zona,
+            "n_personas": n_personas,
+            "cliente": id_cliente,
+            "id_restaurante": id_restaurante,
+            "qr": qr,
+            "estatus": estatus
+        }

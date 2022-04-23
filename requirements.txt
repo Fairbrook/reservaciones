@@ -4,4 +4,4 @@ protobuf==3.19.4
 python-dotenv==0.20.0
 tkcalendar==1.6.1
 babel==2.9.1
-qrcode==0.4.4
+qrcode==7.3.1
