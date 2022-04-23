@@ -1,5 +1,6 @@
 
 # -- coding: utf-8 --
+from cProfile import label
 from dataclasses import InitVar
 from msilib import text
 from re import L
@@ -24,7 +25,7 @@ def inicio_sesion(): #pantalla al iniciar el programa, se encontrara el inicio d
     global pantalla, user_verify, password_verify, user_entry, password_entry #variables globales
     global cupos_max, cupos, reserva, estrellas, zona, fecha, hora, uso_f, uso_h, uso_z, fecha1,hora1,zona1,Op
     pantalla=Tk() #declaramos la pantalla principal
-    pantalla.geometry("300x350") #tamaño de ventana
+    pantalla.geometry("400x450") #tamaño de ventana
     pantalla.title("Login") #titulo de ventana
     user_verify=StringVar() #indicamos el tipo de variable
     cupos_max=IntVar()
@@ -436,13 +437,14 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
     global pantalla_rese
     if user==1: #1 es de admin, probablemente dependiendo de la BD cambiara a ser una funcion aparte
         pantalla_rese = Toplevel(pantalla_ma) #Encima de la pantalla de menu admin
-        rowconfigure(pantalla_rese,3)
+        rowconfigure(pantalla_rese,5)
         columnconfigure(pantalla_rese,1)
+        pantalla_rese.geometry("300x300")
     else: #else de cliente (TEMPORAL)
         pantalla_rese = Toplevel(pantalla_mc) #Encima de la pantalla de menu cliente
         rowconfigure(pantalla_rese,9)
         columnconfigure(pantalla_rese,1)
-    pantalla_rese.geometry("300x400")
+        pantalla_rese.geometry("300x400")
     pantalla_rese.title("Reservacion")
     
     if user!=1: #Si el usuario es cualquier cliente 
@@ -479,22 +481,18 @@ def menu_reservaciones(user, id): #Funcion que despliega el menu de reservacione
         blanklabel(pantalla_rese)
     else:
         #Botones para el admin relacionados con reservar
-        Button(pantalla_rese, text="Ver reservaciones",
-               height="3", width="300",
-               bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para Ver las reservaciones totales
-        
-        blanklabel(pantalla_rese)
-
         Button(pantalla_rese, text = "Registrar asistencia",
-        height= 3, width= 300, bg = "#BCEBE0", command=registrar_asistencia).grid(padx=60, sticky="NSEW") #Boton para registrar asistencia
+                height="3", width="300",
+                bg = "#BCEBE0", command=registrar_asistencia).grid(row=0, padx=60, sticky="NSEW") #Boton para registrar asistencia
 
         blanklabel(pantalla_rese)
 
-        Button(pantalla_rese, text="Modificar parametros",
+        Button(pantalla_rese, text="Administrar reservaciones",
                height="3", width="300",
-               bg= "#BCEBE0").grid(padx=60, sticky="NSEW") #Boton para Ver las reservaciones totales
+               bg= "#BCEBE0", command=administrar_reservaciones).grid(row=2, padx=60, sticky="NSEW") #Boton para Ver las reservaciones totales
         
         blanklabel(pantalla_rese)
+
     volver = Button(pantalla_rese, text="Volver",
                     height="2", width="15",
                     bg= "#47525E", fg="white",
@@ -945,17 +943,88 @@ def ver_reservacion(id_cliente): #Funcion para Ver la Reservacion
 
         rowconfigure(ver_rese, 8)
         columnconfigure(ver_rese, 1)
-        Label(ver_rese, text="Información de su reservación:").grid(column=0, row=0, pady=10) #pop up donde se muestra la info PROXUMAMENTE
-        Label(ver_rese, text="ID de reservación: " + str(id_reserva)).grid(column=0, row=1, pady=10)
-        Label(ver_rese, text="Fecha y hora: "+ str(fecha_hora)).grid(column=0, row= 2, pady=10)
-        Label(ver_rese, text="Su zona es: "+ str(zona)).grid(column=0, row=3, pady=10)
-        Label(ver_rese, text="Mesa para " + str(personas) + " personas").grid(column=0, row=4, pady=10)
+        Label(ver_rese, text="Información de su reservación:").grid(column=0, row=0, pady=10, sticky='NSEW') #pop up donde se muestra la info PROXUMAMENTE
+        Label(ver_rese, text="ID de reservación: " + str(id_reserva)).grid(column=0, row=1, pady=10, sticky='NSEW')
+        Label(ver_rese, text="Fecha y hora: "+ str(fecha_hora)).grid(column=0, row= 2, pady=10, sticky='NSEW')
+        Label(ver_rese, text="Su zona es: "+ str(zona)).grid(column=0, row=3, pady=10, sticky='NSEW')
+        Label(ver_rese, text="Mesa para " + str(personas) + " personas").grid(column=0, row=4, pady=10, sticky='NSEW')
         blanklabel(ver_rese)
         Button(ver_rese, text="Volver",
                 heigh="3", font="18",
                 bg= "#47525E", fg="white",
                 command=ver_rese.destroy).grid(column=0, row = 5,padx=80, sticky="NSEW")
     
+def administrar_reservaciones():
+    global admin_rese, id_rese ,id_rese_entry, seleccion_sello
+    admin_rese = Toplevel() #Encima de cualquier cosa
+    admin_rese.geometry("550x450")
+    admin_rese.title("Administrar Reservaciones")
+    id_rese=IntVar()
+
+    rowconfigure(admin_rese, 7)
+    columnconfigure(admin_rese, 1)
+
+    #Frame para poner los parametros
+    frame_parametros=Frame(admin_rese)
+    frame_parametros.grid(column=0, row=4)
+    rowconfigure(frame_parametros, 2)
+    columnconfigure(frame_parametros, 3)
+
+    Label(admin_rese, text="Administrador de reservaciones",
+            font=('lato', 16, 'bold')).grid(column=0, row=0, pady=10, sticky='NSEW')
+
+    blanklabel(admin_rese)
+
+    #Tabla para ver las reservaciones existentes
+    tabla = ttk.Treeview(admin_rese, height=10)
+    tabla.grid(column=0, row=2, padx=20, pady=20, sticky="NSWE")
+    tabla['columns'] = ('horario','zona','Personas','Sello')
+
+    tabla.column('#0', minwidth=0, width=0, anchor='center')
+    tabla.column('horario', minwidth=70, width=80 , anchor='center')
+    tabla.column('zona', minwidth=120, width=160 , anchor='center')
+    tabla.column('Personas', minwidth=90, width=130 , anchor='center')
+    tabla.column('Sello', minwidth=40, width=50 , anchor='center')
+    
+
+    tabla.heading('horario', text='Horario', anchor ='center')
+    tabla.heading('zona', text='zona', anchor ='center')
+    tabla.heading('Personas', text='Personas', anchor ='center')
+    tabla.heading('Sello', text='Sello', anchor ='center')
+    
+    estilo = ttk.Style(admin_rese)
+    estilo.theme_use('clam') #  ('clam', 'alt', 'default', 'classic')
+    estilo.configure(".",font= ('lato', 10, 'bold'), foreground='black')        
+    estilo.configure("Treeview", font= ('lato', 10, 'bold'), foreground='black',  background='white')
+    estilo.map('Treeview',background=[('selected', 'lato')], foreground=[('selected','green')] )
+
+    blanklabel(admin_rese)
+
+    Label(frame_parametros, text="Seleccione la Id de la reservacion:", 
+            font="12,bold").grid(column=0, row=0, padx=30, sticky='NSEW')
+    Label(frame_parametros, text="Señala el sello a otorgar:", 
+            font="12,bold").grid(column=2, row=0, padx=10, sticky='NSEW')
+
+    id_rese_entry = Entry(frame_parametros, textvariable=id_rese, width="25")#Entry para hacer busqueda
+    id_rese_entry.grid(column=0, row=1, padx=30, sticky="NSEW")
+
+    def sello_nuevo(event): #Da el valor del sello
+        global sello
+        sello = seleccion_sello.get()
+    seleccion_sello = ttk.Combobox(frame_parametros, #Crea la lista desplegable en esta ventana
+            state="readonly", #No se puede editar por el usuario
+            values=["T", "C", "S"],
+            width="25") #Opciones
+    seleccion_sello.grid(column=2, row=1, sticky="NSEW") #Lo de posicionamiento
+    seleccion_sello.bind("<<ComboboxSelected>>",sello_nuevo) #Cambia conforme las selecciones
+
+    blanklabel(admin_rese)
+    Button(admin_rese, text="Volver",
+             heigh="2", font="16",
+             bg= "#47525E", fg="white",
+             command=admin_rese.destroy).grid(padx=80, sticky="NSEW")
+
+
 
 # Funcion para hacer validaciones e iniciar sesión
 def validar(): 
