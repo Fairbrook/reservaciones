@@ -1154,7 +1154,7 @@ def registrar_bd(): #Funcion para el registro
         messagebox.showwarning("Error", "Introduzca su contraseña")
         return
     try:
-        has_error, error_msg = register(new_user, new_password)
+        has_error, error_msg = register(new_name, new_user, new_password)
         if has_error:
             messagebox.showwarning("Error", error_msg)
             return
