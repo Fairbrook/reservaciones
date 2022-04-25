@@ -513,7 +513,13 @@ def menu_reservaciones(user, id):
                bg="#BCEBE0", command=registrar_asistencia).grid(row=0, padx=60, sticky="NSEW")  # Boton para registrar asistencia
 
         blanklabel(pantalla_rese)
-
+        Button(pantalla_rese, text="Cupos disponibles",
+               height="3", width="300",
+               bg="#BCEBE0",
+               command=lambda: cupos_disponibles(id)).grid(row = 1 ,padx=60, sticky="NSEW")  # Boton de Ver cupos disponicles
+        
+        blanklabel(pantalla_rese)
+       
         Button(pantalla_rese, text="Administrar reservaciones",
                height="3", width="300",
                bg="#BCEBE0", command=administrar_reservaciones).grid(row=2, padx=60, sticky="NSEW")  # Boton para Ver las reservaciones totales
