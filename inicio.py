@@ -828,12 +828,13 @@ def cupos_disponibles(id_cliente):
                         i = i+1
                     else:
                         break
-                if cupos_general != 'FC' and cupos_general != 'NC':
+                if cupos_general == 'FC' or cupos_general == 'NC':
 
-                    j = j+1
+                   break 
+
                 else:
-                    break
-
+                    j = j+1
+                    
     ver_cupos = Button(frame_boton_cupos, text="Cupos disponibles",
                        heigh="2", width="40",
                        font="18", bg="#30B68B",
