@@ -28,6 +28,7 @@ def inicio_sesion():  # pantalla al iniciar el programa, se encontrara el inicio
     global cupos_max, cupos, reserva, estrellas, zona, fecha, hora, uso_f, uso_h, uso_z, fecha1, hora1, zona1, Op
     pantalla = Tk()  # declaramos la pantalla principal
     pantalla.geometry("400x450")  # tamaño de ventana
+    centrar_pantalla(pantalla, 400, 450)
     pantalla.title("Login")  # titulo de ventana
     user_verify = StringVar()  # indicamos el tipo de variable
     cupos_max = IntVar()
@@ -109,6 +110,7 @@ def registro():  # Se despliega encima de iniciar sesion para dar un registro
     global new_user_verify, new_password_verify, new_name_verify, new_lastname_verify
     pantalla_r = Toplevel(pantalla)  # pantalla_r = pantalla registro
     pantalla_r.geometry("300x350")
+    centrar_pantalla(pantalla_r, 300, 350)
     pantalla_r.title("Registro")
     new_user_verify = StringVar()  # Indicamos el tipo de variable
     new_password_verify = StringVar()  # Indicamos el tipo de variable
@@ -166,6 +168,7 @@ def menu_cliente(id_cliente):  # Menu a desplegar a todos estos usuarios de tipo
     imagen = PhotoImage(file="logop.png")
     imagen.subsample(2, 2)  # No me acuerdo, pero es de la imagen
     pantalla_mc.geometry("300x500")
+    centrar_pantalla(pantalla_mc, 300, 500)
     pantalla_mc.title("Menu")
     rowconfigure(pantalla_mc, 10)
     columnconfigure(pantalla_mc, 1)
@@ -209,6 +212,7 @@ def menu_admin(id_admin):  # Menu a desplegar al usuario de tipo admin
     pantalla_ma = Toplevel(pantalla)  # Aparece encima del inicio de sesion
     imagen = PhotoImage(file="logop.png")  # Importamos la imagen del equipo
     pantalla_ma.geometry("300x450")
+    centrar_pantalla(pantalla_ma, 300, 450)
     pantalla_ma.title("Administrador")
 
     rowconfigure(pantalla_ma, 11)
@@ -253,6 +257,7 @@ def ver_info():  # Funcion para ver la informacion
     global pantalla_viewinfo  # Variables globales
     pantalla_viewinfo = Toplevel()  # Que aparezca encima de cualquier menu
     pantalla_viewinfo.geometry("590x600")
+    centrar_pantalla(pantalla_viewinfo, 600, 600)
     pantalla_viewinfo.config(bg="white")  # Fondo de la ventana
     pantalla_viewinfo.title("Visualizar información")
     # Escalabiidad
@@ -316,6 +321,7 @@ def modificar_info():  # Funcion para el administrador, con el cual podra modifi
 
     pantalla_modificar_info = Toplevel()
     pantalla_modificar_info.geometry("630x650")
+    centrar_pantalla(pantalla_modificar_info, 630, 650)
     pantalla_modificar_info.config(bg="white")
     pantalla_modificar_info.title("Modificar información")
 
@@ -466,12 +472,14 @@ def menu_reservaciones(user, id):
         rowconfigure(pantalla_rese, 5)
         columnconfigure(pantalla_rese, 1)
         pantalla_rese.geometry("300x300")
+        centrar_pantalla(pantalla_rese, 300, 300)
     else:  # else de cliente (TEMPORAL)
         # Encima de la pantalla de menu cliente
         pantalla_rese = Toplevel(pantalla_mc)
         rowconfigure(pantalla_rese, 9)
         columnconfigure(pantalla_rese, 1)
         pantalla_rese.geometry("300x400")
+        centrar_pantalla(pantalla_rese, 300, 400)
     pantalla_rese.title("Reservacion")
 
     if user != 1:  # Si el usuario es cualquier cliente
@@ -644,6 +652,7 @@ def cupos_disponibles(id_cliente):
     # Encima de la ventana de reservaciones
     cupos_dis = Toplevel(pantalla_rese)
     cupos_dis.geometry("550x670")
+    centrar_pantalla(cupos_dis, 550, 670)
     cupos_dis.title("Cupos disponibles")
     # frame boton cupos disponibles
     frame_boton_cupos = Frame(cupos_dis)
@@ -853,6 +862,7 @@ def cupos_disponibles(id_cliente):
 def Calendario_cupos():
     global fecha1, calendario_cupos, cale
     calendario_cupos = Toplevel()
+    centrar_pantalla(calendario_cupos, 300, 300)
     calendario_cupos.title("Calendario")
     cale = Calendar(calendario_cupos, selectmode='day',
                     year=2022, month=5,
@@ -876,6 +886,7 @@ def crear_reservacion(id_cliente):  # Funcion para crear la reservacion
     # Encima de la ventana de reservaciones
     crear_rese = Toplevel(pantalla_rese)
     crear_rese.geometry("450x500")
+    centrar_pantalla(crear_rese, 450, 500)
     crear_rese.title("Crear reservacion")
     # reiniciamos variables
     uso_h = 0
@@ -977,6 +988,7 @@ def ver_reservacion(id_cliente):  # Funcion para Ver la Reservacion
         # Encima de la ventana de reservaciones
         ver_rese = Toplevel(pantalla_rese)
         ver_rese.geometry("300x300")
+        centrar_pantalla(ver_rese, 300, 300)
         ver_rese.title("Ver reservacion")
 
         id_reserva = resultado[0]
@@ -1011,6 +1023,7 @@ def administrar_reservaciones():
     global admin_rese, id_rese, id_rese_entry, seleccion_sello
     admin_rese = Toplevel()  # Encima de cualquier cosa
     admin_rese.geometry("550x450")
+    centrar_pantalla(admin_rese, 550, 450)
     admin_rese.title("Administrar Reservaciones")
     id_rese = IntVar()
 
@@ -1093,7 +1106,7 @@ def administrar_reservaciones():
 
     seleccion_sello = ttk.Combobox(frame_parametros,  # Crea la lista desplegable en esta ventana
                                    state="readonly",  # No se puede editar por el usuario
-                                   values=["T", "C", "S"],
+                                   values=["A", "T", "C", "S"],
                                    width="25")  # Opciones
     # Lo de posicionamiento
     seleccion_sello.grid(column=2, row=1, sticky="NSEW")
@@ -1180,6 +1193,7 @@ def pop_ups(texto):  # Funcion para los pop ups
     imagen_cheems = PhotoImage(file="cheems.png")  # Importamos la imagen
     image = imagen_cheems.subsample(2, 2)
     pop_up.geometry("650x330")
+    centrar_pantalla(pop_up, 650, 330)
     pop_up.title("Errorm")
     pop_up.configure(bg="white")  # fondo blanco limdom
     rowconfigure(pop_up, 4)
@@ -1261,6 +1275,7 @@ def validar_reservacion_aux(id_cliente, fecha, hora, zona, cupos):
 def Calendario():
     global fecha, calendario, cal
     calendario = Toplevel()
+    centrar_pantalla(calendario, 300, 300)
     calendario.title("Calendario")
     cal = Calendar(calendario, selectmode='day',
                    year=2022, month=5,
@@ -1294,6 +1309,11 @@ def columnconfigure(ventana, column):
     for x in range(column):
         Grid.columnconfigure(ventana, x, weight=1)  # Da un peso que escala
 
+def centrar_pantalla(root, y, x):
+    x_ventana = (root.winfo_screenwidth() // 2 - x // 2)
+    y_ventana = (root.winfo_screenheight() // 2 - y // 2)-100
+    posicion = str(x) + "x" + str(x) + "+" + str(x_ventana) + "+" + str(y_ventana)
+    root.geometry(posicion)
 
 inicio_sesion()
 # app=aplication()
