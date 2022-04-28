@@ -1023,8 +1023,8 @@ def ver_reservacion(id_cliente):  # Funcion para Ver la Reservacion
 def administrar_reservaciones():
     global admin_rese, id_rese, id_rese_entry, seleccion_sello
     admin_rese = Toplevel()  # Encima de cualquier cosa
-    admin_rese.geometry("550x450")
-    centrar_pantalla(admin_rese, 550, 450)
+    admin_rese.geometry("600x550")
+    centrar_pantalla(admin_rese, 600, 550)
     admin_rese.title("Administrar Reservaciones")
     id_rese = IntVar()
 
@@ -1194,16 +1194,15 @@ def pop_ups(texto):  # Funcion para los pop ups
     imagen_cheems = PhotoImage(file="cheems.png")  # Importamos la imagen
     image = imagen_cheems.subsample(2, 2)
     pop_up.geometry("650x330")
-    centrar_pantalla(pop_up, 650, 330)
     pop_up.title("Errorm")
     pop_up.configure(bg="white")  # fondo blanco limdom
-    rowconfigure(pop_up, 4)
+    rowconfigure(pop_up, 5)
     columnconfigure(pop_up, 2)
 
     # Ponemos la label en la segunda columna, para que en la primera este la imagen
     Label(pop_up, text="¡Oh no!", height="3",
           font="Arial,48,bold", bg="white").grid(row=0, column=1, sticky="NSEW")
-    Label(pop_up, text="Oh no!\n"+str(texto),
+    Label(pop_up, text=str(texto),
           height="3", font="Arial,32,bold", bg="white").grid(row=1, column=1, sticky="NSEW")
     Label(pop_up, text="Intentelo nuevamente",
           height="3", font="Arial,32,bold", bg="white").grid(row=2, column=1, sticky="NSEW")
