@@ -1192,7 +1192,6 @@ def pop_ups(texto):  # Funcion para los pop ups
     global pop_up
     pop_up = Toplevel()  # Encima de cualquier cosa
     imagen_cheems = PhotoImage(file="cheems.png")  # Importamos la imagen
-    image = imagen_cheems.subsample(2, 2)
     pop_up.geometry("650x330")
     pop_up.title("Errorm")
     pop_up.configure(bg="white")  # fondo blanco limdom
@@ -1214,7 +1213,7 @@ def pop_ups(texto):  # Funcion para los pop ups
     # Imagen
     Label(pop_up, image=imagen_cheems, bg="white").grid(
         row=0, column=0, rowspan=4, sticky="NS")
-    # pop_ups.mainloop() lanzaba error
+    pop_ups.mainloop()
 
 
 def registrar_bd():  # Funcion para el registro
