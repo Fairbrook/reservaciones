@@ -435,9 +435,9 @@ def modificar_info():  # Funcion para el administrador, con el cual podra modifi
     def actualizar_info():
         rowconfigure(frame_boton, 1)
         columnconfigure(frame_boton, 2)
-        mostrar_info_actual()
         archivo = open("informacion.txt", 'w')  # W de write
         nuevo_texto = texto_info.get(1.0, "end")
+        print("NUEVO TEXTO:!!!!!!!!!!!!!!\n",nuevo_texto)
         archivo.write(nuevo_texto)
         archivo.close()
 
@@ -453,6 +453,7 @@ def modificar_info():  # Funcion para el administrador, con el cual podra modifi
             # id restaurante es siempre 1 en nuestro proyecto
             set_cupos_zonas_db(cupos_zona1, cupos_zona2, 1)
             set_horarios_db(primer_horario, ultimo_horario, 1)
+            mostrar_info_actual()
 
     # Botones para ejecutar las dos funciones previas
     Button(frame_boton, text="Actualizar info",
