@@ -22,9 +22,12 @@ def insertar_Platillo_bd(path_imagen, precio, descripcion, nombre_platillo):
     cursor = db.cursor()
     #Si el usuario no optó por poner una imagen, entonces hacemos inserción sin campo foto
     if path_imagen == "":
-        statement = "Insert into Platillo (nombre_platillo, precio, descripcion) values('{}', {}, '{}')".format(nombre_platillo, precio, descripcion)
-        cursor.execute(statement)
-        db.commit()
+        try:
+            statement = "Insert into Platillo (nombre_platillo, precio, descripcion) values('{}', {}, '{}')".format(nombre_platillo, precio, descripcion)
+            cursor.execute(statement)
+            db.commit()
+        except:
+            messagebox.showerror("Error de inserción", "Precio del platillo presenta formato inválido")
     #Si si hay imagen, leeremos dicho archivo, lo convertimos a blob y lo insertamos
     else:
         try:
@@ -33,9 +36,12 @@ def insertar_Platillo_bd(path_imagen, precio, descripcion, nombre_platillo):
         except:
             messagebox.showerror("Error de archivo", "Ocurrió un error a la hora de leer el archivo")
         else:
-            statement = "Insert into Platillo (precio, descripcion, nombre_platillo, foto) VALUES (%s,%s,%s,%s)"
-            cursor.execute(statement,(precio,descripcion,nombre_platillo, binarydata, )) #Todos los parámetros pasados con este formato tienen que ir en una sola tupla
-            db.commit()
+            try:
+                statement = "Insert into Platillo (precio, descripcion, nombre_platillo, foto) VALUES (%s,%s,%s,%s)"
+                cursor.execute(statement,(precio,descripcion,nombre_platillo, binarydata, )) #Todos los parámetros pasados con este formato tienen que ir en una sola tupla
+                db.commit()
+            except:
+                messagebox.showerror("Error de inserción", "Precio del platillo presenta formato inválido")
 
     cursor.close()
     
