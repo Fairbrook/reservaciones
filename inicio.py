@@ -1134,15 +1134,7 @@ def administrar_reservaciones():
 
 # Funcion para hacer validaciones e iniciar sesión
 def validar():
-    """
-    #BORRAR ESTE UNA VEZ SE COMPLETE EL LOGIN DE ADMIN APROPIADAMENTE, ESTO ES SOLO PARA ACCEDER RÁPIDO EN PRUEBAS
-    #NO LO BORREN PARA QUE FRONTEND PUEDA HACER PRUEBAS * C MUERE POR POBRE *
-    if password_entry.get() == 'admin' and user_entry.get() == 'admin':
-        menu_admin()
-    else:
-        menu_cliente()
-    # Obtenemos los valores igresados en las cajas de texto
-    """
+   
     # Validar nombre de usuario
     usuariovalidar = user_entry.get()
     if len(usuariovalidar) == 0:
