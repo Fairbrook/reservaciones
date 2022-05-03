@@ -1134,7 +1134,6 @@ def administrar_reservaciones():
 
 # Funcion para hacer validaciones e iniciar sesión
 def validar():
-   
     # Validar nombre de usuario
     usuariovalidar = user_entry.get()
     if len(usuariovalidar) == 0:
@@ -1205,7 +1204,7 @@ def pop_ups(texto):  # Funcion para los pop ups
     # Imagen
     Label(pop_up, image=imagen_cheems, bg="white").grid(
         row=0, column=0, rowspan=4, sticky="NS")
-    pop_ups.mainloop()
+    pop_ups.mainloop() #El error que da no perjudica nada, hace que se vea la imagen
 
 
 def registrar_bd():  # Funcion para el registro
