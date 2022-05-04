@@ -60,6 +60,7 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
             cursor.execute(sql_fecha_termino_reserva)
             termino_reserva = cursor.fetchone()[0]
 
+
             sql_validacion2 = '''SELECT '{}' > date_sub(now(), interval 24 hour)'''.format(termino_reserva)
             cursor.execute(sql_validacion2)
             no_valido_2 = cursor.fetchone()[0]
@@ -75,7 +76,7 @@ def validar_reservacion(id_cliente, fecha, hora, zona, cupos):
             if no_valido_3:
                 return False, "La fecha y hora de esta reservación ya pasaron"
             else:
-                sql_validacion4 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') > Date_add(now(), interval 8 day)".format(fecha_hora_db)
+                sql_validacion4 = "SELECT STR_TO_DATE('{}', '%d/%m/%y %H:%i') > Date_add(now(), interval 7 day)".format(fecha_hora_db)
                 cursor.execute(sql_validacion4)
                 no_valido_4 = cursor.fetchone()[0]
                 
