@@ -4,6 +4,7 @@ from cProfile import label
 from dataclasses import InitVar
 from msilib import text
 from re import L
+import re
 import tkinter
 from tkinter import messagebox
 from tkinter import ttk
@@ -437,7 +438,7 @@ def modificar_info():  # Funcion para el administrador, con el cual podra modifi
         columnconfigure(frame_boton, 2)
         archivo = open("informacion.txt", 'w')  # W de write
         nuevo_texto = texto_info.get(1.0, "end")
-        print("NUEVO TEXTO:!!!!!!!!!!!!!!\n",nuevo_texto)
+        print("NUEVO TEXTO:!!!!!!!!!!!!!!\n", nuevo_texto)
         archivo.write(nuevo_texto)
         archivo.close()
 
@@ -525,10 +526,10 @@ def menu_reservaciones(user, id):
         Button(pantalla_rese, text="Cupos disponibles",
                height="3", width="300",
                bg="#BCEBE0",
-               command=lambda: cupos_disponibles(id)).grid(row = 1 ,padx=60, sticky="NSEW")  # Boton de Ver cupos disponicles
-        
+               command=lambda: cupos_disponibles(id)).grid(row=1, padx=60, sticky="NSEW")  # Boton de Ver cupos disponicles
+
         blanklabel(pantalla_rese)
-       
+
         Button(pantalla_rese, text="Administrar reservaciones",
                height="3", width="300",
                bg="#BCEBE0", command=administrar_reservaciones).grid(row=2, padx=60, sticky="NSEW")  # Boton para Ver las reservaciones totales
@@ -840,11 +841,11 @@ def cupos_disponibles(id_cliente):
                         break
                 if cupos_general == 'FC' or cupos_general == 'NC':
 
-                   break 
+                    break
 
                 else:
                     j = j+1
-                    
+
     ver_cupos = Button(frame_boton_cupos, text="Cupos disponibles",
                        heigh="2", width="40",
                        font="18", bg="#30B68B",
@@ -1152,8 +1153,10 @@ def validar():
             pantalla.iconify()
             # <----ID es necesario para varias operaciones, es de suma importancia
             id_current_user = user["id_cliente"]
-            if esta_bloqueado(id_current_user):
-                messagebox.showerror("Atencion", "Su cuenta se encuenta bloqueada por demasiadas reservaciones no atendidas")
+            fecha_bloqueo = esta_bloqueado(id_current_user)
+            if bool(fecha_bloqueo):
+                messagebox.showerror(
+                    "Atencion", f"Su cuenta se encuenta bloqueada por demasiadas reservaciones no atendidas\nLa restricción permanecerá hasta {fecha_bloqueo.strftime('%d/%m/%Y')}")
                 return
             menu_cliente(id_current_user)
 
@@ -1204,7 +1207,7 @@ def pop_ups(texto):  # Funcion para los pop ups
     # Imagen
     Label(pop_up, image=imagen_cheems, bg="white").grid(
         row=0, column=0, rowspan=4, sticky="NS")
-    pop_ups.mainloop() #El error que da no perjudica nada, hace que se vea la imagen
+    pop_ups.mainloop()  # El error que da no perjudica nada, hace que se vea la imagen
 
 
 def registrar_bd():  # Funcion para el registro
@@ -1214,12 +1217,26 @@ def registrar_bd():  # Funcion para el registro
     if len(new_name) == 0:
         messagebox.showwarning("Error", "Introduzca su(s) nombre(s)")
         return
+
+    if not bool(re.match("^([a-zA-Z0-9]|\s)+$", new_name)):
+        messagebox.showwarning(
+            "Error", "El nombre solo puede tener letras, números y espacios")
+        return
+
     if len(new_user) == 0:
         messagebox.showwarning("Error", "Introduzca su nombre de usuario")
+        return
+    if len(new_user) > 20 or len(new_user) < 8:
+        messagebox.showwarning(
+            "Error", "El nombre de usuario debe estar entre 8 y 20 caracteres")
         return
 
     if len(new_password) == 0:
         messagebox.showwarning("Error", "Introduzca su contraseña")
+        return
+    if len(new_password) > 20 or len(new_password) < 8:
+        messagebox.showwarning(
+            "Error", "La contraseña debe tener entre 8 y 20 caracteres")
         return
     try:
         has_error, error_msg = register(new_name, new_user, new_password)
@@ -1299,11 +1316,14 @@ def columnconfigure(ventana, column):
     for x in range(column):
         Grid.columnconfigure(ventana, x, weight=1)  # Da un peso que escala
 
+
 def centrar_pantalla(root, y, x):
     x_ventana = (root.winfo_screenwidth() // 2 - x // 2)
     y_ventana = (root.winfo_screenheight() // 2 - y // 2)-100
-    posicion = str(x) + "x" + str(x) + "+" + str(x_ventana) + "+" + str(y_ventana)
+    posicion = str(x) + "x" + str(x) + "+" + \
+        str(x_ventana) + "+" + str(y_ventana)
     root.geometry(posicion)
+
 
 inicio_sesion()
 # app=aplication()

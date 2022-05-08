@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from db import db
 from tkinter import *
 import os
@@ -55,13 +55,14 @@ def esta_bloqueado(id_cliente):
     cursor.execute(query, (id_cliente,))
     reservaciones = list(cursor)
     if len(reservaciones) < 3:
-        return False
+        return None
     mas_reciente_hora_fecha = reservaciones[0][1]
-    hoy = datetime.now()
-    dias_transcurridos = (hoy - mas_reciente_hora_fecha).days
-    if dias_transcurridos > 7:
-        return False
-    return True
+    hoy = datetime.datetime.now()
+    final_bloqueo = mas_reciente_hora_fecha + datetime.timedelta(days=7)
+
+    if final_bloqueo < hoy:
+        return None
+    return final_bloqueo
 
 
 def crear_calificacion(id_cliente):
