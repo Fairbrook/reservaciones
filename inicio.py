@@ -258,7 +258,6 @@ def ver_info():  # Funcion para ver la informacion
     global pantalla_viewinfo  # Variables globales
     pantalla_viewinfo = Toplevel()  # Que aparezca encima de cualquier menu
     pantalla_viewinfo.geometry("590x600")
-    centrar_pantalla(pantalla_viewinfo, 600, 600)
     pantalla_viewinfo.config(bg="white")  # Fondo de la ventana
     pantalla_viewinfo.title("Visualizar información")
     # Escalabiidad
@@ -322,7 +321,6 @@ def modificar_info():  # Funcion para el administrador, con el cual podra modifi
 
     pantalla_modificar_info = Toplevel()
     pantalla_modificar_info.geometry("630x650")
-    centrar_pantalla(pantalla_modificar_info, 630, 650)
     pantalla_modificar_info.config(bg="white")
     pantalla_modificar_info.title("Modificar información")
 
