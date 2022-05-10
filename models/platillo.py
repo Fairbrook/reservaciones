@@ -124,7 +124,7 @@ def ver_menu():
 
             lista_imagenes.append(img_redimension) #Tomamos imagen previamente creada en el equipo y la agregamos a la lista
             Label(second_frame, text=nombre, font=("Lato", 10), width=40).grid(column=0, row=row, padx=5, pady=8)
-            Label(second_frame, text=precio, font=("Lato", 10), width=10).grid(column=1, row=row, padx=5, pady=8)
+            Label(second_frame, text="$"+str(precio), font=("Lato", 10), width=10).grid(column=1, row=row, padx=5, pady=8)
             Label(second_frame, text=descripcion, font=("Lato", 10), width=50).grid(column=2, row=row, padx=5, pady=8)
             #Aquí sacamos la imagen correspondiente de la lista y la ponemos en la etiqueta
             Label(second_frame, image=lista_imagenes[contador_imagenes], font=("Lato", 10), width=200).grid(column=3, row=row, padx=5, pady=8)
@@ -174,7 +174,10 @@ def modificar_menu():
     def escoger_imagen():
 
         path_imagen = filedialog.askopenfilename(initialdir="/", title="Seleccione una imagen para el platillo", filetypes=(("Archivos png", "*.png"),))
+        texto_path.config(state="normal")
+        texto_path.delete("1.0", "end")
         texto_path.insert("end", path_imagen)
+        texto_path.config(state="disabled")
 
     def agregar_platillo():
 
@@ -186,10 +189,18 @@ def modificar_menu():
         #Por alguna razón, la cadena resultante desde Text siempre tenia un \n añadido al final, rstrip lo quita
         path_imagen_platillo = path_imagen_platillo.rstrip() 
 
-        if nombre and precio != "":
-            insertar_Platillo_bd(path_imagen_platillo, precio, descripcion, nombre)
-        else:
+        if nombre == "" or precio == "":
             messagebox.showwarning("Falta de datos", "Nombre y precio son obligatorios para agregar un platillo")
+        else:
+            try:
+                precio = float(precio)
+            except ValueError:
+                messagebox.showerror("Error de valor", "Formato de precio no válido")
+            else:
+                if precio < 1:
+                    messagebox.showwarning("Falla en el valor", "Precio de platillo debe ser mayor a 0")
+                else:
+                    insertar_Platillo_bd(path_imagen_platillo, precio, descripcion, nombre)
 
         mostrar_platillos_tabla()
     
@@ -239,15 +250,16 @@ def modificar_menu():
     texto_descripcion.grid(column=3, row=0, padx=5)
 
     Label(frame_botones, text = "Precio $: ", font=("Lato", 10)).grid(column=4, row=0, padx=5)
-    Entry(frame_botones, textvariable=entry_precio, width=20, font=("Lato", 10)).grid(column=5, row=0, padx=5)
+    Spinbox(frame_botones, textvariable=entry_precio, width=20, font=("Lato", 10),
+    from_=1, to=20000).grid(column=5, row=0, padx=5)
     Button(frame_botones, text="Seleccionar archivo", font=("Lato", 10), bg= "#47525E", fg="white", command=escoger_imagen).grid(
         column=0, row=1, padx=10, pady=20)
 
-    texto_path = Text(frame_botones, height=1, width=20)
-    texto_path.grid(column=1, row=1, padx=10, pady=20)
+    texto_path = Text(frame_botones, height=1, width=40, state="disabled", font=("Lato",9))
+    texto_path.grid(column=1, row=1, padx=10, pady=20, columnspan=3)
 
     Button(frame_botones, text = "Agregar platillo", font = ("Lato", 10), bg = "green", fg = "white", width=25, command=agregar_platillo).grid(
-        column=3, row=1, padx=10, pady=20, columnspan=2)
+        column=4, row=1, padx=10, pady=20, columnspan=2)
 
 
     #Comenzamos a configurar espacio y aspectos de la tabla

@@ -368,22 +368,22 @@ def modificar_info():  # Funcion para el administrador, con el cual podra modifi
     Label(frame_variables, text="1er horario (Formato 24hrs): ",
           font=("Lato", 8), bg="white").grid(column=0, row=1, sticky='NSEW')
     spin_inicio = Spinbox(frame_variables, textvariable=entry_h1,
-                          values=opciones_spin_inicio).grid(column=1, row=1, padx=5, sticky='NSEW')
+                          values=opciones_spin_inicio, state="readonly").grid(column=1, row=1, padx=5, sticky='NSEW')
 
     Label(frame_variables, text="último horario (Formato 24hrs): ",
           font=("Lato", 8), bg="white").grid(column=2, row=1, sticky='NSEW')
     spin_fin = Spinbox(frame_variables, textvariable=entry_h2,
-                       values=opciones_spin_fin).grid(column=3, row=1, padx=5, sticky='NSEW')
+                       values=opciones_spin_fin, state="readonly").grid(column=3, row=1, padx=5, sticky='NSEW')
 
     Label(frame_variables, text="Mesas en zona interior: ",
           font=("Lato", 8), bg="white").grid(column=0, row=2, padx=5, pady=8, sticky='NSEW')
     spin_zona1 = Spinbox(frame_variables, textvariable=entry_z1,
-                         from_=1, to=50).grid(column=1, row=2, padx=5, sticky='NSEW')
+                         from_=1, to=50, state="readonly").grid(column=1, row=2, padx=5, sticky='NSEW')
 
     Label(frame_variables, text="Mesas en Green Garden: ",
           font=("Lato", 8), bg="white").grid(column=2, row=2, padx=5, pady=8, sticky='NSEW')
     spin_zona2 = Spinbox(frame_variables, textvariable=entry_z2,
-                         from_=1, to=50).grid(column=3, row=2, padx=5, sticky='NSEW')
+                         from_=1, to=50, state="readonly").grid(column=3, row=2, padx=5, sticky='NSEW')
 
     # Frame para botones
     frame_boton = Frame(pantalla_modificar_info, bg="white")
@@ -438,7 +438,6 @@ def modificar_info():  # Funcion para el administrador, con el cual podra modifi
         columnconfigure(frame_boton, 2)
         archivo = open("informacion.txt", 'w')  # W de write
         nuevo_texto = texto_info.get(1.0, "end")
-        print("NUEVO TEXTO:!!!!!!!!!!!!!!\n", nuevo_texto)
         archivo.write(nuevo_texto)
         archivo.close()
 
