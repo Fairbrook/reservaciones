@@ -452,8 +452,14 @@ def get_all_reservations():
     return reservaciones
 
 def update_estatus(id, estatus):
-    query = "UPDATE reservacion SET estatus=%s WHERE id_reservacion=%s"
     cursor = db.cursor()
+    if estatus == 'S':
+        query = "SELECT * FROM reservacion WHERE id_reservacion=%s"
+        cursor.execute(query, (id,))
+        user = list(cursor)[0][4]
+        query = "UPDATE usuario SET cal_pendiente=True WHERE id_cliente=%s"
+        cursor.execute(query, (user,))
+    query = "UPDATE reservacion SET estatus=%s WHERE id_reservacion=%s"
     cursor.execute(query, (estatus, id))
     db.commit()
     cursor.close()
