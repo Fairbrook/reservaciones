@@ -19,7 +19,7 @@ from models.administrador import login_admin, ver_calificaciones_admin
 from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db, get_horarios_formateados
 from models.usuario import esta_bloqueado, login, register, crear_calificacion, ver_calificaciones_cliente
 from models.platillo import ver_menu, modificar_menu
-from models.reservacion import consultar_reservacion, get_all_reservations, get_estatus, get_reservation, update_estatus, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr, cupos_disp, cupos_disp_todos, registrar_asistencia
+from models.reservacion import consultar_reservacion, get_all_reservations, get_estatus, get_reservation, update_estatus, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr, cupos_disp, cupos_disp_todos
 from db import db
 
 
@@ -515,9 +515,9 @@ def menu_reservaciones(user, id):
         blanklabel(pantalla_rese)
     else:
         # Botones para el admin relacionados con reservar
-        Button(pantalla_rese, text="Registrar asistencia",
-               height="3", width="300",
-               bg="#BCEBE0", command=registrar_asistencia).grid(row=0, padx=60, sticky="NSEW")  # Boton para registrar asistencia
+        # Button(pantalla_rese, text="Registrar asistencia",
+        #        height="3", width="300",
+        #        bg="#BCEBE0", command=registrar_asistencia).grid(row=0, padx=60, sticky="NSEW")  # Boton para registrar asistencia
 
         blanklabel(pantalla_rese)
         Button(pantalla_rese, text="Cupos disponibles",
