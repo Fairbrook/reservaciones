@@ -107,16 +107,17 @@ def inicio_sesion():  # pantalla al iniciar el programa, se encontrara el inicio
 
 
 def registro():  # Se despliega encima de iniciar sesion para dar un registro
-    global pantalla_r, new_user_entry, new_password_entry, new_name_entry, new_lastname_entry
-    global new_user_verify, new_password_verify, new_name_verify, new_lastname_verify
+    global pantalla_r, new_user_entry, new_password_entry, new_name_entry, new_mail_entry
+    global new_user_verify, new_password_verify, new_user_verify, new_mail_verify
     pantalla_r = Toplevel(pantalla)  # pantalla_r = pantalla registro
     pantalla_r.geometry("300x350")
     centrar_pantalla(pantalla_r, 300, 350)
     pantalla_r.title("Registro")
     new_user_verify = StringVar()  # Indicamos el tipo de variable
+    new_mail_verify = StringVar()  # Indicamos el tipo de variable
     new_password_verify = StringVar()  # Indicamos el tipo de variable
     new_name_verify = StringVar()  # Indicamos el tipo de variable
-    rowconfigure(pantalla_r, 13)
+    rowconfigure(pantalla_r, 16)
     columnconfigure(pantalla_r, 1)
     Label(pantalla_r, text="Ingrese los datos para el registro",
           font="bold").grid(sticky="NSEW")
@@ -126,6 +127,11 @@ def registro():  # Se despliega encima de iniciar sesion para dar un registro
     new_name_entry = Entry(
         pantalla_r, textvariable=new_name_verify, width="25")
     new_name_entry.grid(padx=20, sticky="NSEW")
+    # Pide el correo de la persona
+    Label(pantalla_r, text="Correo Electronico:").grid(sticky="NSEW")
+    new_mail_entry = Entry(
+        pantalla_r, textvariable = new_mail_verify, width="25")
+    new_mail_entry.grid(padx=20, sticky="NSEW")
 
     blanklabel(pantalla_r)
     # Pide el nuevo usuario
@@ -1209,10 +1215,15 @@ def pop_ups(texto):  # Funcion para los pop ups
 
 def registrar_bd():  # Funcion para el registro
     new_name = new_name_entry.get()  # Obtencion de datos
+    new_mail = new_mail_entry.get()  # Obtencion de datos
     new_user = new_user_entry.get()  # Obtencion de datos
     new_password = new_password_entry.get()  # Obtencion de datos
     if len(new_name) == 0:
         messagebox.showwarning("Error", "Introduzca su(s) nombre(s)")
+        return
+
+    if len(new_mail) == 0:
+        messagebox.showwarning("Error", "Introduzca su correo electronico")
         return
 
     if not bool(re.match("^([a-zA-Z0-9]|\s)+$", new_name)):
