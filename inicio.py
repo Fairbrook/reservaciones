@@ -1109,6 +1109,7 @@ def administrar_reservaciones():
             updated_reservation["hora_fecha"],
             updated_reservation["zona"],
             updated_reservation["n_personas"],
+            updated_reservation["cliente"]["nombre_usuario"],
             updated_reservation["estatus"]
         ))
 

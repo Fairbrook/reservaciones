@@ -437,14 +437,23 @@ def get_estatus(id):
 
 
 def get_reservation(id):
-    query = "SELECT * FROM reservacion WHERE id_reservacion=%s"
+    query = "SELECT reservacion.id_reservacion,\
+        reservacion.hora_fecha, \
+        reservacion.zona,\
+        reservacion.n_personas,\
+        reservacion.id_cliente,\
+        reservacion.id_restaurante,\
+        reservacion.qr, estatus,\
+        usuario.nombre_personal, usuario.nombre_usuario FROM reservacion\
+        INNER JOIN usuario ON usuario.id_cliente = reservacion.id_cliente\
+        WHERE reservacion.id_reservacion=%s"
     cursor = db.cursor()
     cursor.execute(query, (id,))
     reservations = list(cursor)
     cursor.close()
     if(len(reservations) > 0):
-        (id_reservacion, hora_fecha, zona, n_personas, id_cliente,
-         id_restaurante, qr, estatus) = reservations[0]
+        (id_reservacion, hora_fecha, zona, n_personas,
+         id_cliente, id_restaurante, qr, estatus, usuario_nombre_personal, usuario_nombre_usuario) = reservations[0]
         return{
             "id": id_reservacion,
             "hora_fecha": hora_fecha,
@@ -453,5 +462,10 @@ def get_reservation(id):
             "cliente": id_cliente,
             "id_restaurante": id_restaurante,
             "qr": qr,
+            "cliente": {
+                "id": id_cliente,
+                "nombre_personal": usuario_nombre_personal,
+                "nombre_usuario": usuario_nombre_usuario
+            },
             "estatus": estatus
         }
