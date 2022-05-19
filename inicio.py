@@ -1049,13 +1049,14 @@ def administrar_reservaciones():
     # Tabla para ver las reservaciones existentes
     tabla = ttk.Treeview(admin_rese, height=10)
     tabla.grid(column=0, row=2, padx=20, pady=20, sticky="NSWE")
-    tabla['columns'] = ('id', 'horario', 'zona', 'personas', 'sello')
+    tabla['columns'] = ('id', 'horario', 'zona', 'personas', 'nombre_cliente', 'sello')
 
     tabla.column("#0", width=0,  stretch=NO)
     tabla.column('id', minwidth=10, width=10, anchor='center')
     tabla.column('horario', minwidth=120, width=130, anchor='center')
-    tabla.column('zona', minwidth=10, width=10, anchor='center')
-    tabla.column('personas', minwidth=90, width=130, anchor='center')
+    tabla.column('zona', minwidth=10, width=20, anchor='center')
+    tabla.column('personas', minwidth=10, width=30, anchor='center')
+    tabla.column('nombre_cliente', minwidth=30, width=70, anchor='center')
     tabla.column('sello', minwidth=40, width=50, anchor='center')
 
     tabla.heading("#0", text="", anchor=CENTER)
@@ -1063,6 +1064,7 @@ def administrar_reservaciones():
     tabla.heading('horario', text='Horario', anchor='center')
     tabla.heading('zona', text='Zona', anchor='center')
     tabla.heading('personas', text='Personas', anchor='center')
+    tabla.heading('nombre_cliente', text='Cliente', anchor='center')
     tabla.heading('sello', text='Sello', anchor='center')
 
     estilo = ttk.Style(admin_rese)
@@ -1080,7 +1082,8 @@ def administrar_reservaciones():
             reservation['hora_fecha'],
             reservation["zona"],
             reservation["n_personas"],
-            reservation["estatus"]
+            reservation["cliente"]["nombre_usuario"],
+            reservation["estatus"],
         ))
 
     blanklabel(admin_rese)
@@ -1226,6 +1229,10 @@ def registrar_bd():  # Funcion para el registro
         messagebox.showwarning("Error", "Introduzca su correo electronico")
         return
 
+    if not bool(re.match("^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$", new_mail)):
+        messagebox.showwarning("Error", "Dirección de correo electrónico inválido")
+        return
+
     if not bool(re.match("^([a-zA-Z0-9]|\s)+$", new_name)):
         messagebox.showwarning(
             "Error", "El nombre solo puede tener letras, números y espacios")
@@ -1247,7 +1254,7 @@ def registrar_bd():  # Funcion para el registro
             "Error", "La contraseña debe tener entre 8 y 20 caracteres")
         return
     try:
-        has_error, error_msg = register(new_name, new_user, new_password)
+        has_error, error_msg = register(new_name, new_user, new_password, new_mail)
         if has_error:
             messagebox.showwarning("Error", error_msg)
             return

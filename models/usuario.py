@@ -13,16 +13,17 @@ sys.path.append('../')
 # Funcion para registrar usuario
 
 
-def register(name, user_name, password):
+def register(name, user_name, password, email):
     # Comprobación que el nombre de usuario es único
     query = "SELECT * FROM usuario WHERE nombre_usuario=%s LIMIT 1"
     cursor = db.cursor()
     cursor.execute(query, (user_name,))
     if len(list(cursor)) > 0:
         return (True, 'El nombre de usuario se encuentra en uso')
-    query = "INSERT INTO usuario (nombre_personal, nombre_usuario, contrasena) VALUES (%s, %s,SHA2(%s,256))"
+
+    query = "INSERT INTO usuario (nombre_personal, nombre_usuario, contrasena, correo) VALUES (%s, %s,SHA2(%s,256), %s)"
     cursor = db.cursor()
-    cursor.execute(query, (name, user_name, password))
+    cursor.execute(query, (name, user_name, password, email))
     db.commit()
     cursor.close()
     return (False, '')
