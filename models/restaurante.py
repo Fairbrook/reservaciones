@@ -4,6 +4,7 @@ import os
 import sys
 from tkinter import messagebox
 from functools import partial
+from PIL import Image, ImageTk
 import qrcode
 
 sys.path.append('../')
@@ -75,3 +76,25 @@ def get_horarios_formateados(id_restaurante):
         current += 2 #Saltamos de dos en dos horas
     
     return values
+
+def get_logo_restaurante(id_restaurante):
+
+    path_imagenes = os.getcwd() + '\imagenes'
+    almacenar_en = path_imagenes + '\\logo_bd.png'
+    cursor = db.cursor()
+    query_select_logo = "SELECT logo from restaurante where id_restaurante = {}".format(id_restaurante)
+    cursor.execute(query_select_logo)
+    logo = cursor.fetchone()
+    cursor.close()
+
+    if logo != None:
+        logoblob = logo[0]
+        with open(almacenar_en, 'wb') as file: #En la carpeta Imagenes "escribimos" la imagen
+            file.write(logoblob)
+            file.close()
+        
+        imagen_logo = Image.open(almacenar_en)
+        imagen_logo = imagen_logo.resize((150,200), Image.ANTIALIAS)
+        logo_redimension = ImageTk.PhotoImage(imagen_logo)
+
+        return logo_redimension
