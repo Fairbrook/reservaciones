@@ -5,8 +5,7 @@ from dataclasses import InitVar
 from msilib import text
 from re import L
 import re
-import tkinter
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 from tkinter import ttk
 import os
 from tkinter import *
@@ -16,7 +15,7 @@ from PIL import Image, ImageTk
 #from models.administrador import consulta_BD
 import hashlib
 from models.administrador import login_admin, ver_calificaciones_admin
-from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db, get_horarios_formateados
+from models.restaurante import get_cupos_zonas_db, get_horarios_db, set_cupos_zonas_db, set_horarios_db, get_horarios_formateados, get_logo_restaurante
 from models.usuario import esta_bloqueado, login, register, crear_calificacion, ver_calificaciones_cliente
 from models.platillo import ver_menu, modificar_menu
 from models.reservacion import consultar_reservacion, get_all_reservations, get_estatus, get_reservation, update_estatus, validar_reservacion, cancelar_reservacion, consulta_reservacion_qr, cupos_disp, cupos_disp_todos
@@ -172,8 +171,7 @@ def menu_cliente(id_cliente):  # Menu a desplegar a todos estos usuarios de tipo
     # Que aparezca encima de la de inicio de sesion
     pantalla_mc = Toplevel(pantalla)
     # Importamos el Logo de nuestro equipo
-    imagen = PhotoImage(file="logop.png")
-    imagen.subsample(2, 2)  # No me acuerdo, pero es de la imagen
+    img_logo = get_logo_restaurante(1)
     pantalla_mc.geometry("300x500")
     centrar_pantalla(pantalla_mc, 300, 500)
     pantalla_mc.title("Menu")
@@ -208,7 +206,7 @@ def menu_cliente(id_cliente):  # Menu a desplegar a todos estos usuarios de tipo
 
     blanklabel(pantalla_mc)
     # Imagen de nuestro equipo
-    Label(pantalla_mc, image=imagen).grid()
+    Label(pantalla_mc, image=img_logo).grid()
     blanklabel(pantalla_mc)
     pantalla_mc.mainloop()
 
@@ -217,7 +215,8 @@ def menu_admin(id_admin):  # Menu a desplegar al usuario de tipo admin
     global pantalla_ma  # pantalla_ma = pantalla menu admin
     # pantalla.withdraw()
     pantalla_ma = Toplevel(pantalla)  # Aparece encima del inicio de sesion
-    imagen = PhotoImage(file="logop.png")  # Importamos la imagen del equipo
+    img_logo = get_logo_restaurante(1)
+
     pantalla_ma.geometry("300x450")
     centrar_pantalla(pantalla_ma, 300, 450)
     pantalla_ma.title("Administrador")
@@ -254,7 +253,7 @@ def menu_admin(id_admin):  # Menu a desplegar al usuario de tipo admin
 
     blanklabel(pantalla_ma)
     # Cargamos la imagen en la ventana
-    Label(pantalla_ma, image=imagen).grid()
+    Label(pantalla_ma, image=img_logo).grid()
 
     blanklabel(pantalla_ma)
     pantalla_ma.mainloop()
@@ -458,6 +457,30 @@ def modificar_info():  # Funcion para el administrador, con el cual podra modifi
             set_cupos_zonas_db(cupos_zona1, cupos_zona2, 1)
             set_horarios_db(primer_horario, ultimo_horario, 1)
             mostrar_info_actual()
+    
+    def cambiar_logo():
+        
+        path_imagen = filedialog.askopenfilename(initialdir="/", title="Seleccione una imagen para el logo", filetypes=(("Archivos png", "*.png"),))
+        
+        if path_imagen == "":
+            messagebox.showerror("ERROR", "No se ha escogido imagen")
+        else:
+            cursor = db.cursor()
+            try:
+                with open(path_imagen, "rb") as file: 
+                    binarydata = file.read()
+            except:
+                messagebox.showerror("Error de archivo", "Ocurrió un error a la hora de leer el archivo")
+            else:
+                try:
+                    query_update = "UPDATE restaurante set logo = %s where id_restaurante = 1"
+                    cursor.execute(query_update, (binarydata,))
+                    db.commit()
+                except:
+                    messagebox.showerror("Error", "Ocurrió algo inesperado al insertar nuevo logo")
+                else:
+                    messagebox.showinfo("Listo", "Imagen para logo de restaurante ha sido actualizada")
+            cursor.close()
 
     # Botones para ejecutar las dos funciones previas
     Button(frame_boton, text="Actualizar info",
@@ -466,6 +489,9 @@ def modificar_info():  # Funcion para el administrador, con el cual podra modifi
     Button(frame_boton, text="Mostrar info",
            bg="#47525E", fg="white",
            command=mostrar_info_actual).grid(column=1, row=0, pady=5, padx=25, sticky='NSEW')
+    Button(frame_boton, text="Cambiar logo",
+           bg="#47525E", fg="white",
+           command=cambiar_logo).grid(column=0, row=1, pady=5, padx=25, sticky='NSEW')
 
 
 # Funcion que despliega el menu de reservaciones, recibe como parametro la id del usuario
