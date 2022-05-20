@@ -84,13 +84,12 @@ def get_logo_restaurante(id_restaurante):
     cursor = db.cursor()
     query_select_logo = "SELECT logo from restaurante where id_restaurante = {}".format(id_restaurante)
     cursor.execute(query_select_logo)
-    logo = cursor.fetchone()[0]
+    logoblob = cursor.fetchone()[0]
     cursor.close()
 
-    print("LOGO: ", logo)
+    print("LOGO: ", logoblob)
     
-    if logo != None:
-        logoblob = logo[0]
+    if logoblob != None:
         with open(almacenar_en, 'wb') as file: #En la carpeta Imagenes "escribimos" la imagen
             file.write(logoblob)
             file.close()
