@@ -98,3 +98,6 @@ def get_logo_restaurante(id_restaurante):
         logo_redimension = ImageTk.PhotoImage(imagen_logo)
 
         return logo_redimension
+    
+    else: 
+        return False

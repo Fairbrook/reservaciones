@@ -170,8 +170,6 @@ def menu_cliente(id_cliente):  # Menu a desplegar a todos estos usuarios de tipo
     # pantalla.withdraw() #Cerramos la ventana de inicio de sesion
     # Que aparezca encima de la de inicio de sesion
     pantalla_mc = Toplevel(pantalla)
-    # Importamos el Logo de nuestro equipo
-    img_logo = get_logo_restaurante(1)
     pantalla_mc.geometry("300x500")
     centrar_pantalla(pantalla_mc, 300, 500)
     pantalla_mc.title("Menu")
@@ -206,7 +204,10 @@ def menu_cliente(id_cliente):  # Menu a desplegar a todos estos usuarios de tipo
 
     blanklabel(pantalla_mc)
     # Imagen de nuestro equipo
-    Label(pantalla_mc, image=img_logo).grid()
+    img_logo = get_logo_restaurante(1)
+
+    if img_logo != False:
+        Label(pantalla_mc, image=img_logo).grid()
     blanklabel(pantalla_mc)
     pantalla_mc.mainloop()
 
