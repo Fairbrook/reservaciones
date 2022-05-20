@@ -216,8 +216,6 @@ def menu_admin(id_admin):  # Menu a desplegar al usuario de tipo admin
     global pantalla_ma  # pantalla_ma = pantalla menu admin
     # pantalla.withdraw()
     pantalla_ma = Toplevel(pantalla)  # Aparece encima del inicio de sesion
-    img_logo = get_logo_restaurante(1)
-
     pantalla_ma.geometry("300x450")
     centrar_pantalla(pantalla_ma, 300, 450)
     pantalla_ma.title("Administrador")
@@ -254,7 +252,11 @@ def menu_admin(id_admin):  # Menu a desplegar al usuario de tipo admin
 
     blanklabel(pantalla_ma)
     # Cargamos la imagen en la ventana
-    Label(pantalla_ma, image=img_logo).grid()
+
+    img_logo = get_logo_restaurante(1)
+
+    if img_logo != False:
+        Label(pantalla_ma, image=img_logo).grid()
 
     blanklabel(pantalla_ma)
     pantalla_ma.mainloop()
