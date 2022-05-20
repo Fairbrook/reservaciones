@@ -84,9 +84,11 @@ def get_logo_restaurante(id_restaurante):
     cursor = db.cursor()
     query_select_logo = "SELECT logo from restaurante where id_restaurante = {}".format(id_restaurante)
     cursor.execute(query_select_logo)
-    logo = cursor.fetchone()
+    logo = cursor.fetchone()[0]
     cursor.close()
 
+    print("LOGO: ", logo)
+    
     if logo != None:
         logoblob = logo[0]
         with open(almacenar_en, 'wb') as file: #En la carpeta Imagenes "escribimos" la imagen
@@ -98,6 +100,5 @@ def get_logo_restaurante(id_restaurante):
         logo_redimension = ImageTk.PhotoImage(imagen_logo)
 
         return logo_redimension
-    
     else: 
         return False

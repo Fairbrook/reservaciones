@@ -1182,37 +1182,37 @@ def validar():
         messagebox.showwarning("Error", "Introduzca su contraseña")
         return
     # Inicio de sesión
-    try:
-        # funcion para login
-        user = login(usuariovalidar, contraseñavalidar)
-        if user != None:
-            pantalla.iconify()
-            # <----ID es necesario para varias operaciones, es de suma importancia
-            id_current_user = user["id_cliente"]
-            fecha_bloqueo = esta_bloqueado(id_current_user)
-            if bool(fecha_bloqueo):
-                messagebox.showerror(
-                    "Atencion", f"Su cuenta se encuenta bloqueada por demasiadas reservaciones no atendidas\nLa restricción permanecerá hasta {fecha_bloqueo.strftime('%d/%m/%Y')}")
-                return
-            menu_cliente(id_current_user)
+    #try:
+    # funcion para login
+    user = login(usuariovalidar, contraseñavalidar)
+    if user != None:
+        pantalla.iconify()
+        # <----ID es necesario para varias operaciones, es de suma importancia
+        id_current_user = user["id_cliente"]
+        fecha_bloqueo = esta_bloqueado(id_current_user)
+        if bool(fecha_bloqueo):
+            messagebox.showerror(
+                "Atencion", f"Su cuenta se encuenta bloqueada por demasiadas reservaciones no atendidas\nLa restricción permanecerá hasta {fecha_bloqueo.strftime('%d/%m/%Y')}")
+            return
+        menu_cliente(id_current_user)
 
-        else:
-            # Inicio sesion admin
-            admin = login_admin(usuariovalidar, contraseñavalidar)
-        # revisamos si hay concidencias
-            if len(admin) != 0:
-                # si hay concidencias se muestra el menu de admin
-                pantalla.iconify()
-                # <--- admin es una lista de una tupla, [0][0] retorna solo id del admin
-                id_admin = admin[0][0]
-                menu_admin(id_admin)
-            elif user == None:
-                messagebox.showwarning(
-                    "Error", "Usuario y/o contraseña incorrectos")
-                return
-    except:
-        messagebox.showwarning("Error", "Hubo un error inesperado")
-        return
+    else:
+        # Inicio sesion admin
+        admin = login_admin(usuariovalidar, contraseñavalidar)
+    # revisamos si hay concidencias
+        if len(admin) != 0:
+            # si hay concidencias se muestra el menu de admin
+            pantalla.iconify()
+            # <--- admin es una lista de una tupla, [0][0] retorna solo id del admin
+            id_admin = admin[0][0]
+            menu_admin(id_admin)
+        elif user == None:
+            messagebox.showwarning(
+                "Error", "Usuario y/o contraseña incorrectos")
+            return
+    #except:
+      #  messagebox.showwarning("Error", "Hubo un error inesperado")
+      #  return
 
     user_entry.delete(first=0, last='end')  # Se limpia
     password_entry.delete(first=0, last='end')  # Se limpia despues del uso
