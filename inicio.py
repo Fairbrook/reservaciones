@@ -656,7 +656,7 @@ def validar_cupos_aux(fecha, hora, zona):
 
 
 def validar_cupos_aux_todos(fecha, hora, zona):
-    global resultado_cup
+    global resultado_cup1
 
     try:
         fecha = cale.get_date()  # Variables y su asignacion de procedencia
@@ -671,14 +671,14 @@ def validar_cupos_aux_todos(fecha, hora, zona):
             hora = ''
 
         else:
-            resultado_cup = cupos_disp_todos(fecha, hora, zona)
+            resultado_cup1 = cupos_disp_todos(fecha, hora, zona)
 
     except:
         print("ERROR EXCEPT")
         messagebox.showwarning(
-            "Error", "Fallo en la busqueda\nCuenta con uno o más campos vacios")
+            "Error", "Fallo en la busqueda\n No seleccionó una fecha")
 
-    print(resultado_cup)
+    print(resultado_cup1)
 
 
 def cupos_disponibles(id_cliente):
@@ -862,21 +862,21 @@ def cupos_disponibles(id_cliente):
                     horarios = hora_values
 
                     validar_cupos_aux_todos(horarios, fecha1, op_zona_cpy)
-                    cupos_general = resultado_cup
+                    cupos_general = resultado_cup1
                     # posible valor de retorno de la funcion validar_cupos en reservacion.impide que el usuario vea la fecha de mas de 7 dias.
-                    if cupos_general != 'FC' and cupos_general != 'NC':
-
-                        tabla.insert('', i, text="", values=(
-                            hora_values, op_zona, cupos_general))
-                        i = i+1
-                    else:
+                    if cupos_general == 'FC' or cupos_general == 'NC':
                         break
+                    else:
+                            tabla.insert('', i, text="", values=(
+                            hora_values, op_zona, cupos_general))
+                            i = i+1
+                   
                 if cupos_general == 'FC' or cupos_general == 'NC':
 
                     break
 
                 else:
-                    j = j+1
+                     j = j+1
 
     ver_cupos = Button(frame_boton_cupos, text="Cupos disponibles",
                        heigh="2", width="40",

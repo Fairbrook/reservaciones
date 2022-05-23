@@ -86,10 +86,10 @@ def ver_menu():
 
     my_canvas.create_window((0,0), window=second_frame, anchor="nw")
 
-    Label(second_frame, text="Nombre", font=("Lato", 10), width=20).grid(column=0, row=0, padx=5, pady=8)
-    Label(second_frame, text="Precio", font=("Lato", 10), width=10).grid(column=1, row=0, padx=5, pady=8)
-    Label(second_frame, text="Descripción", font=("Lato", 10), width=50).grid(column=2, row=0, padx=5, pady=8)
-    Label(second_frame, text="Imagen", font=("Lato", 10), width=50).grid(column=3, row=0, padx=5, pady=8)
+    Label(second_frame, text="Nombre", font=("Lato", 10,"bold"), width=20).grid(column=0, row=0, padx=5, pady=8)
+    Label(second_frame, text="Precio", font=("Lato", 10,"bold"), width=10).grid(column=1, row=0, padx=5, pady=8)
+    Label(second_frame, text="Descripción", font=("Lato", 10,"bold"), width=50).grid(column=2, row=0, padx=5, pady=8)
+    Label(second_frame, text="Imagen", font=("Lato", 10,"bold"), width=50).grid(column=3, row=0, padx=5, pady=8)
 
     row = 1
     contador_imagenes = -1 #Dado a que puede haber platillos con o sin imagen, es necesario tener un indice
